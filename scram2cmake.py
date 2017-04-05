@@ -1,8 +1,17 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os, glob, shutil, sys
 import xml.etree.ElementTree as ET
 import json
+import fnmatch, re
+
+def find_files(directory, pattern):
+    for root, dirs, files in os.walk(directory):
+        for basename in files:
+            if fnmatch.fnmatch(basename, pattern):
+                filename = os.path.join(root, basename)
+                yield filename
+
 
 # The directory of the current SCRAM project.
 prefix = os.getcwd() + os.sep
@@ -49,7 +58,7 @@ def get_files(node, base_dir):
     for file in files:
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
-        result += glob.glob(file, recursive=True)
+        result += glob.glob(file)
         os.chdir(cwd_bak)
 
     for child_node in node:
@@ -61,7 +70,7 @@ def get_files(node, base_dir):
     return result
 
 # Abstract base class for anything that can be built by SCRAM.
-class ScramTargetBase:
+class ScramTargetBase(object):
     def __init__(self):
         # Link to the ScramProject that contains this target
         self.project = None
@@ -109,7 +118,7 @@ class ScramTargetBase:
             try:
                 target = self.project.get_target(dependency)
                 self.dependencies.add(target)
-            except FileNotFoundError as e:
+            except IOError as e:
                 print("Warning: Dependency " + dependency + " not found!")
 
         for dependency in self.dependencies:
@@ -131,7 +140,7 @@ def get_lib_or_name_attr(node):
 
 class ScramModuleLibrary(ScramTargetBase):
     def __init__(self, node, base_dir):
-        super().__init__()
+        super(ScramModuleLibrary,self).__init__()
         self.dir = base_dir
         self.name = remove_prefix(base_dir)
         self.symbol = self.name.replace("/", "").replace("-", "")
@@ -175,18 +184,17 @@ class ScramModuleLibrary(ScramTargetBase):
                     else:
                         print("Unknown flag type: " + str(child.attrib))
                     
+        
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
-        
         base_glob = "src/*"
         if self.add_subdir:
             base_glob = "src/**/*"
-        
-        self.source_files = glob.glob(base_glob+".cc", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".cpp", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".cxx", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".c", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".C", recursive=self.add_subdir)
+        self.source_files = glob.glob(base_glob+".cc")
+        self.source_files += glob.glob(base_glob+".cpp")
+        self.source_files += glob.glob(base_glob+".cxx")
+        self.source_files += glob.glob(base_glob+".c")
+        self.source_files += glob.glob(base_glob+".C")
         os.chdir(cwd_bak)
 
         if not self.is_virtual():
@@ -195,7 +203,7 @@ class ScramModuleLibrary(ScramTargetBase):
 
 class ScramTarget(ScramTargetBase):
     def __init__(self, node, base_dir):
-        super().__init__()
+        super(ScramTarget,self).__init__()
         self.dir = base_dir
         self.source_files = get_files(node, base_dir)
 
@@ -218,7 +226,7 @@ class ScramTarget(ScramTargetBase):
 
 
 
-class ScramModule:
+class ScramModule():
 
     def get_targets_from(self, base_dir, node):
         result = []
@@ -241,7 +249,6 @@ class ScramModule:
 
     def __init__(self, name, base_dir, node):
         self.base_dir = base_dir
-        #print(base_dir)
         assert(len(base_dir.split("/")) == 2)
         self.subsystem = base_dir.split("/")[0]
         self.package = base_dir.split("/")[1]
@@ -308,8 +315,8 @@ class ScramProject:
     def get_target(self, name):
         if name.lower() in self.targets:
             return self.targets[name.lower()]
-        #print("Couldn't find target: " + name)
-        raise FileNotFoundError()
+        print("Couldn't find target: " + name)
+        raise IOError()
 
     def add_module(self, module):
         module.project = self
@@ -340,8 +347,11 @@ class ScramProject:
 def parse_BuildFileXml(path):
     f = open(path)
     try:
-        data = f.read().strip()
-        data = "<build>" + data + "</build>"
+        data = ""
+        for line in f:
+            if not re.match('^#',line):
+                data += line
+        data = "<build>" + data.strip() + "</build>"
         root = ET.fromstring(data)
         # Manually copy all global <use> not inside a <bin>/<library> tag
         # to each of those tags in the current BuildFile.xml
@@ -382,9 +392,11 @@ class CMakeGenerator:
 
         if target.is_executable:
             out.write("add_executable(")
+            out.write(target.symbol)
         else:
             out.write("add_library(")
-        out.write(target.symbol)
+            out.write(target.symbol)
+            out.write(" SHARED ")
 
         for source in target.source_files:
             out.write("\n  " + source)
@@ -395,7 +407,7 @@ class CMakeGenerator:
                             " PUBLIC " + dir + ")\n")
         
         if len(target.cxx_flags) != 0:
-            out.write("target_compile_definitions(" + target.symbol
+            out.write("target_compile_options(" + target.symbol
                       + " PUBLIC " + target.cxx_flags + ")\n")
 
         if len(target.ld_flags.strip()) != 0:
@@ -409,6 +421,19 @@ class CMakeGenerator:
                 out.write("  " + lib + "\n")
             out.write(")\n")
         out.write("\n")
+
+        out.write("install( TARGETS ") 
+        out.write(target.symbol)
+        out.write(" EXPORT ")
+        out.write(target.symbol)
+        out.write(" DESTINATION ")
+        if target.is_executable:
+            out.write(" bin ")
+        else:
+            out.write(" lib ")
+        out.write(")\n\n")
+
+
 
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own

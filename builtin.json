@@ -16,45 +16,44 @@
   "RecoTracker/TkNavigation": {},
   "RelationalAccess": {},
   "TkOnlineSwDB": {},
+  "DataFormats/MuonData": {},
+  "PlotCompareUtility": {},
   "boost": {
-    "includes" : ["/usr/include/boost/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/"],
     "links" : ["dl", "boost_thread"]
   },
   "boost_filesystem": {
-    "includes" : ["/usr/include/boost/filesystem/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/filesystem/"],
     "depends" : ["boost"],
     "links" : ["boost_filesystem", "boost_system"]
-
   },
   "boost_header": {},
   "boost_iostreams": {
-    "includes" : ["/usr/include/boost/iostreams/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/iostreams/"],
     "depends" : ["boost"]
   },
   "boost_program_options": {
-    "includes" : ["/usr/include/boost/program_options/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/program_options/"],
     "depends" : ["boost"],
     "links" : ["boost_program_options"]
   },
   "boost_python": {
-    "includes" : ["/usr/include/boost/python/", "/usr/include/python2.7/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/python/", "$ENV{PYTHON_BASE}/include/python2.7"],
     "depends" : ["boost"],
     "links" : ["boost_python", "dl", "python2.7"]
-
   },
   "boost_regex": {
-    "includes" : ["/usr/include/boost/regex/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/regex/"],
     "depends" : ["boost"],
     "links" : ["boost_regex"]
-
   },
   "boost_serialization": {
-    "includes" : ["/usr/include/boost/serialization/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/serialization/"],
     "depends" : ["boost"],
     "links" : ["boost_serialization"]
   },
   "boost_system": {
-    "includes" : ["/usr/include/boost/system/"],
+    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/system/"],
     "depends" : ["boost"],
     "links" : ["boost_system"]
   },
@@ -71,8 +70,7 @@
     "links" : ["CLHEP"]
   },
   "clhepheader": {},
-  "cppunit": {
-    "links" : ["cppunit"]
+  "cppunit": {"links" : ["cppunit"]
   },
   "curl": {},
   "davix": {},
@@ -90,40 +88,40 @@
   "gpad" : {},
   "gcc-atomic": {},
   "geant4": {
-    "includes" : ["/usr/include/Geant4/"],
+    "includes" : ["$ENV{GEANT4CORE_BASE}/include/"],
     "links" : [
-        "/usr/lib/libG4analysis.so",
-        "/usr/lib/libG4clhep.so",
-        "/usr/lib/libG4digits_hits.so",
-        "/usr/lib/libG4error_propagation.so",
-        "/usr/lib/libG4event.so",
-        "/usr/lib/libG4FR.so",
-        "/usr/lib/libG4geometry.so",
-        "/usr/lib/libG4gl2ps.so",
-        "/usr/lib/libG4global.so",
-        "/usr/lib/libG4GMocren.so",
-        "/usr/lib/libG4graphics_reps.so",
-        "/usr/lib/libG4intercoms.so",
-        "/usr/lib/libG4interfaces.so",
-        "/usr/lib/libG4materials.so",
-        "/usr/lib/libG4modeling.so",
-        "/usr/lib/libG4OpenGL.so",
-        "/usr/lib/libG4OpenInventor.so",
-        "/usr/lib/libG4parmodels.so",
-        "/usr/lib/libG4particles.so",
-        "/usr/lib/libG4persistency.so",
-        "/usr/lib/libG4physicslists.so",
-        "/usr/lib/libG4processes.so",
-        "/usr/lib/libG4RayTracer.so",
-        "/usr/lib/libG4readout.so",
-        "/usr/lib/libG4run.so",
-        "/usr/lib/libG4tracking.so",
-        "/usr/lib/libG4track.so",
-        "/usr/lib/libG4Tree.so",
-        "/usr/lib/libG4visHepRep.so",
-        "/usr/lib/libG4vis_management.so",
-        "/usr/lib/libG4visXXX.so",
-        "/usr/lib/libG4VRML.so"
+        "$ENV{GEANT4CORE_BASE}/lib/libG4analysis.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4clhep.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4digits_hits.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4error_propagation.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4event.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4FR.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4geometry.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4gl2ps.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4global.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4GMocren.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4graphics_reps.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4intercoms.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4interfaces.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4materials.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4modeling.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4OpenGL.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4OpenInventor.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4parmodels.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4particles.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4persistency.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4physicslists.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4processes.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4RayTracer.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4readout.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4run.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4tracking.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4track.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4Tree.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4visHepRep.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4vis_management.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4visXXX.so",
+        "$ENV{GEANT4CORE_BASE}/lib/libG4VRML.so"
     ]
    },
   "geant4core": {
@@ -145,6 +143,7 @@
   "heppdt": {},
   "herwig": {},
   "histogrammar": {},
+  "HistoData": {},
   "jimmy": {},
   "jemalloc": {},
   "ktjet": {},
@@ -159,8 +158,8 @@
   "MathMore" : {},
   "mcdb": {},
   "md5": {
-    "includes" : ["/home/teemperor/cms/md5/"],
-    "links" : ["/home/teemperor/cms/md5/libmd5.so", "cfitsio"]
+    "includes" : ["$ENV{MD5_BASE}/include"],
+    "links" : ["$ENV{MD5_BASE}/lib/libmd5.so", "cfitsio"]
   },
   "Minuit2" : {},
   "meschach": {},
@@ -183,185 +182,156 @@
   "pythia8": {},
   "RGL" : {},
   "rivet": {},
-  "root": {
-    "includes" : ["/usr/include/root/", "/home/teemperor/CERN/root-build/include"],
-    "links" : [
-        "/usr/lib/root/libASImageGui.so",
-        "/usr/lib/root/libASImage.so",
-        "/usr/lib/root/libBonjour.so",
-        "/usr/lib/root/libCling.so",
-        "/usr/lib/root/libcomplexDict.so",
-        "/usr/lib/root/libCore.so",
-        "/usr/lib/root/libdequeDict.so",
-        "/usr/lib/root/libEG.so",
-        "/usr/lib/root/libEve.so",
-        "/usr/lib/root/libFFTW.so",
-        "/usr/lib/root/libFitPanel.so",
-        "/usr/lib/root/libFITSIO.so",
-        "/usr/lib/root/libFoam.so",
-        "/usr/lib/root/libforward_listDict.so",
-        "/usr/lib/root/libFumili.so",
-        "/usr/lib/root/libGed.so",
-        "/usr/lib/root/libGenetic.so",
-        "/usr/lib/root/libGenVector.so",
-        "/usr/lib/root/libGeomBuilder.so",
-        "/usr/lib/root/libGeomPainter.so",
-        "/usr/lib/root/libGeom.so",
-        "/usr/lib/root/libGpad.so",
-        "/usr/lib/root/libGraf3d.so",
-        "/usr/lib/root/libGraf.so",
-        "/usr/lib/root/libGuiBld.so",
-        "/usr/lib/root/libGuiHtml.so",
-        "/usr/lib/root/libGui.so",
-        "/usr/lib/root/libGviz3d.so",
-        "/usr/lib/root/libGviz.so",
-        "/usr/lib/root/libGX11.so",
-        "/usr/lib/root/libGX11TTF.so",
-        "/usr/lib/root/libHistFactory.so",
-        "/usr/lib/root/libHistPainter.so",
-        "/usr/lib/root/libHist.so",
-        "/usr/lib/root/libHtml.so",
-        "/usr/lib/root/libJupyROOT.so",
-        "/usr/lib/root/libKrb5Auth.so",
-        "/usr/lib/root/liblistDict.so",
-        "/usr/lib/root/libmap2Dict.so",
-        "/usr/lib/root/libmapDict.so",
-        "/usr/lib/root/libMathCore.so",
-        "/usr/lib/root/libMathMore.so",
-        "/usr/lib/root/libMatrix.so",
-        "/usr/lib/root/libMemStat.so",
-        "/usr/lib/root/libMinuit2.so",
-        "/usr/lib/root/libMinuit.so",
-        "/usr/lib/root/libMLP.so",
-        "/usr/lib/root/libmultimap2Dict.so",
-        "/usr/lib/root/libmultimapDict.so",
-        "/usr/lib/root/libMultiProc.so",
-        "/usr/lib/root/libmultisetDict.so",
-        "/usr/lib/root/libNet.so",
-        "/usr/lib/root/libNew.so",
-        "/usr/lib/root/libPgSQL.so",
-        "/usr/lib/root/libPhysics.so",
-        "/usr/lib/root/libPostscript.so",
-        "/usr/lib/root/libProofBench.so",
-        "/usr/lib/root/libProofDraw.so",
-        "/usr/lib/root/libProofPlayer.so",
-        "/usr/lib/root/libProof.so",
-        "/usr/lib/root/libPyMVA.so",
-        "/usr/lib/root/libPyROOT.so",
-        "/usr/lib/root/libQuadp.so",
-        "/usr/lib/root/libRecorder.so",
-        "/usr/lib/root/libRGL.so",
-        "/usr/lib/root/libRHTTP.so",
-        "/usr/lib/root/libRint.so",
-        "/usr/lib/root/libRIO.so",
-        "/usr/lib/root/libRLDAP.so",
-        "/usr/lib/root/libRMySQL.so",
-        "/usr/lib/root/libRODBC.so",
-        "/usr/lib/root/libRooFitCore.so",
-        "/usr/lib/root/libRooFit.so",
-        "/usr/lib/root/libRooStats.so",
-        "/usr/lib/root/libRootAuth.so",
-        "/usr/lib/root/libRSQLite.so",
-        "/usr/lib/root/libSessionViewer.so",
-        "/usr/lib/root/libsetDict.so",
-        "/usr/lib/root/libSmatrix.so",
-        "/usr/lib/root/libSpectrumPainter.so",
-        "/usr/lib/root/libSpectrum.so",
-        "/usr/lib/root/libSPlot.so",
-        "/usr/lib/root/libSQLIO.so",
-        "/usr/lib/root/libSrvAuth.so",
-        "/usr/lib/root/libThread.so",
-        "/usr/lib/root/libTMVAGui.so",
-        "/usr/lib/root/libTMVA.so",
-        "/usr/lib/root/libTreePlayer.so",
-        "/usr/lib/root/libTree.so",
-        "/usr/lib/root/libTreeViewer.so",
-        "/usr/lib/root/libunordered_mapDict.so",
-        "/usr/lib/root/libunordered_multimapDict.so",
-        "/usr/lib/root/libunordered_multisetDict.so",
-        "/usr/lib/root/libunordered_setDict.so",
-        "/usr/lib/root/libUnuran.so",
-        "/usr/lib/root/libvalarrayDict.so",
-        "/usr/lib/root/libvectorDict.so",
-        "/usr/lib/root/libVMC.so",
-        "/usr/lib/root/libX3d.so",
-        "/usr/lib/root/libXMLIO.so",
-        "/usr/lib/root/libXMLParser.so"
-    ]
-  },
   "roofit": {
-    "depends" : ["root"]
+    "depends" : ["roofitcore","rootcore","rootmath"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libRooFit.so"]
   },
   "roofitcore": {
-    "depends" : ["root"]
+    "depends" : ["rootcore","roothistmatrix","rootgpad","rootminuit"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libRooFitCore.so"]
+  },
+  "root_interface": {
+    "includes" : ["$ENV{ROOT_INTERFACE_BASE}/include"] 
+  },
+  "root": {
+      "depends" : ["rootphysics"]
+  },
+  "rootcling" : {  
+     "depends" : ["root_interface"],
+     "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libCore.so"]
   },
   "rootcore": {
-    "depends" : ["root"]
+    "depends" : ["rootmathcore","rootthread"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libTree.so",
+                   "$ENV{ROOT_INTERFACE_BASE}/lib/libNet.so"]
+  },
+  "rooteg":{
+    "depends" : ["rootgraphics"],
+    "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libEG.so"]
+  },
+  "rooteve" : {
+    "depends" : ["rootgeompainter","rootrgl"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libEve.so" ]
+  },
+  "rootfoam" : {
+    "depends" : ["roothistmatrix"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libFoam.so" ]
+  },
+  "rootgeom" : {
+    "depends" : ["rootmathcore","rootrio"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libGeom.so"]
+  },
+  "rootgeompainter" : {
+    "depends" : ["rootgraphics","rootgeom"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libGeomPainter.so" ]
   },
   "rootgpad": {
-    "depends" : ["root"]
+    "depends" : ["roothistmatrix"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libGpad.so",
+                   "$ENV{ROOT_INTERFACE_BASE}/lib/libGraf.so" ]
   },
   "rootgraphics": {
-    "depends" : ["root"]
+    "depends" : ["rootgpad"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libTreePlayer.so","$ENV{ROOT_INTERFACE_BASE}/lib/libGraf3d.so","$ENV{ROOT_INTERFACE_BASE}/lib/libPostscript.so" ]
+  },
+  "rootguihtml" : {
+    "depends" : ["rootinteractive"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libGuiHtml.so" ]
   },
   "roothistmatrix": {
-    "depends" : ["root"]
+    "depends" : ["rootcore"],
+      "links" : ["$ENV{ROOT_INTERFACE_BASE}/lib/libHist.so" ,
+                 "$ENV{ROOT_INTERFACE_BASE}/lib/libMatrix.so" ]
+  },
+  "roothtml" : {
+    "depends" : ["rootgpad"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libHtml.so" ]
   },
   "rootinteractive": {
-    "depends" : ["root"]
+    "depends" : ["rootgpad", "rootrint"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libGui.so" ]
   },
   "rootmath": {
-    "depends" : ["root"]
+    "depends" : ["rootcore"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libGenVector.so",
+                   "$ENV{ROOT_INTERFACE_BASE}/lib/libMathMore.so" ]
+  },
+  "rootmathcore" : {
+    "depends" : ["rootcling"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libMathCore.so" ]
   },
   "rootminuit": {
-    "depends" : ["root"]
+    "depends" : ["rootgpad"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libMinuit.so" ]
   },
   "rootminuit2": {
-    "depends" : ["root"]
+    "depends" : ["rootgpad"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libMinuit2.so" ]
   },
   "rootmlp": {
-    "depends" : ["root"]
+    "depends" : ["rootgraphics"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libMLP.so" ]
   },
   "rootphysics": {
-    "depends" : ["root"]
+    "depends" : ["roothistmatrix"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libPhysics.so" ]
   },
   "rootpy": {
-    "depends" : ["root"]
+    "depends" : ["rootgraphics"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libPyROOT.so" ]
   },
   "rootrflx": {
-    "depends" : ["root"]
+    "depends" : ["rootcling"]
+  },
+  "rootrgl" : {
+     "depends" : ["rootinteractive","rootgraphics"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libRGL.so" ]
   },
   "rootrint": {
-    "depends" : ["root"]
+    "depends" : ["rootcling"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libRint.so" ]
+  },
+  "rootrio" : {
+    "depends" : ["rootcling"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libRIO.so" ]
+  },
+  "rootspectrum" : {
+    "depends" : ["roothistmatrix"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libSpectrum.so" ]
+  },
+  "rootthread":{
+     "depends" : ["rootrio"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libThread.so" ]
   },
   "roottmva": {
-    "depends" : ["root"]
+    "depends" : ["rootmlp","rootminuit"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libTMVA.so" ]
   },
   "rootxmlio": {
-    "depends" : ["root"]
+    "depends" : ["rootrio"],
+      "links" : [  "$ENV{ROOT_INTERFACE_BASE}/lib/libXMLIO.so" ]
   },
   "sherpa": {},
   "sigcpp": {
-    "includes" : ["/usr/include/sigc++-2.0/", "/usr/lib/sigc++-2.0/include/"]
+    "includes" : ["$ENV{SIGCPP_BASE}/include/sigc++-2.0"]
   },
   "sockets": {},
   "tauola": {},
   "tauolapp": {},
-  "tbb": {
-    "links" : ["tbb"]
+  "tbb": {"links" : ["tbb"]
   },
   "tcmalloc_minimal": {},
   "thread": {},
   "tinyxml": {
-    "links" : ["tinyxml"]
+    "includes" : ["$ENV{TINYXML_BASE}/include"],
+    "links" : ["$ENV{TINYXML_BASE}/lib/libtinyxml.so"]
   },
   "tkonlineswdb": {},
   "utm": {},
   "valgrind": {},
   "vdt": {},
   "vdt_headers": {},
-  "xerces-c": {
-    "links" : ["xerces-c"]
+  "xerces-c": {"links" : ["xerces-c"]
   },
   "XrdCl" : {},
   "XrdUtils" : {},
@@ -369,7 +339,5 @@
   "xrootd": {},
   "xz": {},
   "yoda": {},
-  "zlib": {
-    "links" : ["z", "cfitsio"]
-  }
+  "zlib": {"links":["z", "cfitsio"]}
 }
