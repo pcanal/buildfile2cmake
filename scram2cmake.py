@@ -188,13 +188,18 @@ class ScramModuleLibrary(ScramTargetBase):
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
         base_glob = "src/*"
-        if self.add_subdir:
-            base_glob = "src/**/*"
         self.source_files = glob.glob(base_glob+".cc")
         self.source_files += glob.glob(base_glob+".cpp")
         self.source_files += glob.glob(base_glob+".cxx")
         self.source_files += glob.glob(base_glob+".c")
         self.source_files += glob.glob(base_glob+".C")
+        if self.add_subdir:
+            base_glob = "src/**/*"
+            self.source_files += glob.glob(base_glob+".cc")
+            self.source_files += glob.glob(base_glob+".cpp")
+            self.source_files += glob.glob(base_glob+".cxx")
+            self.source_files += glob.glob(base_glob+".c")
+            self.source_files += glob.glob(base_glob+".C")
         os.chdir(cwd_bak)
 
         if not self.is_virtual():
