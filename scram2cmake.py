@@ -506,6 +506,21 @@ class CMakeGenerator:
         output_file.write("project(CMSSW)\n\n")
         output_file.write("include_directories(${CMAKE_SOURCE_DIR})\n")
         output_file.write("include_directories(/usr/include/)\n")
+        output_file.write("find_package(CMakeTools)\n")
+        output_file.write("UseCMakeTools()\n")
+        output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling rootcling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO RFIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder root PyROOT TMVA RooFitCore RooFit )\n")
+        output_file.write("include(EnableROOT6)\n")
+        output_file.write("include(FindTBB)\n")
+        output_file.write("include(FindXercesC)\n")
+        output_file.write("include(FindCLHEP)\n")
+        output_file.write("include(FindCppUnit)\n")
+        output_file.write("include(FindCASTOR)\n")
+        output_file.write("find_package(PythonInterp)\n")
+        output_file.write("find_package(PythonLibs)\n")
+        output_file.write("set(Boost_NO_BOOST_CMAKE ON)\n")
+        output_file.write("set(Boost_NO_SYSTEM_PATHS ON)\n")
+        output_file.write("find_package(Boost 1.57.0 COMPONENTS thread system filesystem iostreams program_options python regex serialization system)\n")
+
 
         include_paths = set()
 

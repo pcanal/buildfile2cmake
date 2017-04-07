@@ -19,59 +19,60 @@
   "Utilities/Xerces":{"depends":["xerces-c"]},
   "PlotCompareUtility": {},
   "boost": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/"],
-    "links" : ["dl", "$ENV{BOOSTHEADER_BASE}/lib/libboost_thread.so"]
+    "includes" : ["${Boost_INCLUDE_DIR}"],
+    "links" : ["dl", "${Boost_THREAD_LIBRARY_RELEASE}"]
   },
   "boost_filesystem": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/filesystem/"],
+    "includes" : ["${Boost_INCLUDE_DIR}"],
     "depends" : ["boost"],
-    "links" : ["$ENV{BOOSTHEADER_BASE}/lib/libboost_filesystem.so", "$ENV{BOOSTHEADER_BASE}/lib/libboost_system.so"]
+    "links" : ["${Boost_FILESYSTEM_LIBRARY_RELEASE}", "${Boost_SYSTEM_LIBRARY_RELEASE}"]
   },
   "boost_header": {},
   "boost_iostreams": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/iostreams/"],
-    "depends" : ["boost"]
+    "includes" : ["${Boost_INCLUDE_DIR}"],
+    "depends" : ["boost"],
+    "links" : ["${Boost_IOSTREAMS_LIBRARY_RELEASE}"]
   },
   "boost_program_options": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/program_options/"],
+    "includes" : ["${Boost_INCLUDE_DIR}"],
     "depends" : ["boost"],
-    "links" : ["$ENV{BOOSTHEADER_BASE}/lib/libboost_program_options.so"]
+    "links" : ["${Boost_IOSTREAMS_LIBRARY_RELEASE}"]
   },
   "boost_python": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/python/", "$ENV{PYTHON_BASE}/include/python2.7"],
+    "includes" : ["${Boost_INCLUDE_DIR}", "${PYTHON_INCLUDE_DIR}"],
     "depends" : ["boost"],
-    "links" : ["$ENV{BOOSTHEADER_BASE}/lib/libboost_python.so", "dl", "$ENV{PYTHON_BASE}/lib/libpython2.7.so"]
+    "links" : ["${Boost_PYTHON_LIBRARY_RELEASE}", "dl", "${PYTHON_LIBRARY}"]
   },
   "boost_regex": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/regex/"],
+    "includes" : ["${Boost_INCLUDE_DIR}"],
     "depends" : ["boost"],
-    "links" : ["$ENV{BOOSTHEADER_BASE}/lib/libboost_regex.so"]
+    "links" : ["${Boost_REGEX_LIBRARY_RELEASE}"]
   },
   "boost_serialization": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/serialization/"],
+    "includes" : ["${Boost_INCLUDE_DIR}"],
     "depends" : ["boost"],
-    "links" : ["$ENV{BOOSTHEADER_BASE}/lib/libboost_serialization.so"]
+    "links" : ["${Boost_SERIALIZATION_LIBRARY_RELEASE}"]
   },
   "boost_system": {
-    "includes" : ["$ENV{BOOSTHEADER_BASE}/include/system/"],
+    "includes" : ["${Boost_INCLUDE_DIR}"],
     "depends" : ["boost"],
-    "links" : ["$ENV{BOOSTHEADER_BASE}/lib/libboost_system.so"]
+    "links" : ["${Boost_SYSTEM_LIBRARY_RELEASE}"]
   },
   "boost_test": {},
   "bz2lib": {
     "links" : ["bz2"]
   },
   "cascade": {},
-  "castor_header": {"includes":["$ENV{CASTOR_BASE}/include","$ENV{CASTOR_BASE}/include/shift"]},
+  "castor_header": {"includes":["${CASTOR_INCLUDE_DIRS}","${CASTOR_INCLUDE_DIRS}/shift"]},
   "castor": {},
   "cgal": {},
   "classlib": {},
   "clhep": {
-    "includes" : ["$ENV{CLHEP_BASE}/include"],
-    "links" : ["$ENV{CLHEP_BASE}/lib/libCLHEP.so"]
+    "includes" : ["${CLHEP_INCLUDE_DIR}"],
+    "links" : ["${CLHEP_MAIN_LIBRARY}"]
   },
-  "clhepheader": {"includes" : ["$ENV{CLHEP_BASE}/include"]},
-  "cppunit": {"includes":["$ENV{CPPUNIT_BASE}/include"],"links" : ["$ENV{CPPUNIT_BASE}/lib/libcppunit.so"]
+  "clhepheader": {"includes" : ["${CLHEP_INCLUDE_DIR}"]},
+  "cppunit": {"includes":["${CPPUNIT_INCLUDE_DIR}"],"links" : ["${CPPUNIT_LIBRARY}"]
   },
   "curl": {},
   "davix": {},
@@ -89,40 +90,40 @@
   "gpad" : {},
   "gcc-atomic": {},
   "geant4": {
-    "includes" : ["$ENV{GEANT4CORE_BASE}/include/"],
+    "includes" : ["${GEANT4_INCLUDE_DIRS}"],
     "links" : [
-        "$ENV{GEANT4CORE_BASE}/lib/libG4analysis.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4clhep.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4digits_hits.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4error_propagation.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4event.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4FR.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4geometry.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4gl2ps.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4global.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4GMocren.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4graphics_reps.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4intercoms.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4interfaces.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4materials.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4modeling.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4OpenGL.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4OpenInventor.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4parmodels.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4particles.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4persistency.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4physicslists.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4processes.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4RayTracer.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4readout.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4run.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4tracking.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4track.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4Tree.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4visHepRep.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4vis_management.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4visXXX.so",
-        "$ENV{GEANT4CORE_BASE}/lib/libG4VRML.so"
+        "G4analysis",
+        "G4clhep",
+        "G4digits_hits",
+        "G4error_propagation",
+        "G4event",
+        "G4FR",
+        "G4geometry",
+        "G4gl2ps",
+        "G4global",
+        "G4GMocren",
+        "G4graphics_reps",
+        "G4intercoms",
+        "G4interfaces",
+        "G4materials",
+        "G4modeling",
+        "G4OpenGL",
+        "G4OpenInventor",
+        "G4parmodels",
+        "G4particles",
+        "G4persistency",
+        "G4physicslists",
+        "G4processes",
+        "G4RayTracer",
+        "G4readout",
+        "G4run",
+        "G4tracking",
+        "G4track",
+        "G4Tree",
+        "G4visHepRep",
+        "G4vis_management",
+        "G4visXXX",
+        "G4VRML"
     ]
    },
   "geant4core": {
@@ -137,8 +138,8 @@
   "Gui" : {},
   "GuiHtml" : {},
   "GX11" : {},
-  "gsl": {"links": ["$ENV{GSL_BASE}/lib/libgsl.so"]},
-  "Graf" : {},
+  "gsl": {"links": ["${GSL_LIBRARY}"]},
+  "${ROOT_Graf_LIBRARY}" : {},
   "hector": {},
   "hepmc": {},
   "heppdt": {},
@@ -159,8 +160,8 @@
   "MathMore" : {},
   "mcdb": {},
   "md5": {
-    "includes" : ["$ENV{MD5_BASE}/include"],
-    "links" : ["$ENV{MD5_BASE}/lib/libcms-md5.so"],
+    "includes" : ["${MD5_INCLUDE_DIR}"],
+    "links" : ["${MD5_LIBRARY}"],
     "depends" : [ "cfitsio"]
   },
   "cfitsio" : {},
@@ -185,169 +186,304 @@
   "pythia8": {},
   "RGL" : {},
   "rivet": {},
-  "roofit": {
-     "includes" : ["${ENV{ROOTSYS}/include"],
-     "links" : [ "$ENV{ROOTSYS}/lib/libRooFitCore.so",
-                "$ENV{ROOTSYS}/lib/libRIO.so",
-                "$ENV{ROOTSYS}/lib/libMatrix.so",
-                "$ENV{ROOTSYS}/lib/libFoam.so",
-                "$ENV{ROOTSYS}/lib/libNet.so",
-                "$ENV{ROOTSYS}/lib/libCint.so",
-                "$ENV{ROOTSYS}/lib/libMathCore.so",
-                "$ENV{ROOTSYS}/lib/libGraf.so",
-                "$ENV{ROOTSYS}/lib/libMinuit.so",
-                "$ENV{ROOTSYS}/lib/libCore.so",
-                "$ENV{ROOTSYS}/lib/libThread.so",
-                "$ENV{ROOTSYS}/lib/libTree.so",
-                "$ENV{ROOTSYS}/lib/libHist.so",
-                "$ENV{ROOTSYS}/lib/libRooFit.so" ]
+  "roofit" : {
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_RooFitCore_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Foam_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Cint_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Minuit_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_RooFit_LIBRARY}"]
   },
-  "roofitcore": {
-     "includes" : ["${ENV{ROOTSYS}/include"],
-     "links" : [ "$ENV{ROOTSYS}/lib/libRooFitCore.so",
-                "$ENV{ROOTSYS}/lib/libRIO.so",
-                "$ENV{ROOTSYS}/lib/libMatrix.so",
-                "$ENV{ROOTSYS}/lib/libFoam.so",
-                "$ENV{ROOTSYS}/lib/libNet.so",
-                "$ENV{ROOTSYS}/lib/libCint.so",
-                "$ENV{ROOTSYS}/lib/libMathCore.so",
-                "$ENV{ROOTSYS}/lib/libGraf.so",
-                "$ENV{ROOTSYS}/lib/libMinuit.so",
-                "$ENV{ROOTSYS}/lib/libCore.so",
-                "$ENV{ROOTSYS}/lib/libThread.so",
-                "$ENV{ROOTSYS}/lib/libTree.so",
-                "$ENV{ROOTSYS}/lib/libHist.so" ]
+  "roofitcore" : {
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_RooFitCore_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Foam_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Cint_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Minuit_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}"]
   },
-  "root": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libPhysics.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+  "root" : {
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Physics_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}"]
   },
   "rootcling" : {  
-     "includes" : ["$ENV{ROOTSYS}/include"],
-     "links" : ["$ENV{ROOTSYS}/lib/libCore.so"]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Core_LIBRARY}"]
   },
   "rootcore": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}"]
   },
-  "rooteg":{
-    "includes" : ["$ENV{ROOTSYS}/include"],
-    "links" : ["$ENV{ROOTSYS}/lib/libEG.so", "$ENV{ROOTSYS}/lib/libTreePlayer.so","$ENV{ROOTSYS}/lib/libGraf3d.so","$ENV{ROOTSYS}/lib/libPostscript.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+  "rooteg": {
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_EG_LIBRARY}",
+               "${ROOT_TreePlayer_LIBRARY}",
+               "${ROOT_Graf3d_LIBRARY}",
+               "${ROOT_Postscript_LIBRARY}",
+               "${ROOT_Gpad_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "rooteve" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libEve.so", "$ENV{ROOTSYS}/lib/libGeomPainter.so", "$ENV{ROOTSYS}/lib/libGeom.so","$ENV{ROOTSYS}/lib/libRIO.so","$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so", "$ENV{ROOTSYS}/lib/libTreePlayer.so","$ENV{ROOTSYS}/lib/libGraf3d.so","$ENV{ROOTSYS}/lib/libPostscript.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so", "$ENV{ROOTSYS}/lib/libRGL.so", "$ENV{ROOTSYS}/lib/libGui.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libRint.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Eve_LIBRARY}",
+               "${ROOT_GeomPainter_LIBRARY}",
+               "${ROOT_Geom_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}",
+               "${ROOT_TreePlayer_LIBRARY}",
+               "${ROOT_Graf3d_LIBRARY}",
+               "${ROOT_Postscript_LIBRARY}",
+               "${ROOT_Gpad_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}",
+               "${ROOT_RGL_LIBRARY}",
+               "${ROOT_Gui_LIBRARY}",
+               "${ROOT_Rint_LIBRARY}" ]
   },
   "rootfoam" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libFoam.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Foam_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootgeom" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libGeom.so","$ENV{ROOTSYS}/lib/libRIO.so","$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Geom_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootgeompainter" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libGeomPainter.so", "$ENV{ROOTSYS}/lib/libGeom.so","$ENV{ROOTSYS}/lib/libRIO.so","$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so", "$ENV{ROOTSYS}/lib/libTreePlayer.so","$ENV{ROOTSYS}/lib/libGraf3d.so","$ENV{ROOTSYS}/lib/libPostscript.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_GeomPainter_LIBRARY}",
+               "${ROOT_Geom_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}",
+               "${ROOT_TreePlayer_LIBRARY}",
+               "${ROOT_Graf3d_LIBRARY}",
+               "${ROOT_Postscript_LIBRARY}",
+               "${ROOT_Gpad_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootgpad": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Gpad_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootgraphics": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libTreePlayer.so","$ENV{ROOTSYS}/lib/libGraf3d.so","$ENV{ROOTSYS}/lib/libPostscript.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_TreePlayer_LIBRARY}",
+               "${ROOT_Graf3d_LIBRARY}",
+               "${ROOT_Postscript_LIBRARY}",
+               "${ROOT_Gpad_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootguihtml" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libGuiHtml.so", "$ENV{ROOTSYS}/lib/libGui.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libRint.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_GuiHtml_LIBRARY}",
+               "${ROOT_Gui_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_Rint_LIBRARY}",
+               "${ROOT_Gpad_LIBRARY}",
+               "${ROOT_Graf_LIBRARY}",
+               "${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "roothistmatrix": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Hist_LIBRARY}",
+               "${ROOT_Matrix_LIBRARY}",
+               "${ROOT_Tree_LIBRARY}",
+               "${ROOT_Net_LIBRARY}",
+               "${ROOT_Thread_LIBRARY}",
+               "${ROOT_RIO_LIBRARY}",
+               "${ROOT_Core_LIBRARY}",
+               "${ROOT_MathCore_LIBRARY}" ]
   },
   "roothtml" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libHtml.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_Html_LIBRARY}",
+                 "${ROOT_Gpad_LIBRARY}",
+                 "${ROOT_Graf_LIBRARY}",
+                 "${ROOT_Hist_LIBRARY}",
+                 "${ROOT_Matrix_LIBRARY}",
+                 "${ROOT_Tree_LIBRARY}",
+                 "${ROOT_Net_LIBRARY}",
+                 "${ROOT_Thread_LIBRARY}",
+                 "${ROOT_RIO_LIBRARY}",
+                 "${ROOT_Core_LIBRARY}",
+                 "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootinteractive": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libGui.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libRint.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_Gui_LIBRARY}",
+                 "${ROOT_Core_LIBRARY}",
+                 "${ROOT_Rint_LIBRARY}",
+                 "${ROOT_Gpad_LIBRARY}",
+                 "${ROOT_Graf_LIBRARY}",
+                 "${ROOT_Hist_LIBRARY}",
+                 "${ROOT_Matrix_LIBRARY}",
+                 "${ROOT_Tree_LIBRARY}",
+                 "${ROOT_Net_LIBRARY}",
+                 "${ROOT_Thread_LIBRARY}",
+                 "${ROOT_RIO_LIBRARY}",
+                 "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootmath": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
     "depends" : ["gsl"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libGenVector.so", "$ENV{ROOTSYS}/lib/libMathMore.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "links" : [  "GenVector", "MathMore", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootmathcore" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-     "links" : ["$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootminuit": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libMinuit.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_Minuit_LIBRARY}", "${ROOT_Gpad_LIBRARY}", "${ROOT_Graf_LIBRARY}", "${ROOT_Hist_LIBRARY}", "${ROOT_Matrix_LIBRARY}", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootmlp": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libMLP.so", "$ENV{ROOTSYS}/lib/libTreePlayer.so","$ENV{ROOTSYS}/lib/libGraf3d.so","$ENV{ROOTSYS}/lib/libPostscript.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_MLP_LIBRARY}", "${ROOT_TreePlayer_LIBRARY}","${ROOT_Graf3d_LIBRARY}","${ROOT_Postscript_LIBRARY}", "${ROOT_Gpad_LIBRARY}", "${ROOT_Graf_LIBRARY}", "${ROOT_Hist_LIBRARY}", "${ROOT_Matrix_LIBRARY}", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootphysics": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libPhysics.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_Physics_LIBRARY}", "${ROOT_Hist_LIBRARY}", "${ROOT_Matrix_LIBRARY}", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootpy": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libPyROOT.so", "$ENV{ROOTSYS}/lib/libTreePlayer.so","$ENV{ROOTSYS}/lib/libGraf3d.so","$ENV{ROOTSYS}/lib/libPostscript.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "PyROOT", "${ROOT_TreePlayer_LIBRARY}","${ROOT_Graf3d_LIBRARY}","${ROOT_Postscript_LIBRARY}", "${ROOT_Gpad_LIBRARY}", "${ROOT_Graf_LIBRARY}", "${ROOT_Hist_LIBRARY}", "${ROOT_Matrix_LIBRARY}", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootrflx": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-     "links" : ["$ENV{ROOTSYS}/lib/libCore.so"]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Core_LIBRARY}"]
   },
   "rootrgl" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : ["$ENV{ROOTSYS}/lib/libTreePlayer.so","$ENV{ROOTSYS}/lib/libGraf3d.so","$ENV{ROOTSYS}/lib/libPostscript.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so", "$ENV{ROOTSYS}/lib/libRGL.so", "$ENV{ROOTSYS}/lib/libGui.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libRint.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_TreePlayer_LIBRARY}","${ROOT_Graf3d_LIBRARY}","${ROOT_Postscript_LIBRARY}", "${ROOT_Gpad_LIBRARY}", "${ROOT_Graf_LIBRARY}", "${ROOT_Hist_LIBRARY}", "${ROOT_Matrix_LIBRARY}", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}", "${ROOT_RGL_LIBRARY}", "${ROOT_Gui_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_Rint_LIBRARY}" ]
   },
   "rootrint": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-    "depends" : ["rootcling"],
-     "links" : ["$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libRint.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Core_LIBRARY}", "${ROOT_Rint_LIBRARY}" ]
   },
   "rootrio" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-     "links" : ["$ENV{ROOTSYS}/lib/libCore.so" ,"$ENV{ROOTSYS}/lib/libRIO.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Core_LIBRARY}" ,"${ROOT_RIO_LIBRARY}" ]
   },
   "rootspectrum" : {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libSpectrum.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_Spectrum_LIBRARY}", "${ROOT_Hist_LIBRARY}", "${ROOT_Matrix_LIBRARY}", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}" ]
   },
   "rootthread":{
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libThread.so", "$ENV{ROOTSYS}/lib/libCore.so" ,"$ENV{ROOTSYS}/lib/libRIO.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_Thread_LIBRARY}", "${ROOT_Core_LIBRARY}" ,"${ROOT_RIO_LIBRARY}" ]
   },
   "roottmva": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-      "links" : [  "$ENV{ROOTSYS}/lib/libTMVA.so","$ENV{ROOTSYS}/lib/libMinuit.so", "$ENV{ROOTSYS}/lib/libGpad.so", "$ENV{ROOTSYS}/lib/libGraf.so", "$ENV{ROOTSYS}/lib/libHist.so", "$ENV{ROOTSYS}/lib/libMatrix.so", "$ENV{ROOTSYS}/lib/libTree.so", "$ENV{ROOTSYS}/lib/libNet.so", "$ENV{ROOTSYS}/lib/libThread.so","$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libCore.so", "$ENV{ROOTSYS}/lib/libMathCore.so", "$ENV{ROOTSYS}/lib/libMLP.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "${ROOT_TMVA_LIBRARY}","${ROOT_Minuit_LIBRARY}", "${ROOT_Gpad_LIBRARY}", "${ROOT_Graf_LIBRARY}", "${ROOT_Hist_LIBRARY}", "${ROOT_Matrix_LIBRARY}", "${ROOT_Tree_LIBRARY}", "${ROOT_Net_LIBRARY}", "${ROOT_Thread_LIBRARY}","${ROOT_RIO_LIBRARY}", "${ROOT_Core_LIBRARY}", "${ROOT_MathCore_LIBRARY}", "${ROOT_MLP_LIBRARY}" ]
   },
   "rootxmlio": {
-    "includes" : ["$ENV{ROOTSYS}/include"],
-     "links" : ["$ENV{ROOTSYS}/lib/libCore.so" ,"$ENV{ROOTSYS}/lib/libRIO.so", "$ENV{ROOTSYS}/lib/libXMLIO.so" ]
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : ["${ROOT_Core_LIBRARY}"
+ ,"${ROOT_RIO_LIBRARY}",
+ "${ROOT_XMLIO_LIBRARY}" ]
   },
   "sherpa": {},
   "sigcpp": {
-    "includes" : ["$ENV{SIGCPP_BASE}/include/sigc++-2.0"]
+    "includes" : ["${SIGCPP_INCLUDE_DIR}"]
   },
   "sockets": {},
   "tauola": {},
   "tauolapp": {},
   "tbb": {
-    "includes" : ["$ENV{TBB_BASE}/include"],
-    "links" : ["$ENV{TBB_BASE}/lib/libtbb.so"]
+    "includes" : ["${TBB_INCLUDE_DIRS}"],
+    "links" : ["${TBB_LIBRARIES}"]
   },
   "tcmalloc_minimal": {},
   "thread": {},
   "tinyxml": {
-    "includes" : ["$ENV{TINYXML_BASE}/include"],
-    "links" : ["$ENV{TINYXML_BASE}/lib/libtinyxml.so"]
+    "includes" : ["${TINYXML_INCLUDE_DIR}"],
+    "links" : ["${TINYXML_LIBRARY}"]
   },
   "tkonlineswdb": {},
   "utm": {},
