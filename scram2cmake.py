@@ -449,7 +449,6 @@ class CMakeGenerator:
                     out.write("  " + lib + "\n")
                 out.write(")\n")
             out.write("\n")
-
             out.write("install( TARGETS ") 
             out.write(target.symbol)
             out.write(" EXPORT ")
@@ -570,8 +569,13 @@ class CMakeGenerator:
 
         for subsystem in subsystem_list:
             output_file.write("add_subdirectory(" + subsystem + ")\n")
+            output_file.write("install(DIRECTORY "+subsystem+" DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
             subsystem_modules = self.project.subsystems[subsystem]
             self.handle_subsystem(subsystem, subsystem_modules)
+
+
+        output_file.write("install(FILES CMakeLists.txt README.md DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
+        output_file.write('install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
 
         module_groups = {}
 
