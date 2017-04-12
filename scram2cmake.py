@@ -77,6 +77,7 @@ class ScramTargetBase(object):
         # Paths to the source files that should be compiled
         # to generate this target.
         self.source_files = []
+        self.classes_h = []
         # Unique name of this target.
         self.name = None
         # CMake-friendly name that is alphanumeric with '_'
@@ -125,12 +126,14 @@ class ScramTargetBase(object):
             self.include_dirs |= dependency.include_dirs
             self.needed_libs |= dependency.libs
 
-    def is_virtual(self):
-        return len(self.source_files) == 0
+    def has_source(self):
+        return not len(self.source_files) == 0
 
     def built_by_cmake(self):
-        return not self.is_virtual() and not self.external
+        return self.has_source() and self.has_dictionary() and not self.external
 
+    def has_dictionary(self):
+        return not len(self.classes_h) == 0
 
 def get_lib_or_name_attr(node):
     if "name" in node.attrib:
@@ -200,9 +203,13 @@ class ScramModuleLibrary(ScramTargetBase):
             self.source_files += glob.glob(base_glob+".cxx")
             self.source_files += glob.glob(base_glob+".c")
             self.source_files += glob.glob(base_glob+".C")
+        self.classes_h = glob.glob("src/classes*.h")
         os.chdir(cwd_bak)
 
-        if not self.is_virtual():
+        if self.has_source():
+            self.libs.add(self.symbol)
+         
+        if self.has_dictionary():
             self.libs.add(self.symbol)
 
 
@@ -392,53 +399,69 @@ class CMakeGenerator:
     # Writes the necessary CMake commands to generate the given target
     # to the given out stream (which needs to support a 'write' call).
     def generate_target(self, target, out):
-        if target.is_virtual():
-            return
+       
+        if target.has_dictionary():
+           for clh in target.classes_h :
+               cl = clh.replace('.h','')
+               part = cl.replace('src/classes','')
+               cldef = 'src/classes_def'+part+'.xml'
+               name=target.symbol+part
+               out.write('reflex_dictionary('+name+' '+clh+' '+cldef+')\n')
+               target.source_files.append(name+'Dict.cpp')
 
-        if target.is_executable:
-            out.write("add_executable(")
+        if target.has_source():
+            if target.is_executable:
+                out.write("add_executable(")
+                out.write(target.symbol)
+            else:
+                out.write("add_library(")
+                out.write(target.symbol)
+                out.write(" SHARED ")
+
+            for source in target.source_files:
+                    out.write("\n  " + source)
+            out.write("\n)\n\n")
+
+            if target.has_dictionary():
+               for clh in target.classes_h :
+                   cl = clh.replace('.h','')
+                   part = cl.replace('src/classes','')
+                   cldef = 'src/classes_def'+part+'.xml'
+                   name=target.symbol+part
+                   out.write("add_dependencies("+target.symbol+" "+name+"Dict)\n")
+
+            for dir in target.include_dirs:
+                out.write("target_include_directories(" + target.symbol +
+                                " PUBLIC " + dir + ")\n")
+            
+            if len(target.cxx_flags) != 0:
+                out.write("target_compile_options(" + target.symbol
+                          + " PUBLIC " + target.cxx_flags + ")\n")
+
+            if len(target.ld_flags.strip()) != 0:
+                out.write("# Manually defined LD_FLAGS\n")
+                out.write("target_link_libraries(" + target.symbol + 
+                          " " + target.ld_flags + ")\n")
+
+            if len(target.needed_libs) != 0:
+                out.write("target_link_libraries(" + target.symbol + " PUBLIC\n")
+                for lib in target.needed_libs:
+                    out.write("  " + lib + "\n")
+                out.write(")\n")
+            out.write("\n")
+
+            out.write("install( TARGETS ") 
             out.write(target.symbol)
-        else:
-            out.write("add_library(")
+            out.write(" EXPORT ")
             out.write(target.symbol)
-            out.write(" SHARED ")
+            out.write(" DESTINATION ")
+            if target.is_executable:
+                out.write(" bin ")
+            else:
+                out.write(" lib ")
+            out.write(")\n\n")
 
-        for source in target.source_files:
-            out.write("\n  " + source)
-        out.write("\n)\n\n")
-
-        for dir in target.include_dirs:
-            out.write("target_include_directories(" + target.symbol +
-                            " PUBLIC " + dir + ")\n")
-        
-        if len(target.cxx_flags) != 0:
-            out.write("target_compile_options(" + target.symbol
-                      + " PUBLIC " + target.cxx_flags + ")\n")
-
-        if len(target.ld_flags.strip()) != 0:
-            out.write("# Manually defined LD_FLAGS\n")
-            out.write("target_link_libraries(" + target.symbol + 
-                      " " + target.ld_flags + ")\n")
-
-        if len(target.needed_libs) != 0:
-            out.write("target_link_libraries(" + target.symbol + "\n")
-            for lib in target.needed_libs:
-                out.write("  " + lib + "\n")
-            out.write(")\n")
-        out.write("\n")
-
-        out.write("install( TARGETS ") 
-        out.write(target.symbol)
-        out.write(" EXPORT ")
-        out.write(target.symbol)
-        out.write(" DESTINATION ")
-        if target.is_executable:
-            out.write(" bin ")
-        else:
-            out.write(" lib ")
-        out.write(")\n\n")
-
-
+                                 
 
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
@@ -508,18 +531,19 @@ class CMakeGenerator:
         output_file.write("include_directories(/usr/include/)\n")
         output_file.write("find_package(CMakeTools)\n")
         output_file.write("UseCMakeTools()\n")
-        output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling rootcling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO RFIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder root PyROOT TMVA RooFitCore RooFit )\n")
-        output_file.write("include(EnableROOT6)\n")
-        output_file.write("include(FindTBB)\n")
-        output_file.write("include(FindXercesC)\n")
-        output_file.write("include(FindCLHEP)\n")
-        output_file.write("include(FindCppUnit)\n")
-        output_file.write("include(FindCASTOR)\n")
-        output_file.write("find_package(PythonInterp)\n")
-        output_file.write("find_package(PythonLibs)\n")
+        output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA RooFitCore RooFit )\n")
+        output_file.write("find_package(TBB)\n")
+        output_file.write("find_package(XercesC)\n")
+        output_file.write("find_package(CLHEP)\n")
+        output_file.write("find_package(CppUnit)\n")
+        output_file.write("find_package(CASTOR)\n")
+        output_file.write("find_package(CMSMD5)\n")
+        output_file.write("find_package(TINYXML)\n")
         output_file.write("set(Boost_NO_BOOST_CMAKE ON)\n")
         output_file.write("set(Boost_NO_SYSTEM_PATHS ON)\n")
-        output_file.write("find_package(Boost 1.57.0 COMPONENTS thread system filesystem iostreams program_options python regex serialization system)\n")
+        output_file.write("find_package(Boost 1.57.0 COMPONENTS filesystem thread iostreams python regex serialization system program_options )\n")
+        output_file.write("find_package(PythonInterp)\n")
+        output_file.write("find_package(PythonLibs)\n")
 
 
         include_paths = set()
