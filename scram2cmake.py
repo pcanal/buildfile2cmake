@@ -532,7 +532,7 @@ class CMakeGenerator:
         output_file.write("include_directories(/usr/include/)\n")
         output_file.write("find_package(CMakeTools)\n")
         output_file.write("UseCMakeTools()\n")
-        output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA RooFitCore RooFit )\n")
+        output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA RooFitCore RooFit )\n")
         output_file.write("find_package(TBB)\n")
         output_file.write("find_package(XercesC)\n")
         output_file.write("find_package(CLHEP)\n")

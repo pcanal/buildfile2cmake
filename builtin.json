@@ -167,6 +167,7 @@
   "cfitsio" : {},
   "Minuit2" : {},
   "meschach": {},
+  "minuit2":{"depends":["rootminuit2"]},
   "occi" : {},
   "opengl": {},
   "openssl": {},
@@ -429,6 +430,20 @@
   "rootminuit": {
     "includes" : ["${ROOT_INCLUDE_DIR}"],
     "links" : [  "Minuit",
+                 "Gpad",
+                 "Graf",
+                 "Hist",
+                 "Matrix",
+                 "Tree",
+                 "Net",
+                 "Thread",
+                 "RIO",
+                 "Core",
+                 "MathCore" ]
+  },
+  "rootminuit2": {
+    "includes" : ["${ROOT_INCLUDE_DIR}"],
+    "links" : [  "Minuit2",
                  "Gpad",
                  "Graf",
                  "Hist",
