@@ -485,7 +485,9 @@ class CMakeGenerator:
         if len(module.binaries) != 0:
             output_file.write("add_subdirectory(bin)\n")
         if len(module.tests) != 0:
+            output_file.write("if(BUILDTEST)\n")
             output_file.write("add_subdirectory(test)\n")
+            output_file.write("endif()\n")
         if len(module.plugins) != 0:
             output_file.write("add_subdirectory(plugins)\n")
 
