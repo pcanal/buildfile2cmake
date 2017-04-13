@@ -105,6 +105,7 @@ class ScramTargetBase(object):
         self.edm_plugin = False
         self.needed_libs = set()
         self.include_dirs = set()
+        self.finds = set()
         self.add_subdir = False
         self.dir = ""
         self.module = None
@@ -114,6 +115,7 @@ class ScramTargetBase(object):
         for forward in self.forwards:
             self.libs |= self.project.get_target(forward).libs
             self.include_dirs |= self.project.get_target(forward).include_dirs
+            self.finds |= self.project.get_target(forward).finds
 
         for dependency in self.dependencies_by_name:
             try:
@@ -125,6 +127,7 @@ class ScramTargetBase(object):
         for dependency in self.dependencies:
             self.include_dirs |= dependency.include_dirs
             self.needed_libs |= dependency.libs
+            self.finds |= dependency.finds
 
     def has_source(self):
         return not len(self.source_files) == 0
@@ -311,6 +314,9 @@ class ScramProject:
             if "links" in value:
                 m.libs |= set(value["links"])
 
+            if "find" in value:
+                m.finds |= set(value["find"])
+
             self.add_target(m)
 
     def __init__(self):
@@ -327,6 +333,8 @@ class ScramProject:
     def get_target(self, name):
         if name.lower() in self.targets:
             return self.targets[name.lower()]
+        if name.replace("/", "").replace("-", "") in self.targets:
+            return self.targets[name.replace("/", "").replace("-", "")]
         print("Couldn't find target: " + name)
         raise IOError()
 
@@ -433,6 +441,8 @@ class CMakeGenerator:
             for dir in target.include_dirs:
                 out.write("target_include_directories(" + target.symbol +
                                 " PUBLIC " + dir + ")\n")
+                out.write("include_directories(" + target.symbol +
+                                " PUBLIC " + dir + ")\n")
             
             if len(target.cxx_flags) != 0:
                 out.write("target_compile_options(" + target.symbol
@@ -440,7 +450,7 @@ class CMakeGenerator:
 
             if len(target.ld_flags.strip()) != 0:
                 out.write("# Manually defined LD_FLAGS\n")
-                out.write("target_link_libraries(" + target.symbol + 
+                out.write("# target_xcompile_options(" + target.symbol + 
                           " " + target.ld_flags + ")\n")
 
             if len(target.needed_libs) != 0:
@@ -533,13 +543,13 @@ class CMakeGenerator:
         output_file.write("find_package(CMakeTools)\n")
         output_file.write("UseCMakeTools()\n")
         output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA RooFitCore RooFit )\n")
-        output_file.write("find_package(TBB)\n")
-        output_file.write("find_package(XercesC)\n")
-        output_file.write("find_package(CLHEP)\n")
-        output_file.write("find_package(CppUnit)\n")
-        output_file.write("find_package(CASTOR)\n")
-        output_file.write("find_package(CMSMD5)\n")
-        output_file.write("find_package(TINYXML)\n")
+#        output_file.write("find_package(TBB)\n")
+#        output_file.write("find_package(XercesC)\n")
+#        output_file.write("find_package(CLHEP)\n")
+#        output_file.write("find_package(CppUnit)\n")
+#        output_file.write("find_package(CASTOR)\n")
+#        output_file.write("find_package(CMSMD5)\n")
+#        output_file.write("find_package(TINYXML)\n")
         output_file.write("set(Boost_NO_BOOST_CMAKE ON)\n")
         output_file.write("set(Boost_NO_SYSTEM_PATHS ON)\n")
         output_file.write("find_package(Boost 1.57.0 COMPONENTS filesystem thread iostreams python regex serialization system program_options )\n")
@@ -548,11 +558,15 @@ class CMakeGenerator:
 
 
         include_paths = set()
+        finds = set()
 
         for module in self.project.modules:
             for target in module.targets:
                 include_paths |= target.include_dirs
+                finds |= target.finds
 
+        for f in finds:
+            output_file.write("find_package("+f+")\n")
         for d in include_paths:
             output_file.write("include_directories(" + d + ")\n")
 
@@ -574,7 +588,7 @@ class CMakeGenerator:
             self.handle_subsystem(subsystem, subsystem_modules)
 
 
-        output_file.write("install(FILES CMakeLists.txt README.md DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
+        output_file.write("install(FILES CMakeLists.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
         output_file.write('install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
 
         module_groups = {}

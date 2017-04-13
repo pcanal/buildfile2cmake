@@ -4,9 +4,25 @@
   "CoralCommon": {},
   "CoralKernel": {},
   "Core" : {},
+  "hepmc": { "includes" : ["${HepMC_INCLUDE_DIR}"],
+             "links" : ["${HepMC_HepMC_LIBRARY}"],
+             "find" : ["HepMC"]
+   },
+
+  "HepMC": { "includes" : ["${HepMC_INCLUDE_DIR}"],
+             "links" : ["${HepMC_HepMC_LIBRARY}"],
+             "find" : ["HepMC"]
+   },
+  "heppdt": { "includes" : ["${HepPDT_INCLUDE_DIR}"],
+             "links" : ["${HepPDT_HePDT_LIBRARY}"],
+             "find" : ["HepPDT"]
+   },
+
+  "HepPDT": { "includes" : ["${HepPDT_INCLUDE_DIR}"],
+             "links" : ["${HepPDT_HepPDT_LIBRARY}"],
+             "find" : ["HepPDT"]
+   },
   "Geometry/CaloEventSetup": {},
-  "HepMC": {},
-  "HepPDT": {},
   "IOPool/Stramer": {},
   "L1Trigger/L1TCalorimeter": {},
   "L1Trigger/L1TGlobal": {},
@@ -16,7 +32,16 @@
   "RelationalAccess": {},
   "TkOnlineSwDB": {},
   "DataFormats/MuonData": {},
-  "Utilities/Xerces":{"depends":["xerces-c"]},
+  "CommonTools/UtilAlgos": {},
+  "CondFormats/DataRecord": {},
+  "CondFormats/EgammaObjects": {},
+  "DataFormats/TestObjects": {},
+  "Geometry/CSCGeometry": {},
+  "Geometry/GEMGeometryBuilder": {},
+  "Geometry/Records": {},
+  "Geometry/TrackerGeometryBuilder": {},
+  "Utilities/StorageFactory": {},
+  "Utilities/Xerces":{},
   "PlotCompareUtility": {},
   "boost": {
     "includes" : ["${Boost_INCLUDE_DIR}"],
@@ -63,16 +88,17 @@
     "links" : ["bz2"]
   },
   "cascade": {},
-  "castor_header": {"includes":["${CASTOR_INCLUDE_DIRS}","${CASTOR_INCLUDE_DIRS}/shift"]},
-  "castor": {},
+  "castor_header": {"find":["CASTOR"],"includes":["${CASTOR_INCLUDE_DIRS}","${CASTOR_INCLUDE_DIRS}/shift"]},
+  "castor": {"find":["CASTOR"],"includes":["${CASTOR_INCLUDE_DIRS}","${CASTOR_INCLUDE_DIRS}/shift"]},
   "cgal": {},
   "classlib": {},
   "clhep": {
+    "find" : [ "CLHEP" ],
     "includes" : ["${CLHEP_INCLUDE_DIR}"],
     "links" : ["${CLHEP_MAIN_LIBRARY}"]
   },
   "clhepheader": {"includes" : ["${CLHEP_INCLUDE_DIR}"]},
-  "cppunit": {"includes":["${CPPUNIT_INCLUDE_DIR}"],"links" : ["${CPPUNIT_LIBRARY}"]
+  "cppunit": {"find":["CppUnit"],"includes":["${CPPUNIT_INCLUDE_DIR}"],"links" : ["${CPPUNIT_LIBRARY}"]
   },
   "curl": {},
   "davix": {},
@@ -141,8 +167,6 @@
   "gsl": {"links": ["${GSL}"]},
   "Graf" : {},
   "hector": {},
-  "hepmc": {},
-  "heppdt": {},
   "herwig": {},
   "histogrammar": {},
   "HistoData": {},
@@ -160,6 +184,7 @@
   "MathMore" : {},
   "mcdb": {},
   "md5": {
+    "find" : ["CMSMD5"],
     "includes" : ["${MD5_INCLUDE_DIR}"],
     "links" : ["${MD5_LIBRARY}"],
     "depends" : [ "cfitsio"]
@@ -577,18 +602,21 @@
   },
   "sherpa": {},
   "sigcpp": {
-    "includes" : ["${SIGCPP_INCLUDE_DIR}"]
+    "find" : ["SIGCPP"],
+    "includes" : ["${SIGCPP_INCLUDE_DIR}","${SIGCPP_INCLUDE_DIR}/sigc++-2.0"]
   },
   "sockets": {},
   "tauola": {},
   "tauolapp": {},
   "tbb": {
+    "find" : ["TBB"],
     "includes" : ["${TBB_INCLUDE_DIRS}"],
     "links" : ["${TBB_LIBRARIES}"]
   },
   "tcmalloc_minimal": {},
   "thread": {},
   "tinyxml": {
+    "find": ["TINYXML"],
     "includes" : ["${TINYXML_INCLUDE_DIR}"],
     "links" : ["${TINYXML_LIBRARY}"]
   },
@@ -597,7 +625,7 @@
   "valgrind": {},
   "vdt": {},
   "vdt_headers": {},
-  "xerces-c": {"links" : ["xerces-c"]},
+  "xerces-c": {"find":["XercesC"],"links" : ["xerces-c"]},
   "XrdCl" : {},
   "XrdUtils" : {},
   "XrdPosixPreload" : {},
