@@ -4,13 +4,13 @@
   "CoralCommon": {},
   "CoralKernel": {},
   "Core" : {},
-  "hepmc": { "includes" : ["${HepMC_INCLUDE_DIR}"],
-             "links" : ["${HepMC_HepMC_LIBRARY}"],
+  "hepmc": { "includes" : ["${HEPMC_INCLUDE_DIR}"],
+             "links" : ["${HEPMC_HepMC_LIBRARY}"],
              "find" : ["HepMC"]
    },
 
-  "HepMC": { "includes" : ["${HepMC_INCLUDE_DIR}"],
-             "links" : ["${HepMC_HepMC_LIBRARY}"],
+  "HepMC": { "includes" : ["${HEPMC_INCLUDE_DIR}"],
+             "links" : ["${HEPMC_HepMC_LIBRARY}"],
              "find" : ["HepMC"]
    },
   "heppdt": { "includes" : ["${HepPDT_INCLUDE_DIR}"],
@@ -101,7 +101,7 @@
   "cppunit": {"find":["CppUnit"],"includes":["${CPPUNIT_INCLUDE_DIR}"],"links" : ["${CPPUNIT_LIBRARY}"]
   },
   "curl": {},
-  "davix": {},
+  "davix": {"includes":["${DAVIX_INCLUDE_DIR}"],"links":["DAVIX_LIBRARY"],"find":["DAVIX"]},
   "dcap": {},
   "dpm": {},
   "eigen": {},
@@ -158,14 +158,15 @@
   "geant4static": {
     "depends" : ["geant4"]
    },
-  "Geom" : {},
-  "GeomPainter" : {},
-  "GLEW" : {},
-  "Gui" : {},
-  "GuiHtml" : {},
-  "GX11" : {},
+  "Geom" : {"links":["Geom"]},
+  "GeomPainter" : {"links":["GeomPainter"]},
+  "GLEW" : {"links":["GLEW"]},
+  "Gui" : {"links":["Gui"]},
+  "GuiHtml" : {"links":["GuiHtml"]},
+  "GX11" : {"links":["GX11"]},
+  "GCocoa" : {"links":["GCocoa"]},
   "gsl": {"links": ["${GSL}"]},
-  "Graf" : {},
+  "Graf" : {"links":["Graf"]},
   "hector": {},
   "herwig": {},
   "histogrammar": {},
@@ -181,7 +182,7 @@
   },
   "llvm": {},
   "lwtnn": {},
-  "MathMore" : {},
+  "MathMore" : {"links":["MathMore"]},
   "mcdb": {},
   "md5": {
     "find" : ["CMSMD5"],
@@ -190,11 +191,11 @@
     "depends" : [ "cfitsio"]
   },
   "cfitsio" : {},
-  "Minuit2" : {},
+  "Minuit2" : {"links":["Minuit2"]},
   "meschach": {},
   "minuit2":{"depends":["rootminuit2"]},
   "occi" : {},
-  "opengl": {},
+  "opengl": {"links":["GL","GLU"],"depends":["x11"]},
   "openssl": {},
   "oracle": {},
   "oracleocci": {},
@@ -210,7 +211,7 @@
   "pydata": {},
   "pythia6": {},
   "pythia8": {},
-  "RGL" : {},
+  "RGL" : {"links":["RGL"]},
   "rivet": {},
   "roofit" : {
     "includes" : ["${ROOT_INCLUDE_DIR}"],
@@ -603,9 +604,9 @@
   "sherpa": {},
   "sigcpp": {
     "find" : ["SIGCPP"],
-    "includes" : ["${SIGCPP_INCLUDE_DIR}","${SIGCPP_INCLUDE_DIR}/sigc++-2.0"]
+    "includes" : ["${SIGCPP_INCLUDE_DIR}/sigc++-2.0"]
   },
-  "sockets": {},
+  "sockets": {"links":["nsl","crypt","dl","rt"]},
   "tauola": {},
   "tauolapp": {},
   "tbb": {
@@ -631,6 +632,7 @@
   "XrdPosixPreload" : {},
   "xrootd": {},
   "xz": {},
+  "x11": {"depends":["sockets"]},
   "yoda": {},
   "zlib": {"links":["z"], "depends":["cfitsio"]}
 }
