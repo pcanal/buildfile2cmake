@@ -101,7 +101,7 @@
   "cppunit": {"find":["CppUnit"],"includes":["${CPPUNIT_INCLUDE_DIR}"],"links" : ["${CPPUNIT_LIBRARY}"]
   },
   "curl": {},
-  "davix": {"includes":["${DAVIX_INCLUDE_DIR}"],"links":["DAVIX_LIBRARY"],"find":["DAVIX"]},
+  "davix": {"includes":["${DAVIX_INCLUDE_DIR}"],"links":["${DAVIX_LIBRARY}"],"find":["DAVIX"]},
   "dcap": {},
   "dpm": {},
   "eigen": {},
@@ -602,7 +602,7 @@
   "sherpa": {},
   "sigcpp": {
     "find" : ["SIGCPP"],
-    "includes" : ["${SIGCPP_INCLUDE_DIR}/sigc++-2.0"]
+    "includes" : ["${SIGCPP_INCLUDE_DIR}"]
   },
   "sockets": {"links":["nsl","crypt","dl","rt"]},
   "tauola": {},
