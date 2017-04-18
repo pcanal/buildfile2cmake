@@ -32,6 +32,7 @@
   "RelationalAccess": {},
   "TkOnlineSwDB": {},
   "DataFormats/MuonData": {},
+  "CondCore/DBOutputService":{},
   "CommonTools/UtilAlgos": {},
   "CondFormats/DataRecord": {},
   "CondFormats/EgammaObjects": {},
@@ -106,7 +107,7 @@
   "dpm": {},
   "eigen": {},
   "evtgen": {},
-  "Eve": {},
+  "Eve": {"links":["Eve","jpeg"]},
   "expat": {},
   "f77compiler": {},
   "fastjet": {},
@@ -288,7 +289,7 @@
   },
   "rooteve" : {
     "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["${Eve}",
+    "links" : ["Eve",
                "GeomPainter",
                "Geom",
                "RIO",
@@ -602,7 +603,8 @@
   "sherpa": {},
   "sigcpp": {
     "find" : ["SIGCPP"],
-    "includes" : ["${SIGCPP_INCLUDE_DIR}"]
+    "includes" : ["${SIGCPP_INCLUDE_DIR}"],
+    "links" : ["${SIGCPP_LIBRARY}"]
   },
   "sockets": {"links":["nsl","crypt","dl","rt"]},
   "tauola": {},
@@ -615,9 +617,9 @@
   "tcmalloc_minimal": {},
   "thread": {},
   "tinyxml": {
-    "find": ["TINYXML"],
-    "includes" : ["${TINYXML_INCLUDE_DIR}"],
-    "links" : ["${TINYXML_LIBRARY}"]
+    "find" : ["TINYXML"],
+    "links" : ["${TINYXML_LIBRARY}"],
+    "includes" : ["${TINYXML_INCLUDE_DIR}"]
   },
   "tkonlineswdb": {},
   "utm": {},

@@ -459,16 +459,20 @@ class CMakeGenerator:
                     out.write("  " + lib + "\n")
                 out.write(")\n")
             out.write("\n")
-            out.write("install( TARGETS ") 
-            out.write(target.symbol)
-            out.write(" EXPORT ")
-            out.write(target.symbol)
-            out.write(" DESTINATION ")
-            if target.is_executable:
-                out.write(" bin ")
+            if re.search("test", target.dir) :
+                if target.is_executable:
+                    out.write("add_test(NAME "+target.symbol+" COMMAND "+target.symbol+")\n")
             else:
-                out.write(" lib ")
-            out.write(")\n\n")
+                out.write("install( TARGETS ") 
+                out.write(target.symbol)
+                out.write(" EXPORT ")
+                out.write(target.symbol)
+                out.write(" DESTINATION ")
+                if target.is_executable:
+                    out.write(" bin ")
+                else:
+                    out.write(" lib ")
+                out.write(")\n\n")
 
                                  
 
@@ -491,6 +495,8 @@ class CMakeGenerator:
 
         output_file = open(output_path, "w")
 
+        output_file.write("include_directories(${CMAKE_SOURCE_DIR})\n")
+        output_file.write("include_directories(/usr/include/)\n")
         if len(module.binaries) != 0:
             output_file.write("add_subdirectory(bin)\n")
         if len(module.tests) != 0:
@@ -543,13 +549,6 @@ class CMakeGenerator:
         output_file.write("find_package(CMakeTools)\n")
         output_file.write("UseCMakeTools()\n")
         output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA RooFitCore RooFit )\n")
-#        output_file.write("find_package(TBB)\n")
-#        output_file.write("find_package(XercesC)\n")
-#        output_file.write("find_package(CLHEP)\n")
-#        output_file.write("find_package(CppUnit)\n")
-#        output_file.write("find_package(CASTOR)\n")
-#        output_file.write("find_package(CMSMD5)\n")
-#        output_file.write("find_package(TINYXML)\n")
         output_file.write("set(Boost_NO_BOOST_CMAKE ON)\n")
         output_file.write("set(Boost_NO_SYSTEM_PATHS ON)\n")
         output_file.write("find_package(Boost 1.57.0 COMPONENTS filesystem thread iostreams python regex serialization system program_options )\n")
@@ -604,6 +603,7 @@ class CMakeGenerator:
             else:
                 module_groups[group_name] = [module]
 
+        output_file.write("include(CTest)")
         output_file.write("\n\n")
 
         output_file.close()
