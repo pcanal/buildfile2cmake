@@ -602,9 +602,10 @@ class CMakeGenerator:
                 module_groups[group_name].append(module)
             else:
                 module_groups[group_name] = [module]
-
-        output_file.write("include(CTest)")
-        output_file.write("\n\n")
+        output_file.write("set(BUILD_TESTING ON)\n")
+        output_file.write("include(CTest)\n")
+        output_file.write("enable_testing()\n")
+        output_file.write("\n")
 
         output_file.close()
 

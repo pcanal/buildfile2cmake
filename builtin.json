@@ -179,7 +179,9 @@
   "lhapdf": {},
   "libhepml": {},
   "libuuid": {
-    "links" : ["uuid"]
+    "find" : ["UUID"],
+    "includes" : ["${UUID_INCLUDE_DIR}"],
+    "links" : ["${UUID_LIBRARIES}"]
   },
   "llvm": {},
   "lwtnn": {},
@@ -626,7 +628,11 @@
   "valgrind": {},
   "vdt": {},
   "vdt_headers": {},
-  "xerces-c": {"find":["XercesC"],"links" : ["xerces-c"]},
+  "xerces-c": {
+     "find":["XercesC"],
+     "includes": ["${XERCESC_INCLUDE_DIR}"],
+     "links" : ["${XERCESC_LIBRARIES}"]
+  },
   "XrdCl" : {},
   "XrdUtils" : {},
   "XrdPosixPreload" : {},
