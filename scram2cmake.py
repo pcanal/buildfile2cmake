@@ -407,15 +407,14 @@ class CMakeGenerator:
     # Writes the necessary CMake commands to generate the given target
     # to the given out stream (which needs to support a 'write' call).
     def generate_target(self, target, out):
-       
         if target.has_dictionary():
            for clh in target.classes_h :
                cl = clh.replace('.h','')
                part = cl.replace('src/classes','')
                cldef = 'src/classes_def'+part+'.xml'
                name=target.symbol+part
-               out.write('reflex_dictionary('+name+' '+clh+' '+cldef+')\n')
                target.source_files.append(name+'Dict.cpp')
+               out.write('reflex_generate_dictionary('+name+' '+clh+' '+cldef+' ROOTMAPLIB '+target.symbol+')\n')
 
         if target.has_source():
             if target.is_executable:
@@ -426,19 +425,11 @@ class CMakeGenerator:
                 out.write(target.symbol)
                 out.write(" SHARED ")
 
-            for source in target.source_files:
+            for source in sorted(target.source_files):
                     out.write("\n  " + source)
             out.write("\n)\n\n")
 
-            if target.has_dictionary():
-               for clh in target.classes_h :
-                   cl = clh.replace('.h','')
-                   part = cl.replace('src/classes','')
-                   cldef = 'src/classes_def'+part+'.xml'
-                   name=target.symbol+part
-                   out.write("add_dependencies("+target.symbol+" "+name+"Dict)\n")
-
-            for dir in target.include_dirs:
+            for dir in sorted(target.include_dirs):
                 out.write("target_include_directories(" + target.symbol +
                                 " PUBLIC " + dir + ")\n")
                 out.write("include_directories(" + target.symbol +
@@ -455,7 +446,7 @@ class CMakeGenerator:
 
             if len(target.needed_libs) != 0:
                 out.write("target_link_libraries(" + target.symbol + " PUBLIC\n")
-                for lib in target.needed_libs:
+                for lib in sorted(target.needed_libs):
                     out.write("  " + lib + "\n")
                 out.write(")\n")
             out.write("\n")
@@ -474,7 +465,16 @@ class CMakeGenerator:
                     out.write(" lib ")
                 out.write(")\n\n")
 
-                                 
+        if target.has_dictionary():
+            for clh in target.classes_h :
+               cl = clh.replace('.h','')
+               part = cl.replace('src/classes','')
+               cldef = 'src/classes_def'+part+'.xml'
+               name=target.symbol+part
+               out.write('add_dependencies('+target.symbol+' '+name+'Gen)\n')
+            out.write('install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION lib FILES_MATCHING PATTERN "'+target.symbol+'*.pcm")\n')
+            out.write('install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION lib FILES_MATCHING PATTERN "'+target.symbol+'*.cpp")\n')
+            out.write('install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION lib FILES_MATCHING PATTERN "'+target.symbol+'*.rootmap")\n')
 
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own

@@ -608,7 +608,7 @@
     "includes" : ["${SIGCPP_INCLUDE_DIR}"],
     "links" : ["${SIGCPP_LIBRARY}"]
   },
-  "sockets": {"links":["nsl","crypt","dl","rt"]},
+  "sockets": {},
   "tauola": {},
   "tauolapp": {},
   "tbb": {
@@ -637,7 +637,7 @@
   "XrdUtils" : {},
   "XrdPosixPreload" : {},
   "xrootd": {},
-  "xz": {},
+  "xz": {"links":["lzma"]},
   "x11": {"depends":["sockets"]},
   "yoda": {},
   "zlib": {"links":["z"], "depends":["cfitsio"]}
