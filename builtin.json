@@ -41,7 +41,6 @@
   "Geometry/GEMGeometryBuilder": {},
   "Geometry/Records": {},
   "Geometry/TrackerGeometryBuilder": {},
-  "Utilities/StorageFactory": {},
   "Utilities/Xerces":{},
   "PlotCompareUtility": {},
   "boost": {
@@ -107,7 +106,7 @@
   "dpm": {},
   "eigen": {},
   "evtgen": {},
-  "Eve": {"links":["Eve","jpeg"]},
+  "Eve": {"links":["Eve","jpeg","png"]},
   "expat": {},
   "f77compiler": {},
   "fastjet": {},
@@ -198,13 +197,13 @@
   "meschach": {},
   "minuit2":{"depends":["rootminuit2"]},
   "occi" : {},
-  "opengl": {"links":["GL","GLU"],"depends":["x11"]},
-  "openssl": {},
+  "opengl": {"find":["OpenGL"],"includes":["${OPENGL_INCLUDE_DIR}"],"links":["${OPENGL_gl_LIBRARY}","${OPENGL_glu_LIBRARY}"]},
+  "openssl": {"find":["OpenSSL"],"includes":["${OPENSSL_INCLUDE_DIR}"],"links":["${OPENSSL_SSL_LIBRARY}","${OPENSSL_CRYPTO_LIBRARY}"]},
   "oracle": {},
   "oracleocci": {},
   "photos": {},
   "photospp": {},
-  "Physics" : {},
+  "Physics" : {"links":["Physics"]},
   "protobuf": {},
   "py2-matplotlib": {},
   "py2-pandas": {},
@@ -594,7 +593,7 @@
                  "RIO",
                  "Core",
                  "MathCore",
-                 "MLP" ]
+                 "MLP","z" ]
   },
   "rootxmlio": {
     "includes" : ["${ROOT_INCLUDE_DIR}"],
@@ -638,7 +637,7 @@
   "XrdPosixPreload" : {},
   "xrootd": {},
   "xz": {"links":["lzma"]},
-  "x11": {"depends":["sockets"]},
+  "x11": {"links":["x11"]},
   "yoda": {},
   "zlib": {"links":["z"], "depends":["cfitsio"]}
 }

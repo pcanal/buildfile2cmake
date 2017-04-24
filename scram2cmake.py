@@ -554,7 +554,7 @@ class CMakeGenerator:
         output_file.write("find_package(Boost 1.57.0 COMPONENTS filesystem thread iostreams python regex serialization system program_options )\n")
         output_file.write("find_package(PythonInterp)\n")
         output_file.write("find_package(PythonLibs)\n")
-
+        output_file.write("find_package(Threads)\n")
 
         include_paths = set()
         finds = set()
