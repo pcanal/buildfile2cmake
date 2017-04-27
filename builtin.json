@@ -160,6 +160,7 @@
    },
   "Geom" : {"links":["Geom"]},
   "GeomPainter" : {"links":["GeomPainter"]},
+  "EG" : {"links":["EG"]},
   "GLEW" : {"links":["GLEW"]},
   "Gui" : {"links":["Gui"]},
   "GuiHtml" : {"links":["GuiHtml"]},

@@ -472,9 +472,7 @@ class CMakeGenerator:
                cldef = 'src/classes_def'+part+'.xml'
                name=target.symbol+part
                out.write('add_dependencies('+target.symbol+' '+name+'Gen)\n')
-            out.write('install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION lib FILES_MATCHING PATTERN "'+target.symbol+'*.pcm")\n')
-            out.write('install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION lib FILES_MATCHING PATTERN "'+target.symbol+'*.cpp")\n')
-            out.write('install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION lib FILES_MATCHING PATTERN "'+target.symbol+'*.rootmap")\n')
+               out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)\n')
 
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
