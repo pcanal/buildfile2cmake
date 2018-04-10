@@ -588,6 +588,7 @@ class CMakeGenerator:
 
         output_file.write("install(FILES CMakeLists.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
         output_file.write('install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
+        output_file.write('install(DIRECTORY scram2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
 
         module_groups = {}
 
@@ -690,9 +691,9 @@ def main():
     project = ScramProject()
 
     # traverse root directory, and list directories as dirs and files as files
-    for root, dirs, files in os.walk("."):
+    for root, dirs, files in os.walk('.'):
         for file in files:
-            root = remove_str_refix(root, "./")
+            root = remove_str_refix(root, './')
             if len(root.split("/")) != 2:
               continue;
             if file == "BuildFile.xml":
@@ -701,9 +702,9 @@ def main():
                 if m:
                     project.add_module(m)
 
-    for root, dirs, files in os.walk("."):
-        r = remove_str_refix(root, "./")
-        if len(r.split("/")) == 2:
+    for root, dirs, files in os.walk('.'):
+        r = remove_str_refix(root, './')
+        if len(r.split("/")) == 2 and not r.startswith('.git') :
             if not 'BuildFile.xml' in os.listdir(r):
                 data = '<build><export><lib name="1"/></export></build>'
                 et=ET.fromstring(data)
