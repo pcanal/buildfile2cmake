@@ -118,6 +118,7 @@ class ScramTargetBase(object):
             self.finds |= self.project.get_target(forward).finds
 
         for dependency in self.dependencies_by_name:
+            dependency=dependency.lstrip().rstrip()
             try:
                 target = self.project.get_target(dependency)
                 self.dependencies.add(target)
@@ -153,7 +154,7 @@ class ScramModuleLibrary(ScramTargetBase):
 
         for child in node:
             if child.tag == "use" or child.tag == "lib":
-                self.dependencies_by_name.add(get_lib_or_name_attr(child).rstrip())
+                self.dependencies_by_name.add(get_lib_or_name_attr(child))
             if child.tag == "flags":
                 for key, value in child.attrib.items():
                     if "CXXFLAGS" == key or "cppflags" == key or "CPPFLAGS" == key:
@@ -237,7 +238,7 @@ class ScramTarget(ScramTargetBase):
 
         for child in node:
             if child.tag == "use" or child.tag == "lib":
-                self.dependencies_by_name.add(get_lib_or_name_attr(child).rstrip())
+                self.dependencies_by_name.add(get_lib_or_name_attr(child))
 
 
 
@@ -331,7 +332,6 @@ class ScramProject:
         self.init_builtin()
 
     def get_target(self, name):
-        name=name.lstrip().rstrip()
         if name.lower() in self.targets:
             return self.targets[name.lower()]
         if name.replace("/", "").replace("-", "") in self.targets:
@@ -700,6 +700,15 @@ def main():
                 m = handle_BuildFileXml(root, path)
                 if m:
                     project.add_module(m)
+
+    for root, dirs, files in os.walk("."):
+        r = remove_str_refix(root, "./")
+        if len(r.split("/")) == 2:
+            if not 'BuildFile.xml' in os.listdir(r):
+                data = '<build><export><lib name="1"/></export></build>'
+                et=ET.fromstring(data)
+                m = ScramModule('.', r, et)
+                project.add_module(m)
 
     project.resolve_dependencies()
 
