@@ -153,7 +153,7 @@ class ScramModuleLibrary(ScramTargetBase):
 
         for child in node:
             if child.tag == "use" or child.tag == "lib":
-                self.dependencies_by_name.add(get_lib_or_name_attr(child))
+                self.dependencies_by_name.add(get_lib_or_name_attr(child).rstrip())
             if child.tag == "flags":
                 for key, value in child.attrib.items():
                     if "CXXFLAGS" == key or "cppflags" == key or "CPPFLAGS" == key:
@@ -237,7 +237,7 @@ class ScramTarget(ScramTargetBase):
 
         for child in node:
             if child.tag == "use" or child.tag == "lib":
-                self.dependencies_by_name.add(get_lib_or_name_attr(child))
+                self.dependencies_by_name.add(get_lib_or_name_attr(child).rstrip())
 
 
 
