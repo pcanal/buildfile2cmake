@@ -542,7 +542,7 @@ class CMakeGenerator:
         output_file = open(output_path, "w")
 
         output_file.write("cmake_minimum_required(VERSION 3.0)\n")
-        output_file.write("project(CMSSW)\n\n")
+        output_file.write("project(CMSSW CMSSW C CXX Fortran)\n\n")
         output_file.write("include_directories(${CMAKE_SOURCE_DIR})\n")
         output_file.write("include_directories(/usr/include/)\n")
         output_file.write("find_package(CMakeTools)\n")
