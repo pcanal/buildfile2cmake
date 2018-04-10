@@ -122,7 +122,7 @@ class ScramTargetBase(object):
                 target = self.project.get_target(dependency)
                 self.dependencies.add(target)
             except IOError as e:
-                print("Warning: Dependency " + dependency + " not found!")
+                print('Warning: Dependency "' + dependency + '" not found!')
 
         for dependency in self.dependencies:
             self.include_dirs |= dependency.include_dirs
@@ -331,11 +331,12 @@ class ScramProject:
         self.init_builtin()
 
     def get_target(self, name):
+        name=name.lstrip().rstrip()
         if name.lower() in self.targets:
             return self.targets[name.lower()]
         if name.replace("/", "").replace("-", "") in self.targets:
             return self.targets[name.replace("/", "").replace("-", "")]
-        print("Couldn't find target: " + name)
+        print('Could\'t find target: "' + name + '"')
         raise IOError()
 
     def add_module(self, module):
