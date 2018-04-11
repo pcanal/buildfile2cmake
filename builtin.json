@@ -192,7 +192,7 @@
   "occi" : {"links":["occi"]},
   "opengl": {"find":["OpenGL"],"includes":["${OPENGL_INCLUDE_DIR}"],"links":["${OPENGL_gl_LIBRARY}","${OPENGL_glu_LIBRARY}"]},
   "openssl": {"find":["OpenSSL"],"includes":["${OPENSSL_INCLUDE_DIR}"],"links":["${OPENSSL_SSL_LIBRARY}","${OPENSSL_CRYPTO_LIBRARY}"]},
-  "oracle": {"includes":[],"links":["clntsh","sockets"]},
+  "oracle": {"includes":[],"links":["clntsh"]},
   "oracleocci": {"links":["occi"]},
   "photos": {"includes":[],"links":["photos"]},
   "photospp": {"includes":[],"links":["Photospp","PhotosppHepMC","PhotosppHEPEVT"]},
