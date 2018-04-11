@@ -194,7 +194,7 @@
   "opengl": {"find":["OpenGL"],"includes":["${OPENGL_INCLUDE_DIR}"],"links":["${OPENGL_gl_LIBRARY}","${OPENGL_glu_LIBRARY}"]},
   "openssl": {"find":["OpenSSL"],"includes":["${OPENSSL_INCLUDE_DIR}"],"links":["${OPENSSL_SSL_LIBRARY}","${OPENSSL_CRYPTO_LIBRARY}"]},
   "oracle": {"includes":[],"links":["clntsh"]},
-  "oracleocci": {"links":["occi"]},
+  "oracleocci": {"links":["cms_oracleocci_abi_hack"]},
   "photos": {"includes":[],"links":["photos"]},
   "photospp": {"includes":[],"links":["Photospp","PhotosppHepMC","PhotosppHEPEVT"]},
   "Physics" : {"links":["Physics"]},
@@ -622,7 +622,7 @@
     "links" : ["${TINYXML_LIBRARY}"],
     "includes" : ["${TINYXML_INCLUDE_DIR}"]
   },
-  "tkonlineswdb": {"includes":[],"links":["DeviceDescriptions","Fed9UDeviceFactory","oracle","oracleocci","ICUtils","Fed9UUtils"]},
+  "tkonlineswdb": {"includes":[],"links":["DeviceDescriptions","Fed9UDeviceFactory","clntsh","cms_oracleocci_abi_hack","ICUtils","Fed9UUtils"]},
   "utm": {"links":["tmeventsetup","tmtable","tmxsd","tmgrammar","tmutil"]},
   "valgrind": {},
   "vdt": {"includes":[],"links":["vdt"]},
