@@ -569,7 +569,7 @@ class CMakeGenerator:
             output_file.write("include_directories(" + d + ")\n")
 
         output_file.write("set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} -pthread -Wno-attributes "
-                          "-Wno-deprecated-declarations -std=c++14\")\n")
+                          "-Wno-deprecated-declarations -std=c++1z -sse3\")\n")
         if cxxmodules:
             output_file.write("set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} "
                               "-fmodules -Rmodule-build -ivfsoverlay " + prefix + "libs.overlay.yaml -fmodules-cache-path=${CMAKE_BINARY_DIR}/pcms/  -Xclang -fmodules-local-submodule-visibility\")\n")
