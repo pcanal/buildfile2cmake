@@ -107,6 +107,7 @@
   "gpad" : {"links":["Gpad","Graf"]},
   "gcc-atomic": {"links":["atomic"]},
   "geant4": {
+    "find": ["GEANT4"],
     "includes" : ["${GEANT4_INCLUDE_DIRS}"],
     "links" : [
         "G4analysis",
