@@ -1,645 +1,1684 @@
 {
-  "IOPool/Stramer": {"links": ["IOPoolStreamer"]},
-  "CSCTrackFinderEmulation": {"links" : ["CSCTrackFinderEmulation"]},
-  "CoralBase": {"includes":[],"links":["CoralBase"]},
-  "CoralCommon": {"includes":[],"links":["CoralCommon"]},
-  "CoralKernel": {"includes":[],"links":["CoralKernel"]},
-  "Core" : {"links":[]},
-  "hepmc": { "includes" : ["${HEPMC_INCLUDE_DIR}"],
-             "links" : ["${HEPMC_HepMC_LIBRARY}"],
-             "find" : ["HepMC"]
-   },
-
-  "HepMC": { "includes" : ["${HEPMC_INCLUDE_DIR}"],
-             "links" : ["${HEPMC_HepMC_LIBRARY}"],
-             "find" : ["HepMC"]
-   },
-  "heppdt": { "includes" : ["${HepPDT_INCLUDE_DIR}"],
-             "links" : ["${HepPDT_HePDT_LIBRARY}"],
-             "find" : ["HepPDT"]
-   },
-
-  "HepPDT": { "includes" : ["${HepPDT_INCLUDE_DIR}"],
-             "links" : ["${HepPDT_HepPDT_LIBRARY}"],
-             "find" : ["HepPDT"]
-   },
-  "RelationalAccess": {"includes":[], "links" : ["RelationalAccess"] },
-  "TkOnlineSwDB": {"includes":[], "links" : ["TkOnlineSwDB"] },
-  "PlotCompareUtility": {"includes":[],"links":["PlotCompareUtility"]},
-  "boost": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "links" : ["dl", "${Boost_THREAD_LIBRARY_RELEASE}","${Boost_FILESYSTEM_LIBRARY_RELEASE}","${Boost_SYSTEM_LIBRARY_RELEASE}","${Boost_IOSTREAMS_LIBRARY_RELEASE}","${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}","${Boost_PYTHON_LIBRARY_RELEASE}","${PYTHON_LIBRARY}","${Boost_SERIALIZATION_LIBRARY_RELEASE}","${Boost_SYSTEM_LIBRARY_RELEASE}", "${Boost_REGEX_LIBRARY_RELEASE}"]
-  },
-  "boost_chrono": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["${Boost_CHRONO_LIBRARY_RELEASE}", "${Boost_SYSTEM_LIBRARY_RELEASE}"]
-  },   
-  "boost_filesystem": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["${Boost_FILESYSTEM_LIBRARY_RELEASE}", "${Boost_SYSTEM_LIBRARY_RELEASE}"]
-  },
-  "boost_header": {},
-  "boost_iostreams": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["${Boost_IOSTREAMS_LIBRARY_RELEASE}"]
-  },
-  "boost_program_options": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}"]
-  },
-  "boost_python": {
-    "includes" : ["${Boost_INCLUDE_DIR}","${Boost_INCLUDE_DIR}/python","${PYTHON_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["dl","${Boost_PYTHON_LIBRARY_RELEASE}","${PYTHON_LIBRARY}"]
-  },
-  "boost_regex": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["${Boost_REGEX_LIBRARY_RELEASE}"]
-  },
-  "boost_serialization": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["${Boost_SERIALIZATION_LIBRARY_RELEASE}"]
-  },
-  "boost_system": {
-    "includes" : ["${Boost_INCLUDE_DIR}"],
-    "depends" : ["boost"],
-    "links" : ["${Boost_SYSTEM_LIBRARY_RELEASE}"]
-  },
-  "boost_test": {},
-  "bz2lib": {
-    "links" : ["bz2"]
-  },
-  "cascade": {"includes":[],"links":["cascade_merged"]},
-  "castor_header": {"find":["CASTOR"],"includes":["${CASTOR_INCLUDE_DIRS}","${CASTOR_INCLUDE_DIRS}/shift"]},
-  "castor": {"find":["CASTOR"],"includes":["${CASTOR_INCLUDE_DIRS}","${CASTOR_INCLUDE_DIRS}/shift"]},
-  "cgal": {"includes":[],"links":["CGAL_Core","CGAL"]},
-  "classlib": {"includes":[],"links":["classlib"]},
-  "clhep": {
-    "find" : [ "CLHEP" ],
-    "includes" : ["${CLHEP_INCLUDE_DIR}"],
-    "links" : ["${CLHEP_MAIN_LIBRARY}"]
-  },
-  "clhepheader": {"find":["CLHEP"],"includes" : ["${CLHEP_INCLUDE_DIR}"]},
-  "cppunit": {"find":["CppUnit"],"includes":["${CPPUNIT_INCLUDE_DIR}"],"links" : ["${CPPUNIT_LIBRARY}"]
-  },
-  "curl": {"includes":[],"links":["curl"]},
-  "davix": {"includes":["${DAVIX_INCLUDE_DIR}"],"links":["${DAVIX_LIBRARY}"],"find":["DAVIX"]},
-  "dd4hep" : {"includes":[],"links":["DDAlign","DDCore","DDCond","DDParsers"]},
-  "dcap": {"includes":[],"links":["dcap"]},
-  "dire": {"includes":[],"links":["dire"]},
-  "dpm": {"includes":[],"links":["dpm"]},
-  "eigen": {"includes":["${EIGEN_BASE}/include/eigen3"],"links":[]},
-  "evtgen": {"includes":[],"links":["EvtGen","EvtGenExternal"]},
-  "Eve": {"links":["Eve","jpeg","png"]},
-  "expat": {"links":["expat"]},
-  "f77compiler": {"links":["gfortran"]},
-  "fastjet": {"includes":[],"links":["fastjetplugins","fastjettools","siscone","siscone_spherical","fastjet"]},
-  "fastjet-contrib": {"includes":[],"links":["fastjetcontribfragile"]},
-  "fftjet": {"includes":[],"links":["fftjet"]},
-  "fftw3": {"includes":[],"links":["fftw3"]},
-  "gbl" : {"includes":[],"links":["GBL"]},
-  "gpad" : {"links":["Gpad","Graf"]},
-  "gcc-atomic": {"links":["atomic"]},
-  "geant4": {
-    "find": ["GEANT4"],
-    "includes" : ["${GEANT4_INCLUDE_DIRS}"],
-    "links" : [
-        "G4analysis",
-        "G4clhep",
-        "G4digits_hits",
-        "G4error_propagation",
-        "G4event",
-        "G4FR",
-        "G4geometry",
-        "G4gl2ps",
-        "G4global",
-        "G4GMocren",
-        "G4graphics_reps",
-        "G4intercoms",
-        "G4interfaces",
-        "G4materials",
-        "G4modeling",
-        "G4OpenGL",
-        "G4OpenInventor",
-        "G4parmodels",
-        "G4particles",
-        "G4persistency",
-        "G4physicslists",
-        "G4processes",
-        "G4RayTracer",
-        "G4readout",
-        "G4run",
-        "G4tracking",
-        "G4track",
-        "G4Tree",
-        "G4visHepRep",
-        "G4vis_management",
-        "G4visXXX",
-        "G4VRML"
-    ]
-   },
-  "geant4core": {
-    "depends" : ["geant4"]
-   },
-  "geant4static": {
-    "depends" : ["geant4"]
-   },
-  "Geom" : {"links":["Geom"]},
-  "GeomPainter" : {"links":["GeomPainter"]},
-  "EG" : {"links":["EG"]},
-  "GLEW" : {"links":["GLEW"]},
-  "Gui" : {"links":["Gui"]},
-  "GuiHtml" : {"links":["GuiHtml"]},
-  "GX11" : {"links":["GX11"]},
-  "GCocoa" : {"links":["GCocoa"]},
-  "gsl": {"links": ["${GSL}"]},
-  "Graf" : {"links":["Graf"]},
-  "hector": {"includes":[],"links":["Hector"]},
-  "herwig": {"includes":[],"links":["herwig","herwig_dummy"]},
-  "herwigpp": {"includes":[],"links":["HerwigAPI"]},
-  "histogrammar": {"links":[]},
-  "HistoData": {"links":["HistoData"]},
-  "jimmy": {"includes":[],"links":["jimmy"]},
-  "jemalloc": {"includes":[],"links":["jemalloc"]},
-  "ktjet": {"includes":[],"links":["KtEvent"]},
-  "lapack" : {"includes":[],"links":[]},
-  "lhapdf": {"includes":[],"links":["LHAPDF"]},
-  "libhepml": {"includes":[],"links":["hepml"]},
-  "libuuid": {
-    "find" : ["UUID"],
-    "includes" : ["${UUID_INCLUDE_DIR}"],
-    "links" : ["${UUID_LIBRARIES}"]
-  },
-  "llvm": {"includes":[],"links":["clang"]},
-  "lwtnn": {"includes":[],"links":["lwtnn"]},
-  "MathMore" : {"links":["MathMore"]},
-  "mcdb": {"includes":[],"links":["mcdb"]},
-  "md5": {
-    "find" : ["CMSMD5"],
-    "includes" : ["${MD5_INCLUDE_DIR}"],
-    "links" : ["${MD5_LIBRARY}"],
-    "depends" : [ "cfitsio"]
-  },
-  "cfitsio" : {"includes":[],"links":[]},
-  "Minuit2" : {"links":["Minuit2"]},
-  "meschach": {"includes":[],"links":["meschach"]},
-  "minuit2":{"depends":["rootminuit2"]},
-  "occi" : {"links":["occi"]},
-  "opengl": {"find":["OpenGL"],"includes":["${OPENGL_INCLUDE_DIR}"],"links":["${OPENGL_gl_LIBRARY}","${OPENGL_glu_LIBRARY}"]},
-  "openssl": {"find":["OpenSSL"],"includes":["${OPENSSL_INCLUDE_DIR}"],"links":["${OPENSSL_SSL_LIBRARY}","${OPENSSL_CRYPTO_LIBRARY}"]},
-  "oracle": {"includes":[],"links":["clntsh"]},
-  "oracleocci": {"links":["cms_oracleocci_abi_hack"]},
-  "photos": {"includes":[],"links":["photos"]},
-  "photospp": {"includes":[],"links":["Photospp","PhotosppHepMC","PhotosppHEPEVT"]},
-  "Physics" : {"links":["Physics"]},
-  "protobuf": {"includes":[],"links":["protobuf"]},
-  "py2-matplotlib": {"includes":[],"links":[]},
-  "py2-pandas": {"includes":[],"links":[]},
-  "py2-pippkgs": {"includes":[],"links":[]},
-  "py2-root_numpy": {"includes":[],"links":[]},
-  "pyclang": {"includes":[],"links":[]},
-  "pydata": {"includes":[],"links":[]},
-  "pythia6": {"includes":[],"links":["pythia6","pythia6_dummy","pythia6_pdfdummy"]},
-  "pythia8": {"includes":[],"links":["pythia8"]},
-  "RGL" : {"links":["RGL"]},
-  "rivet": {"includes":[],"links":["Rivet"]},
-  "roofit" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["RooFitCore",
-               "RIO",
-               "Matrix",
-               "Foam",
-               "Net",
-               "MathCore",
-               "Graf",
-               "Minuit",
-               "Core",
-               "Thread",
-               "Tree",
-               "Hist",
-               "RooFit"]
-  },
-  "roofitcore" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["RooFitCore",
-               "RIO",
-               "Matrix",
-               "Foam",
-               "Net",
-               "MathCore",
-               "Graf",
-               "Minuit",
-               "Core",
-               "Thread",
-               "Tree",
-               "Hist"]
-  },
-  "root" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Physics",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore"]
-  },
-  "rootcling" : {  
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Core"]
-  },
-  "rootcore": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore"]
-  },
-  "rooteg": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["EG",
-               "TreePlayer",
-               "Graf3d",
-               "Postscript",
-               "Gpad",
-               "Graf",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore" ]
-  },
-  "rooteve" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Eve",
-               "GeomPainter",
-               "Geom",
-               "RIO",
-               "Core",
-               "MathCore",
-               "TreePlayer",
-               "Graf3d",
-               "Postscript",
-               "Gpad",
-               "Graf",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "MathCore",
-               "RGL",
-               "Gui",
-               "Rint" ]
-  },
-  "rootfoam" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Foam",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore" ]
-  },
-  "rootgeom" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Geom",
-               "RIO",
-               "Core",
-               "MathCore" ]
-  },
-  "rootgeompainter" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["GeomPainter",
-               "Geom",
-               "RIO",
-               "Core",
-               "MathCore",
-               "TreePlayer",
-               "Graf3d",
-               "Postscript",
-               "Gpad",
-               "Graf",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore" ]
-  },
-  "rootgpad": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Gpad",
-               "Graf",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore" ]
-  },
-  "rootgraphics": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["TreePlayer",
-               "Graf3d",
-               "Postscript",
-               "Gpad",
-               "Graf",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore" ]
-  },
-  "rootguihtml" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["${GuiHtml}",
-               "Gui",
-               "Core",
-               "Rint",
-               "Gpad",
-               "Graf",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "MathCore" ]
-  },
-  "roothistmatrix": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore" ]
-  },
-  "roothtml" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "${Html}",
-                 "Gpad",
-                 "Graf",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                 "MathCore" ]
-  },
-  "rootinteractive": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "Gui",
-                 "Core",
-                 "Rint",
-                 "Gpad",
-                 "Graf",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "MathCore" ]
-  },
-  "rootmath": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "depends" : ["gsl"],
-    "links" : [  "GenVector",
-                 "MathMore",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                 "MathCore" ]
-  },
-  "rootmathcore" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Core",
-               "MathCore" ]
-  },
-  "rootminuit": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "Minuit",
-                 "Gpad",
-                 "Graf",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                 "MathCore" ]
-  },
-  "rootminuit2": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "Minuit2",
-                 "Gpad",
-                 "Graf",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                 "MathCore" ]
-  },
-  "rootmlp": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "MLP",
-                 "TreePlayer",
-                 "Graf3d",
-                 "Postscript",
-                 "Gpad",
-                 "Graf",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO", 
-                 "Core",
-                 "MathCore" ]
-  },
-  "rootphysics": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "Physics",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                 "MathCore" ]
-  },
-  "rootpy": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "PyROOT",
-                 "TreePlayer",
-                 "Graf3d",
-                 "Postscript",
-                 "Gpad",
-                 "Graf",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                 "MathCore" ]
-  },
-  "rootrflx": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Core"]
-  },
-  "rootrgl" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["TreePlayer",
-               "Graf3d",
-               "Postscript",
-               "Gpad",
-               "Graf",
-               "Hist",
-               "Matrix",
-               "Tree",
-               "Net",
-               "Thread",
-               "RIO",
-               "Core",
-               "MathCore",
-               "RGL",
-               "Gui",
-               "Core",
-               "Rint" ]
-  },
-  "rootrint": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Core",
-               "Rint" ]
-  },
-  "rootrio" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Core",
-               "RIO" ]
-  },
-  "rootsmatrix" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "Smatrix", "Core" ]
-  },
-  "rootspectrum" : {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "Spectrum",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                  "MathCore" ]
-  },
-  "rootthread":{
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "Thread",
-                 "Core",
-                 "RIO" ]
-  },
-  "roottmva": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : [  "TMVA",
-                 "Minuit",
-                 "Gpad",
-                 "Graf",
-                 "Hist",
-                 "Matrix",
-                 "Tree",
-                 "Net",
-                 "Thread",
-                 "RIO",
-                 "Core",
-                 "MathCore",
-                 "MLP","z" ]
-  },
-  "rootxmlio": {
-    "includes" : ["${ROOT_INCLUDE_DIR}"],
-    "links" : ["Core",
-               "RIO",
-               "XMLIO" ]
-  },
-  "sherpa": {"includes":[],"links":["SherpaMain","ToolsMath","ToolsOrg"]},
-  "sigcpp": {
-    "find" : ["SIGCPP"],
-    "includes" : ["${SIGCPP_INCLUDE_DIR}"],
-    "links" : ["${SIGCPP_LIBRARY}"]
-  },
-  "sockets": {"includes":[],"links":["nsl","crypt","dl","rt"]},
-  "tauola": {"includes":[],"links":["pretauola","tauola"]},
-  "tauolapp": {"includes":[],"links":["TauolaCxxInterface","TauolaFortran","TauolaTauSpinner"]},
-  "tbb": {
-    "find" : ["TBB"],
-    "includes" : ["${TBB_INCLUDE_DIRS}"],
-    "links" : ["${TBB_LIBRARIES}"]
-  },
-  "tcmalloc_minimal": {"includes":[],"links":["tcmalloc_minimal"]},
-  "tensorflow-cc":{"includes":[],"links":["tensorflow_cc"]},
-  "thepeg": {"includes":[],"links":["ThePEG","LesHouches"]},
-  "thread": {"links":["thread"]},
-  "tinyxml": {
-    "find" : ["TINYXML"],
-    "links" : ["${TINYXML_LIBRARY}"],
-    "includes" : ["${TINYXML_INCLUDE_DIR}"]
-  },
-  "tkonlineswdb": {"includes":[],"links":["DeviceDescriptions","Fed9UDeviceFactory","clntsh","cms_oracleocci_abi_hack","ICUtils","Fed9UUtils"]},
-  "utm": {"links":["tmeventsetup","tmtable","tmxsd","tmgrammar","tmutil"]},
-  "valgrind": {},
-  "vdt": {"includes":[],"links":["vdt"]},
-  "vdt_headers": {"includes":[]},
-  "vincia": {"links":["vincia","VinciaMG4","VinciaMG5"],"includes":[]},
-  "xerces-c": {
-     "find":["XercesC"],
-     "includes": ["${XERCESC_INCLUDE_DIR}"],
-     "links" : ["${XERCESC_LIBRARIES}"]
-  },
-  "XrdCl" : {"links":["XrdClient"]},
-  "XrdUtils" : {"links":["XrdUtils"]},
-  "XrdPosixPreload" : {"links":[]},
-  "xrootd": {"includes":[],"links":["XrdClient","XrdUtils"]},
-  "xz": {"links":["lzma"]},
-  "x11": {"links":["x11"]},
-  "yoda": {"links":["YODA"]},
-  "zlib": {"links":["z"], "depends":["cfitsio"]},
-  "cuda": {"links":["cudart","cudadevrt","nvToolsExt"], "includes":[""]}
+    "CSCTrackFinderEmulation": {
+        "includes": [
+            "${CSCTRACKFINDEREMULATION_INCLUDE_DIR}"
+        ],
+        "links": [
+            "CSCTrackFinderEmulation"
+        ]
+    },
+    "CoralBase": {
+        "includes": [
+            "${CORAL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "CoralBase"
+        ]
+    },
+    "CoralCommon": {
+        "includes": [
+            "${CORAL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "CoralCommon"
+        ]
+    },
+    "CoralKernel": {
+        "includes": [
+            "${CORAL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "CoralKernel"
+        ]
+    },
+    "Core": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Core"
+        ]
+    },
+    "EG": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "EG"
+        ]
+    },
+    "Eve": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Eve",
+            "jpeg",
+            "png"
+        ]
+    },
+    "GCocoa": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "GCocoa"
+        ]
+    },
+    "GLEW": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "GLEW"
+        ]
+    },
+    "GX11": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "GX11"
+        ]
+    },
+    "Geom": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Geom"
+        ]
+    },
+    "GeomPainter": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "GeomPainter"
+        ]
+    },
+    "Graf": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Graf"
+        ]
+    },
+    "Gui": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Gui"
+        ]
+    },
+    "GuiHtml": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "GuiHtml"
+        ]
+    },
+    "HepMC": {
+        "find": [
+            "HepMC"
+        ],
+        "includes": [
+            "${HEPMC_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${HEPMC_HepMC_LIBRARY}"
+        ]
+    },
+    "HepPDT": {
+        "find": [
+            "HepPDT"
+        ],
+        "includes": [
+            "${HepPDT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${HepPDT_HepPDT_LIBRARY}"
+        ]
+    },
+    "HistoData": {
+        "links": [
+            "HistoData"
+        ]
+    },
+    "IOPool/Stramer": {
+        "links": [
+            "IOPoolStreamer"
+        ]
+    },
+    "MathMore": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "MathMore"
+        ]
+    },
+    "Minuit2": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Minuit2"
+        ]
+    },
+    "Physics": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Physics"
+        ]
+    },
+    "PlotCompareUtility": {
+        "includes": [],
+        "links": [
+            "PlotCompareUtility"
+        ]
+    },
+    "RGL": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "RGL"
+        ]
+    },
+    "RelationalAccess": {
+        "includes": [
+            "${CORAL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "RelationalAccess"
+        ]
+    },
+    "TkOnlineSwDB": {
+        "includes": [
+            "${TKONLINESWDB_INCLUDE_DIR}"
+        ],
+        "links": [
+            "TkOnlineSwDB"
+        ]
+    },
+    "XrdCl": {
+        "includes": [
+            "${XROOTD_INCLUDE_DIR}"
+        ],
+        "links": [
+            "XrdClient"
+        ]
+    },
+    "XrdPosixPreload": {
+        "includes": [
+            "${XROOTD_INCLUDE_DIR}"
+        ],
+        "links": [
+            "XrdPosixPreload"
+        ]
+    },
+    "XrdUtils": {
+        "includes": [
+            "${XROOTD_INCLUDE_DIR}"
+        ],
+        "links": [
+            "XrdUtils"
+        ]
+    },
+    "boost": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "dl",
+            "${Boost_THREAD_LIBRARY_RELEASE}",
+            "${Boost_FILESYSTEM_LIBRARY_RELEASE}",
+            "${Boost_SYSTEM_LIBRARY_RELEASE}",
+            "${Boost_IOSTREAMS_LIBRARY_RELEASE}",
+            "${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}",
+            "${Boost_PYTHON_LIBRARY_RELEASE}",
+            "${PYTHON_LIBRARY}",
+            "${Boost_SERIALIZATION_LIBRARY_RELEASE}",
+            "${Boost_SYSTEM_LIBRARY_RELEASE}",
+            "${Boost_REGEX_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_chrono": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Boost_CHRONO_LIBRARY_RELEASE}",
+            "${Boost_SYSTEM_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_filesystem": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Boost_FILESYSTEM_LIBRARY_RELEASE}",
+            "${Boost_SYSTEM_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_header": {},
+    "boost_iostreams": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Boost_IOSTREAMS_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_program_options": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Boost_PROGRAM_OPTIONS_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_python": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}",
+            "${Boost_INCLUDE_DIR}/python",
+            "${PYTHON_INCLUDE_DIR}"
+        ],
+        "links": [
+            "dl",
+            "${Boost_PYTHON_LIBRARY_RELEASE}",
+            "${PYTHON_LIBRARY}"
+        ]
+    },
+    "boost_regex": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Boost_REGEX_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_serialization": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Boost_SERIALIZATION_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_system": {
+        "includes": [
+            "${Boost_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Boost_SYSTEM_LIBRARY_RELEASE}"
+        ]
+    },
+    "boost_test": {},
+    "bz2lib": {
+        "includes": [
+            "/usr/include"
+        ],
+        "links": [
+            "bz2"
+        ]
+    },
+    "cascade": {
+        "includes": [
+            "${CASCADE_INCLUDE_DIR}"
+        ],
+        "links": [
+            "cascade_merged"
+        ]
+    },
+    "castor": {
+        "find": [
+            "CASTOR"
+        ],
+        "includes": [
+            "${CASTOR_INCLUDE_DIRS}",
+            "${CASTOR_INCLUDE_DIRS}/shift"
+        ]
+    },
+    "castor_header": {
+        "find": [
+            "CASTOR"
+        ],
+        "includes": [
+            "${CASTOR_INCLUDE_DIRS}",
+            "${CASTOR_INCLUDE_DIRS}/shift"
+        ]
+    },
+    "cgal": {
+        "includes": [
+            "${CGAL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "CGAL_Core",
+            "CGAL"
+        ]
+    },
+    "classlib": {
+        "includes": [
+            "${CLASSLIB_INCLUDE_DIR}"
+        ],
+        "links": [
+            "classlib"
+        ]
+    },
+    "clhep": {
+        "find": [
+            "CLHEP"
+        ],
+        "includes": [
+            "${CLHEP_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${CLHEP_MAIN_LIBRARY}"
+        ]
+    },
+    "clhepheader": {
+        "find": [
+            "CLHEP"
+        ],
+        "includes": [
+            "${CLHEP_INCLUDE_DIR}"
+        ]
+    },
+    "cppunit": {
+        "find": [
+            "CppUnit"
+        ],
+        "includes": [
+            "${CPPUNIT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${CPPUNIT_LIBRARY}"
+        ]
+    },
+    "cuda": {
+        "includes": [
+            "${CUDA_INCLUDE_DIR}"
+        ],
+        "links": [
+            "cudart",
+            "cudadevrt",
+            "nvToolsExt"
+        ]
+    },
+    "curl": {
+        "includes": [
+            "${CURL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "curl"
+        ]
+    },
+    "davix": {
+        "find": [
+            "DAVIX"
+        ],
+        "includes": [
+            "${DAVIX_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${DAVIX_LIBRARY}"
+        ]
+    },
+    "dcap": {
+        "includes": [
+            "${DCAP_INCLUDE_DIR}"
+        ],
+        "links": [
+            "dcap"
+        ]
+    },
+    "dd4hep": {
+        "includes": [
+            "${DD4HEP_INCLUDE_DIR}"
+        ],
+        "links": [
+            "DDAlign",
+            "DDCore",
+            "DDCond",
+            "DDParsers"
+        ]
+    },
+    "dire": {
+        "includes": [
+            "${DIRE_INCLUDE_DIR}"
+        ],
+        "links": [
+            "dire"
+        ]
+    },
+    "dpm": {
+        "includes": [
+            "${DPM_INCLUDE_DIR}"
+        ],
+        "links": [
+            "dpm"
+        ]
+    },
+    "eigen": {
+        "includes": [
+            "${EIGEN_INCLUDE_DIR}/eigen3"
+        ]
+    },
+    "evtgen": {
+        "includes": [
+            "${EVTGEN_INCLUDE_DIR}"
+        ],
+        "links": [
+            "EvtGen",
+            "EvtGenExternal"
+        ]
+    },
+    "expat": {
+        "includes": [
+            "${EXPAT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "expat"
+        ]
+    },
+    "f77compiler": {
+        "links": [
+            "gfortran"
+        ]
+    },
+    "fastjet": {
+        "includes": [
+            "${FASTJET_INCLUDE_DIR}"
+        ],
+        "links": [
+            "fastjetplugins",
+            "fastjettools",
+            "siscone",
+            "siscone_spherical",
+            "fastjet"
+        ]
+    },
+    "fastjet-contrib": {
+        "includes": [
+            "${FASTJET-CONTRIB_INCLUDE_DIR}"
+        ],
+        "links": [
+            "fastjetcontribfragile"
+        ]
+    },
+    "fftjet": {
+        "includes": [
+            "${FFTJET_INCLUDE_DIR}"
+        ],
+        "links": [
+            "fftjet"
+        ]
+    },
+    "fftw3": {
+        "includes": [
+            "${FFTW3_INCLUDE_DIR}"
+        ],
+        "links": [
+            "fftw3"
+        ]
+    },
+    "gbl": {
+        "includes": [
+            "${GBL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "GBL"
+        ]
+    },
+    "gcc-atomic": {
+        "links": [
+            "atomic"
+        ]
+    },
+    "geant4": {
+        "includes": [
+            "${GEANT4_INCLUDE_DIR}/Geant4"
+        ],
+        "links": [
+            "G4analysis",
+            "G4clhep",
+            "G4digits_hits",
+            "G4error_propagation",
+            "G4event",
+            "G4FR",
+            "G4geometry",
+            "G4gl2ps",
+            "G4global",
+            "G4GMocren",
+            "G4graphics_reps",
+            "G4intercoms",
+            "G4interfaces",
+            "G4materials",
+            "G4modeling",
+            "G4OpenGL",
+            "G4OpenInventor",
+            "G4parmodels",
+            "G4particles",
+            "G4persistency",
+            "G4physicslists",
+            "G4processes",
+            "G4RayTracer",
+            "G4readout",
+            "G4run",
+            "G4tracking",
+            "G4track",
+            "G4Tree",
+            "G4visHepRep",
+            "G4vis_management",
+            "G4visXXX",
+            "G4VRML"
+        ]
+    },
+    "geant4core": {
+        "includes": [
+            "${GEANT4_INCLUDE_DIR}/Geant4"
+        ],
+        "links": [
+            "G4analysis",
+            "G4clhep",
+            "G4digits_hits",
+            "G4error_propagation",
+            "G4event",
+            "G4FR",
+            "G4geometry",
+            "G4gl2ps",
+            "G4global",
+            "G4GMocren",
+            "G4graphics_reps",
+            "G4intercoms",
+            "G4interfaces",
+            "G4materials",
+            "G4modeling",
+            "G4OpenGL",
+            "G4OpenInventor",
+            "G4parmodels",
+            "G4particles",
+            "G4persistency",
+            "G4physicslists",
+            "G4processes",
+            "G4RayTracer",
+            "G4readout",
+            "G4run",
+            "G4tracking",
+            "G4track",
+            "G4Tree",
+            "G4visHepRep",
+            "G4vis_management",
+            "G4visXXX",
+            "G4VRML"
+        ]
+    },
+    "geant4static": {
+        "includes": [
+            "${GEANT4_INCLUDE_DIR}/Geant4"
+        ],
+        "links": [
+            "G4analysis",
+            "G4clhep",
+            "G4digits_hits",
+            "G4error_propagation",
+            "G4event",
+            "G4FR",
+            "G4geometry",
+            "G4gl2ps",
+            "G4global",
+            "G4GMocren",
+            "G4graphics_reps",
+            "G4intercoms",
+            "G4interfaces",
+            "G4materials",
+            "G4modeling",
+            "G4OpenGL",
+            "G4OpenInventor",
+            "G4parmodels",
+            "G4particles",
+            "G4persistency",
+            "G4physicslists",
+            "G4processes",
+            "G4RayTracer",
+            "G4readout",
+            "G4run",
+            "G4tracking",
+            "G4track",
+            "G4Tree",
+            "G4visHepRep",
+            "G4vis_management",
+            "G4visXXX",
+            "G4VRML"
+        ]
+    },
+    "gpad": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "gsl": {
+        "includes": [
+            "${GSL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "gsl"
+        ]
+    },
+    "hector": {
+        "includes": [
+            "${HECTOR_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Hector"
+        ]
+    },
+    "hepmc": {
+        "find": [
+            "HepMC"
+        ],
+        "includes": [
+            "${HEPMC_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${HEPMC_HepMC_LIBRARY}"
+        ]
+    },
+    "heppdt": {
+        "find": [
+            "HepPDT"
+        ],
+        "includes": [
+            "${HepPDT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${HepPDT_HePDT_LIBRARY}"
+        ]
+    },
+    "herwig": {
+        "includes": [
+            "${HERWIG_INCLUDE_DIR}"
+        ],
+        "links": [
+            "herwig",
+            "herwig_dummy"
+        ]
+    },
+    "herwigpp": {
+        "includes": [
+            "${HERWIGPP_INCLUDE_DIR}"
+        ],
+        "links": [
+            "HerwigAPI"
+        ]
+    },
+    "histogrammar": {
+        "links": [
+            "histogrammar"
+        ]
+    },
+    "jemalloc": {
+        "includes": [
+            "${JEMALLOC_INCLUDE_DIR}"
+        ],
+        "links": [
+            "jemalloc"
+        ]
+    },
+    "jimmy": {
+        "includes": [
+            "${JIMMY_INCLUDE_DIR}"
+        ],
+        "links": [
+            "jimmy"
+        ]
+    },
+    "ktjet": {
+        "includes": [
+            "${KTJET_INCLUDE_DIR}"
+        ],
+        "links": [
+            "KtEvent"
+        ]
+    },
+    "lapack": {
+        "includes": [
+            "${LAPACK_INCLUDE_DIR}"
+        ],
+        "links": []
+    },
+    "lhapdf": {
+        "includes": [
+            "${LHAPDF_INCLUDE_DIR}"
+        ],
+        "links": [
+            "LHAPDF"
+        ]
+    },
+    "libhepml": {
+        "includes": [
+            "${LIBHEPML_INCLUDE_DIR}"
+        ],
+        "links": [
+            "hepml"
+        ]
+    },
+    "libuuid": {
+        "find": [
+            "UUID"
+        ],
+        "includes": [
+            "${UUID_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${UUID_LIBRARIES}"
+        ]
+    },
+    "llvm": {
+        "includes": [
+            "LLVM_INCLUDE_DIR"
+        ],
+        "links": [
+            "clang"
+        ]
+    },
+    "lwtnn": {
+        "includes": [
+            "${LWTNN_INCLUDE_DIR}"
+        ],
+        "links": [
+            "lwtnn"
+        ]
+    },
+    "mcdb": {
+        "includes": [
+            "${MCDB_INCLUDE_DIR}"
+        ],
+        "links": [
+            "mcdb"
+        ]
+    },
+    "md5": {
+        "find": [
+            "CMSMD5"
+        ],
+        "includes": [
+            "${MD5_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${MD5_LIBRARY}"
+        ]
+    },
+    "meschach": {
+        "includes": [
+            "${MESCHACH_INCLUDE_DIR}"
+        ],
+        "links": [
+            "meschach"
+        ]
+    },
+    "minuit2": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Minuit2",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "occi": {
+        "links": [
+            "occi"
+        ]
+    },
+    "opengl": {
+        "find": [
+            "OpenGL"
+        ],
+        "includes": [
+            "${OPENGL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${OPENGL_gl_LIBRARY}",
+            "${OPENGL_glu_LIBRARY}"
+        ]
+    },
+    "openssl": {
+        "find": [
+            "OpenSSL"
+        ],
+        "includes": [
+            "${OPENSSL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${OPENSSL_SSL_LIBRARY}",
+            "${OPENSSL_CRYPTO_LIBRARY}"
+        ]
+    },
+    "oracle": {
+        "includes": [
+            "${ORACLE_INCLUDE_DIR}"
+        ],
+        "links": [
+            "clntsh"
+        ]
+    },
+    "oracleocci": {
+        "includes": [
+            "${OCCI_INCLUDE_DIR}",
+            "${ORACLE_INCLUDE_DIR}"
+        ],
+        "links": [
+            "cms_oracleocci_abi_hack",
+            "clntsh"
+        ]
+    },
+    "photos": {
+        "includes": [
+            "${PHOTOS_INCLUDE_DIR}"
+        ],
+        "links": [
+            "photos"
+        ]
+    },
+    "photospp": {
+        "includes": [
+            "${PHOTOS_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Photospp",
+            "PhotosppHepMC",
+            "PhotosppHEPEVT"
+        ]
+    },
+    "protobuf": {
+        "includes": [
+            "${PROTOBUF_INCLUDE_DIR}"
+        ],
+        "links": [
+            "protobuf"
+        ]
+    },
+    "py2-matplotlib": {},
+    "py2-pandas": {},
+    "py2-pippkgs": {},
+    "py2-root_numpy": {},
+    "pyclang": {},
+    "pydata": {},
+    "pythia6": {
+        "includes": [
+            "${PYHTIA6_INCLUDE_DIR}"
+        ],
+        "links": [
+            "pythia6",
+            "pythia6_dummy",
+            "pythia6_pdfdummy"
+        ]
+    },
+    "pythia8": {
+        "includes": [
+            "${PYTHIA8_INCLUDE_DIR}"
+        ],
+        "links": [
+            "pythia8"
+        ]
+    },
+    "rivet": {
+        "includes": [
+            "${RIVET_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Rivet"
+        ]
+    },
+    "roofit": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "RooFitCore",
+            "RIO",
+            "Matrix",
+            "Foam",
+            "Net",
+            "MathCore",
+            "Graf",
+            "Minuit",
+            "Core",
+            "Thread",
+            "Tree",
+            "Hist",
+            "RooFit"
+        ]
+    },
+    "roofitcore": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "RooFitCore",
+            "RIO",
+            "Matrix",
+            "Foam",
+            "Net",
+            "MathCore",
+            "Graf",
+            "Minuit",
+            "Core",
+            "Thread",
+            "Tree",
+            "Hist"
+        ]
+    },
+    "root": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Physics",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootcling": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Core"
+        ]
+    },
+    "rootcore": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rooteg": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "EG",
+            "TreePlayer",
+            "Graf3d",
+            "Postscript",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rooteve": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Eve",
+            "GeomPainter",
+            "Geom",
+            "RIO",
+            "Core",
+            "MathCore",
+            "TreePlayer",
+            "Graf3d",
+            "Postscript",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "MathCore",
+            "RGL",
+            "Gui",
+            "Rint"
+        ]
+    },
+    "rootfoam": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Foam",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootgeom": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Geom",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootgeompainter": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "GeomPainter",
+            "Geom",
+            "RIO",
+            "Core",
+            "MathCore",
+            "TreePlayer",
+            "Graf3d",
+            "Postscript",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootgpad": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootgraphics": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "TreePlayer",
+            "Graf3d",
+            "Postscript",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootguihtml": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${GuiHtml}",
+            "Gui",
+            "Core",
+            "Rint",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "MathCore"
+        ]
+    },
+    "roothistmatrix": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "roothtml": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${Html}",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootinteractive": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Gui",
+            "Core",
+            "Rint",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "MathCore"
+        ]
+    },
+    "rootmath": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}",
+            "${GSL_INCLUDE_DIR}"
+        ],
+        "links": [
+            "gsl",
+            "GenVector",
+            "MathMore",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootmathcore": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootminuit": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Minuit",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootminuit2": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Minuit2",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootmlp": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "MLP",
+            "TreePlayer",
+            "Graf3d",
+            "Postscript",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootphysics": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Physics",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootpy": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "PyROOT",
+            "TreePlayer",
+            "Graf3d",
+            "Postscript",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootrflx": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Core"
+        ]
+    },
+    "rootrgl": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "TreePlayer",
+            "Graf3d",
+            "Postscript",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore",
+            "RGL",
+            "Gui",
+            "Core",
+            "Rint"
+        ]
+    },
+    "rootrint": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Core",
+            "Rint"
+        ]
+    },
+    "rootrio": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Core",
+            "RIO"
+        ]
+    },
+    "rootsmatrix": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Smatrix",
+            "Core"
+        ]
+    },
+    "rootspectrum": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Spectrum",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore"
+        ]
+    },
+    "rootthread": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Thread",
+            "Core",
+            "RIO"
+        ]
+    },
+    "roottmva": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "TMVA",
+            "Minuit",
+            "Gpad",
+            "Graf",
+            "Hist",
+            "Matrix",
+            "Tree",
+            "Net",
+            "Thread",
+            "RIO",
+            "Core",
+            "MathCore",
+            "MLP",
+            "z"
+        ]
+    },
+    "rootxmlio": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Core",
+            "RIO",
+            "XMLIO"
+        ]
+    },
+    "sherpa": {
+        "includes": [
+            "${SHERPA_INCLUDE_DIR}"
+        ],
+        "links": [
+            "SherpaMain",
+            "ToolsMath",
+            "ToolsOrg"
+        ]
+    },
+    "sigcpp": {
+        "find": [
+            "SIGCPP"
+        ],
+        "includes": [
+            "${SIGCPP_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${SIGCPP_LIBRARY}"
+        ]
+    },
+    "sockets": {
+        "includes": [
+            "/usr/include"
+        ],
+        "links": [
+            "nsl",
+            "crypt",
+            "dl",
+            "rt"
+        ]
+    },
+    "tauola": {
+        "includes": [
+            "${TAUOLA_INCLUDE_DIR}"
+        ],
+        "links": [
+            "pretauola",
+            "tauola"
+        ]
+    },
+    "tauolapp": {
+        "includes": [
+            "${TAUOLAPP_INCLUDE_DIR}"
+        ],
+        "links": [
+            "TauolaCxxInterface",
+            "TauolaFortran",
+            "TauolaTauSpinner"
+        ]
+    },
+    "tbb": {
+        "find": [
+            "TBB"
+        ],
+        "includes": [
+            "${TBB_INCLUDE_DIRS}"
+        ],
+        "links": [
+            "${TBB_LIBRARIES}"
+        ]
+    },
+    "tcmalloc_minimal": {
+        "includes": [
+            "${TCMALLOC_INCLUDE_DIR}"
+        ],
+        "links": [
+            "tcmalloc_minimal"
+        ]
+    },
+    "tensorflow-cc": {
+        "includes": [
+            "${TENSORFLOWCC_INCLUDE_DIR}"
+        ],
+        "links": [
+            "tensorflow_cc"
+        ]
+    },
+    "thepeg": {
+        "includes": [
+            "${THEPEG}"
+        ],
+        "links": [
+            "ThePEG",
+            "LesHouches"
+        ]
+    },
+    "thread": {
+        "links": [
+            "thread"
+        ]
+    },
+    "tinyxml": {
+        "find": [
+            "TINYXML"
+        ],
+        "includes": [
+            "${TINYXML_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${TINYXML_LIBRARY}"
+        ]
+    },
+    "tkonlineswdb": {
+        "includes": [
+            "${TKONLINESWDB_LINCLUDE_DIR}"
+        ],
+        "links": [
+            "DeviceDescriptions",
+            "Fed9UDeviceFactory",
+            "clntsh",
+            "cms_oracleocci_abi_hack",
+            "ICUtils",
+            "Fed9UUtils"
+        ]
+    },
+    "utm": {
+        "includes": [
+            "${UTM_INCLUDE_DIR}"
+        ],
+        "links": [
+            "tmeventsetup",
+            "tmtable",
+            "tmxsd",
+            "tmgrammar",
+            "tmutil"
+        ]
+    },
+    "valgrind": {},
+    "vdt": {
+        "includes": [
+            "${VDT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "vdt"
+        ]
+    },
+    "vdt_headers": {
+        "includes": [
+            "${VDT_INCLUDE_DIR}"
+        ]
+    },
+    "vincia": {
+        "includes": [
+            "${VINCIA_INCLUDE_DIR}"
+        ],
+        "links": [
+            "vincia",
+            "VinciaMG4",
+            "VinciaMG5"
+        ]
+    },
+    "x11": {
+        "links": [
+            "x11"
+        ]
+    },
+    "xerces-c": {
+        "find": [
+            "XercesC"
+        ],
+        "includes": [
+            "${XERCESC_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${XERCESC_LIBRARIES}"
+        ]
+    },
+    "xrootd": {
+        "includes": [
+            "${XROOTD_INCLUDE_DIR}"
+        ],
+        "links": [
+            "XrdClient",
+            "XrdUtils"
+        ]
+    },
+    "xz": {
+        "includes": [
+            "${XZ_INCLUDE_DIR}"
+        ],
+        "links": [
+            "lzma"
+        ]
+    },
+    "yoda": {
+        "include": [
+            "${YODA_INCLUDE_DIR}"
+        ],
+        "links": [
+            "YODA"
+        ]
+    },
+    "zlib": {
+        "includes": [
+            "${ZLIB_INCLUDE_DIR}"
+        ],
+        "links": [
+            "z"
+        ]
+    }
 }
