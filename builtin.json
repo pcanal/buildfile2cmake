@@ -548,7 +548,6 @@
         ],
         "links": [
             "G4analysis",
-            "G4clhep",
             "G4digits_hits",
             "G4error_propagation",
             "G4event",
@@ -563,7 +562,6 @@
             "G4materials",
             "G4modeling",
             "G4OpenGL",
-            "G4OpenInventor",
             "G4parmodels",
             "G4particles",
             "G4persistency",
@@ -587,7 +585,6 @@
         ],
         "links": [
             "G4analysis",
-            "G4clhep",
             "G4digits_hits",
             "G4error_propagation",
             "G4event",
@@ -602,7 +599,6 @@
             "G4materials",
             "G4modeling",
             "G4OpenGL",
-            "G4OpenInventor",
             "G4parmodels",
             "G4particles",
             "G4persistency",
@@ -626,7 +622,6 @@
         ],
         "links": [
             "G4analysis",
-            "G4clhep",
             "G4digits_hits",
             "G4error_propagation",
             "G4event",
@@ -641,7 +636,6 @@
             "G4materials",
             "G4modeling",
             "G4OpenGL",
-            "G4OpenInventor",
             "G4parmodels",
             "G4particles",
             "G4persistency",
