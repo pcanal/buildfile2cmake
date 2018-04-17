@@ -885,6 +885,7 @@
     },
     "oracle": {
         "includes": [
+            "${OCCI_INCLUDE_DIR}",
             "${ORACLE_INCLUDE_DIR}"
         ],
         "links": [

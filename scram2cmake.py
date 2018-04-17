@@ -481,6 +481,8 @@ class CMakeGenerator:
     def handle_target(self, target):
         output_path = target.dir + os.sep + "CMakeLists.txt"
         output_file = open(output_path, "a")
+        output_file.write("include_directories(${CMAKE_SOURCE_DIR})\n")
+        output_file.write("include_directories(/usr/include/)\n")
         self.generate_target(target, output_file)
         output_file.close()
 
@@ -494,8 +496,6 @@ class CMakeGenerator:
 
         output_file = open(output_path, "w")
 
-        output_file.write("include_directories(${CMAKE_SOURCE_DIR})\n")
-        output_file.write("include_directories(/usr/include/)\n")
         if len(module.binaries) != 0:
             output_file.write("add_subdirectory(bin)\n")
         if len(module.tests) != 0:
