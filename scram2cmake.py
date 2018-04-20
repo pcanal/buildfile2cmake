@@ -318,6 +318,10 @@ class ScramProject:
             if "find" in value:
                 m.finds |= set(value["find"])
 
+            if "cxx_flags" in value:
+                m.cxx_flags += " "
+                m.cxx_flags += value["cxx_flags"]
+
             self.add_target(m)
 
     def __init__(self):
