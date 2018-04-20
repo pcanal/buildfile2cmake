@@ -7,26 +7,25 @@
             "CSCTrackFinderEmulation"
         ]
     },
-    "CoralBase": {
+    "coral":{
         "includes": [
             "${CORAL_INCLUDE_DIR}"
-        ],
+        ]
+    },
+    "CoralBase": {
+        "depends": ["coral"],
         "links": [
             "CoralBase"
         ]
     },
     "CoralCommon": {
-        "includes": [
-            "${CORAL_INCLUDE_DIR}"
-        ],
+        "depends": ["coral"],
         "links": [
             "CoralCommon"
         ]
     },
     "CoralKernel": {
-        "includes": [
-            "${CORAL_INCLUDE_DIR}"
-        ],
+        "depends": ["coral"],
         "links": [
             "CoralKernel"
         ]
@@ -192,9 +191,7 @@
         ]
     },
     "RelationalAccess": {
-        "includes": [
-            "${CORAL_INCLUDE_DIR}"
-        ],
+        "depends": ["coral"],
         "links": [
             "RelationalAccess"
         ]
@@ -370,6 +367,14 @@
         ],
         "links": [
             "classlib"
+        ]
+    },
+    "CLHEP": {
+        "includes": [
+            "${CLHEP_INCLUDE_DIR}"
+        ],
+        "links": [
+            "${CLHEP_MAIN_LIBRARY}"
         ]
     },
     "clhep": {
@@ -653,6 +658,14 @@
             "G4VRML"
         ]
     },
+    "Gpad": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": [
+            "Gpad"
+        ]
+    },
     "gpad": {
         "includes": [
             "${ROOT_INCLUDE_DIR}"
@@ -879,7 +892,6 @@
     },
     "oracle": {
         "includes": [
-            "${OCCI_INCLUDE_DIR}",
             "${ORACLE_INCLUDE_DIR}"
         ],
         "links": [
@@ -887,13 +899,14 @@
         ]
     },
     "oracleocci": {
+        "depends": [
+            "oracle"
+        ],
         "includes": [
-            "${OCCI_INCLUDE_DIR}",
-            "${ORACLE_INCLUDE_DIR}"
+            "${OCCI_INCLUDE_DIR}"
         ],
         "links": [
-            "cms_oracleocci_abi_hack",
-            "clntsh"
+            "cms_oracleocci_abi_hack"
         ]
     },
     "photos": {
@@ -1017,6 +1030,8 @@
             "Core"
         ]
     },
+    "Root" : { "depends": ["rootcore"] },
+    "ROOT" : { "depends": ["rootcore"] },
     "rootcore": {
         "includes": [
             "${ROOT_INCLUDE_DIR}"
@@ -1282,6 +1297,12 @@
             "Core",
             "MathCore"
         ]
+    },
+    "Thread": {
+        "includes": [
+            "${ROOT_INCLUDE_DIR}"
+        ],
+        "links": ["Thread"]
     },
     "rootminuit2": {
         "includes": [
@@ -1578,7 +1599,17 @@
             "${TINYXML_LIBRARY}"
         ]
     },
+    "tkonlinesw": {
+        "cxx_flags": [
+            "-DCMS_TK_64BITS"
+        ]
+    },
     "tkonlineswdb": {
+        "depends": [
+            "tkonlinesw",
+            "occi",
+            "oracle"
+        ],
         "includes": [
             "${TKONLINESWDB_INCLUDE_DIR}"
         ],
@@ -1589,8 +1620,7 @@
             "cms_oracleocci_abi_hack",
             "ICUtils",
             "Fed9UUtils"
-        ],
-        "cxx_flags": "-DCMS_TK_64BITS"
+        ]
     },
     "utm": {
         "includes": [

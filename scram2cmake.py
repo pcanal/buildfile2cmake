@@ -293,7 +293,7 @@ class ScramTargetBase(object):
         # True iff this executable is a test that should be executed.
         self.is_test = False
         self.libs = set()
-        self.cxx_flags = ""
+        self.cxx_flags = set()
         self.defines = ""
         self.ld_flags = ""
         self.edm_plugin = False
@@ -309,15 +309,17 @@ class ScramTargetBase(object):
         
     def link_dependencies(self):
         for forward in self.forwards:
-            self.libs |= self.project.get_target(forward).libs
-            self.include_dirs |= self.project.get_target(forward).include_dirs
-            self.finds |= self.project.get_target(forward).finds
-
+            forward=forward.lstrip().rstrip()
+            try:
+                dep_target = self.project.get_target(forward)
+                self.dependencies.add(dep_target)
+            except IOError as e:
+                print('Warning: Dependency "' + forward + '" not found!')
         for dependency in self.dependencies_by_name:
             dependency=dependency.lstrip().rstrip()
             try:
-                target = self.project.get_target(dependency)
-                self.dependencies.add(target)
+                dep_target = self.project.get_target(dependency)
+                self.dependencies.add(dep_target)
             except IOError as e:
                 print('Warning: Dependency "' + dependency + '" not found!')
                 
@@ -330,8 +332,11 @@ class ScramTargetBase(object):
             self.include_dirs |= dependency.include_dirs
             self.needed_libs |= dependency.libs
             self.finds |= dependency.finds
+            self.cxx_flags |= dependency.cxx_flags
             if self.is_virtual():
                 self.libs |= dependency.libs
+
+
 
 
     def built_by_cmake(self):
@@ -367,8 +372,7 @@ class ScramModuleLibrary(ScramTargetBase):
             if child.tag == "flags":
                 for key, value in child.attrib.items():
                     if "CXXFLAGS" == key or "cppflags" == key or "CPPFLAGS" == key:
-                        self.cxx_flags += " " + value
-                        self.cxx_flags = self.cxx_flags.strip()
+                        self.cxx_flags |= set(value.split())
                     elif "CPPDEFINES" == key:
                         self.defines += " -D" + value
                         self.defines = self.defines.strip()
@@ -441,7 +445,7 @@ class ScramTarget(ScramTargetBase):
             assert len(self.source_files) == 1
             self.name = self.source_files[0].split(".")[0]
 
-        self.symbol = self.name
+        self.symbol = self.name.replace("/", "").replace("-", "")
 
         if node.tag == "bin":
             self.is_executable = True
@@ -516,8 +520,8 @@ class ScramProject:
         for key, value in builtins.items():
             m = ScramTargetBase()
             m.name = key
+            m.target = key
             m.external = True
-
             if "includes" in value:
                 m.include_dirs |= set(value["includes"])
 
@@ -525,19 +529,13 @@ class ScramProject:
                 m.forwards |= set(value["depends"])
 
             if "links" in value:
-                for l in value["links"]:
-                    if l.startswith("r:"):
-                        found_libs = glob.glob(l[2:])
-                        m.libs |= set(found_libs)
-                    else:
-                        m.libs.add(l)
+                m.libs |= set(value["links"])
 
             if "find" in value:
                 m.finds |= set(value["find"])
 
             if "cxx_flags" in value:
-                m.cxx_flags += " "
-                m.cxx_flags += value["cxx_flags"]
+                m.cxx_flags |= set(value["cxx_flags"])
 
             self.add_target(m)
 
@@ -553,10 +551,9 @@ class ScramProject:
         self.init_builtin()
 
     def get_target(self, name):
-        if name.lower() in self.targets:
-            return self.targets[name.lower()]
-        if name.replace("/", "").replace("-", "") in self.targets:
-            return self.targets[name.replace("/", "").replace("-", "")]
+        key = name.lstrip().rstrip()
+        if key in self.targets:
+            return self.targets[key]
         print('Could\'t find target: "' + name + '"')
         raise IOError()
 
@@ -575,7 +572,8 @@ class ScramProject:
     def add_target(self, target):
         assert isinstance(target, ScramTargetBase)
         target.project = self
-        self.targets[target.name.lower()] = target
+        key = target.name.lstrip().rstrip()
+        self.targets[key] = target
 
     # During parsing each target only knows other targets (e.g. dependencies)
     # by name. This will resolve all those names to actual references to those
@@ -660,9 +658,9 @@ class CMakeGenerator:
                 out.write("include_directories(" + target.symbol +
                                 " PUBLIC " + dir + ")\n")
             
-            if len(target.cxx_flags) != 0:
-                out.write("target_compile_options(" + target.symbol
-                          + " PUBLIC " + target.cxx_flags + ")\n")
+            if target.cxx_flags:
+                out.write("target_compile_options(" + target.symbol +
+                           " PUBLIC " + " ".join(sorted(target.cxx_flags)) + ")\n")
 
             if len(target.ld_flags.strip()) != 0:
                 out.write("# Manually defined LD_FLAGS\n")
@@ -681,13 +679,13 @@ class CMakeGenerator:
             else:
                 out.write("install( TARGETS ") 
                 out.write(target.symbol)
-                out.write(" EXPORT ")
-                out.write(target.symbol)
                 out.write(" DESTINATION ")
                 if target.is_executable:
                     out.write(" bin ")
                 else:
                     out.write(" lib ")
+                out.write(" EXPORT cmssw:")
+                out.write(target.symbol)
                 out.write(")\n\n")
 
         if target.has_dictionary():
@@ -1025,7 +1023,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 
