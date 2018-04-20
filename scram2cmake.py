@@ -224,7 +224,7 @@ def get_files(node, base_dir):
     for file in files:
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
-        result += glob.glob(file, recursive=True)
+        result += glob.glob(file)
         os.chdir(cwd_bak)
 
     for child_node in node:
@@ -271,6 +271,7 @@ class ScramTargetBase(object):
         # Paths to the source files that should be compiled
         # to generate this target.
         self.source_files = []
+        self.classes_h = []
         # Unique name of this target.
         self.name = None
         # CMake-friendly name that is alphanumeric with '_'
@@ -318,7 +319,7 @@ class ScramTargetBase(object):
                 target = self.project.get_target(dependency)
                 self.dependencies.add(target)
             except IOError as e:
-                print("Warning: Dependency " + dependency + " not found!")
+                print('Warning: Dependency "' + dependency + '" not found!')
                 
     def link(self):
         if self.was_linked:
@@ -332,14 +333,19 @@ class ScramTargetBase(object):
             if self.is_virtual():
                 self.libs |= dependency.libs
 
+
+    def built_by_cmake(self):
+        return not self.is_virtual() and self.has_dictionary() and not self.external
+
+
+    def has_source(self):
+        return len(self.source_files) !=0
+
     def is_virtual(self):
         return len(self.source_files) == 0
 
     def has_dictionary(self):
         return not len(self.classes_h) == 0
-
-    def built_by_cmake(self):
-        return not self.is_virtual() and not self.external
 
 
 def get_lib_or_name_attr(node):
@@ -398,34 +404,30 @@ class ScramModuleLibrary(ScramTargetBase):
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
         base_glob = "src/*"
+        
+        self.source_files = glob.glob(base_glob+".cc")
+        self.source_files += glob.glob(base_glob+".cpp")
+        self.source_files += glob.glob(base_glob+".cxx")
+        self.source_files += glob.glob(base_glob+".c")
+        self.source_files += glob.glob(base_glob+".C")
+
         if self.add_subdir:
             base_glob = "src/**/*"
-        
-        self.source_files = glob.glob(base_glob+".cc", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".cpp", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".cxx", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".c", recursive=self.add_subdir)
-        self.source_files += glob.glob(base_glob+".C", recursive=self.add_subdir)
-
-        for s in self.source_files:
-            if s.endswith("src/ReferenceTrajectory.cc"):
-                self.source_files.remove(s)
-                break
-
-        if os.path.isfile("src/classes.h") and not noLink:
-            classes_xml = None
-            classes_h = os.path.realpath("src/classes.h")
-            if os.path.isfile("src/classes_def.xml"):
-                classes_xml = os.path.realpath("src/classes_def.xml")
-            self.root_dict = RootDict(classes_h, classes_xml)
-            self.source_files.append("${CMAKE_BINARY_DIR}/" + self.root_dict.cpp_file)
+            self.source_files += glob.glob(base_glob+".cc")
+            self.source_files += glob.glob(base_glob+".cpp")
+            self.source_files += glob.glob(base_glob+".cxx")
+            self.source_files += glob.glob(base_glob+".c")
+            self.source_files += glob.glob(base_glob+".C")
+        self.classes_h = glob.glob("src/classes*.h")
         
 
         os.chdir(cwd_bak)
 
-        if not self.is_virtual():
+        if self.has_source():
             self.libs.add(self.symbol)
-
+         
+        if self.has_dictionary():
+            self.libs.add(self.symbol)
 
 class ScramTarget(ScramTargetBase):
     def __init__(self, node, base_dir):
@@ -836,11 +838,11 @@ class CMakeGenerator:
 
     def get_headers(self, path):
         result = set()
-        result |= set(glob.glob(path + "**/*.h", recursive=True))
-        result |= set(glob.glob(path + "**/*.hh", recursive=True))
-        result |= set(glob.glob(path + "**/*.hpp", recursive=True))
-        result |= set(glob.glob(path + "**/*.icc", recursive=True))
-        result |= set(glob.glob(path + "**/*.inc", recursive=True))
+        result |= set(glob.glob(path + "**/*.h"))
+        result |= set(glob.glob(path + "**/*.hh"))
+        result |= set(glob.glob(path + "**/*.hpp"))
+        result |= set(glob.glob(path + "**/*.icc"))
+        result |= set(glob.glob(path + "**/*.inc"))
 
         for s in list(result):
             if s.endswith("/classes.h"):
