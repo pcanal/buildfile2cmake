@@ -44,6 +44,10 @@ module "stl" {
     export *
     header "chrono"
   }
+  //module "stdlib.h" {
+  //  export *
+  //  header "stdlib.h"
+  //}
   module "cinttypes" {
     export *
     header "cinttypes"
@@ -66,7 +70,7 @@ module "stl" {
   }
   module "complex" {
     export *
-    header "complex"
+    textual header "complex"
   }
   module "complex.h" {
     export *
@@ -108,10 +112,13 @@ module "stl" {
     export *
     header "cstdio"
   }
-  module "cstdlib" {
-    export *
-    header "cstdlib"
-  }
+  // builtin modules seem to include this
+  // and this in turn includes builtin module.
+  // So let's get this from the modulemap.
+  //module "cstdlib" {
+  //  export *
+  //  header "cstdlib"
+  //}
   module "cstring" {
     export *
     header "cstring"
@@ -124,10 +131,6 @@ module "stl" {
     export *
     header "ctime"
   }
-//  module "ctype.h" {
-//    export *
-//    header "ctype.h"
-//  }
   module "cwchar" {
     export *
     header "cwchar"
@@ -168,15 +171,6 @@ module "stl" {
     export *
     header "future"
   }
-/*  module "hash_map" {
-    export *
-    header "hash_map"
-  }
-  module "hash_set" {
-    export *
-    header "hash_set"
-  }
-  */
   module "initializer_list" {
     export *
     header "initializer_list"
@@ -197,10 +191,6 @@ module "stl" {
     export *
     header "iostream"
   }
-//  module "iostream.h" {
-//    export *
-//    header "iostream.h"
-//  }
   module "istream" {
     export *
     header "istream"
@@ -221,18 +211,10 @@ module "stl" {
     export *
     header "locale"
   }
-//  module "locale.h" {
-//    export *
-//    header "locale.h"
-//  }
   module "map" {
     export *
     header "map"
   }
-//  module "math.h" {
-//    export *
-//    header "math.h"
-//  }
   module "memory" {
     export *
     header "memory"
@@ -277,10 +259,6 @@ module "stl" {
     export *
     header "set"
   }
-//  module "setjmp.h" {
-//    export *
-//    header "setjmp.h"
-//  }
   module "sstream" {
     export *
     header "sstream"
@@ -301,18 +279,10 @@ module "stl" {
     export *
     header "string"
   }
-//  module "string.h" {
-//    export *
-//    header "string.h"
- // }
   module "system_error" {
     export *
     header "system_error"
   }
-//  module "tgmath.h" {
-//    export *
-//    header "tgmath.h"
-//  }
   module "thread" {
     export *
     header "thread"
@@ -353,10 +323,6 @@ module "stl" {
     export *
     header "vector"
   }
-  //module "experimental/algorithm" {
-  //  export *
-  //  header "experimental/algorithm"
-  //}
   module "ext/functional" {
     export *
     header "ext/functional"

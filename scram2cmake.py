@@ -1,17 +1,8 @@
 #!/usr/bin/env python
 
-import os, glob, shutil, sys
+import os, glob, shutil, sys, subprocess, re
 import xml.etree.ElementTree as ET
 import json
-import fnmatch, re
-
-def find_files(directory, pattern):
-    for root, dirs, files in os.walk(directory):
-        for basename in files:
-            if fnmatch.fnmatch(basename, pattern):
-                filename = os.path.join(root, basename)
-                yield filename
-
 
 # The directory of the current SCRAM project.
 prefix = os.getcwd() + os.sep
@@ -23,6 +14,177 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 # Options for enabling/disabling cxxmodules
 cxxmodules = False
 perHeaderModules = False
+printTextualHeaders = False
+noLink = False
+
+allPCMTargets = []
+
+ignored_headers = [
+  # CMS things
+  "DataFormats/Common/interface/AssociativeIterator.h",
+  "DataFormats/Math/interface/AVXVec.h", # Can't be used alone, needs Vec4 definition.
+  "GeneratorInterface/Core/interface/RNDMEngineAccess.h", # Obsolete header DONE
+  "GeneratorInterface/Pythia8Interface/interface/RandomP8.h", # Obsolete header
+  "Geometry/Records/interface/GeometricDetExtraRcd.h", # Obsolete header
+  "DataFormats/RecoCandidate/interface/RecoPFClusterRefCandidate.h", # Obsolete header DONE
+  "DataFormats/RecoCandidate/interface/RecoPFClusterRefCandidateFwd.h", #Obsolete header DONE
+  "SimDataFormats/TrackingAnalysis/interface/TrackingDataPrint.h", # Really old code that doesn't compile anymore.
+  "CondFormats/Calibration/interface/EfficiencyPayloads.h", # Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICSimpleNavigationSchool.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICMuonPropagator.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HITrackVertexMaker.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICMeasurementEstimator.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICSeedMeasurementEstimator.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/FmpConst.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICTrajectoryBuilder.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICMuonUpdator.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICTrajectoryCorrector.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/DiMuonSeedGeneratorHIC.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/FastMuPropagator.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICConst.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICTkOuterStartingLayerFinder.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/DiMuonTrajectorySeed.h", #Obsolete header
+  "RecoHI/HiMuonAlgos/interface/HICFTSfromL1orL2.h", #Obsolete header
+  "CommonTools/Utils/src/CandForTest.h", # Doesn't have header guards....
+  "Geometry/TrackerGeometryBuilder/interface/GeomDetLess.h", #Obsolete header
+  "Geometry/TrackerGeometryBuilder/interface/GluedGeomDet.h", #Obsolete header
+  "CondFormats/GeometryObjects/interface/GeometryFile.h", #Obsolete header
+  "TrackingTools/MeasurementDet/interface/GeometricSearchDetMeasurements.h", #Obsolete header
+  "TrackingTools/TrajectoryFiltering/interface/BaseCkfTrajectoryFilter.h", #Obsolete header
+  "FastSimulation/Utilities/interface/RandomEngine.h", #Obsolete header
+  "RecoMuon/MuonIsolation/interface/MuIsoExtractor.h", #Obsolete header
+  "RecoMuon/MuonIsolation/interface/MuIsoExtractorFactory.h", #Obsolete header
+  "RecoPixelVertexing/PixelTriplets/interface/CombinedHitTripletGenerator.h", #Obsolete header
+  "CondFormats/DTObjects/interface/DTCompactMapAbstractHandler.h", #Obsolete header
+  "CondFormats/DTObjects/interface/DTConfigAbstractHandler.h", #Obsolete header
+
+  "L1TriggerConfig/GMTConfigProducers/interface/GTRecordGroup.h", #Does funny template stuff
+
+  "L1Trigger/RegionalCaloTrigger/interface/L1GctRegion.h", # Is doing funny C++ things
+
+  "CondTools/SiPixel/interface/PixelPopConDCSSourceHandler.h", #References nonexistent file
+
+  "CommonTools/ParticleFlow/interface/TopProjectors.h", # Is doing strange template things.
+
+  "CondCore/DTPlugins/interface/DTConfigPluginHandler.h", #Obsolete header
+
+  "PhysicsTools/UtilAlgos/interface/AdHocNTupler.h", #includes nonexistent file
+
+  "CondCore/DTPlugins/interface/DTCompactMapPluginHandler.h", #Obsolete header
+
+  "CommonTools/CandAlgos/interface/CandDecaySelector.h", # Specializes StoreManagerTrait in CommonTools/CandAlgos/interface/CandDecaySelector.h:47
+#In module 'CMS_CommonToolsUtilAlgos' imported from /home/teemperor/cms/cmssw/CommonTools/CandAlgos/interface/CandCombiner.h:23:
+#/home/teemperor/cms/cmssw/CommonTools/UtilAlgos/interface/ObjectSelector.h:35:46: error: missing '#include "CommonTools/CandAlgos/interface/CandDecaySelector.h"'; #definition of
+#      'StoreManagerTrait<reco::CandidateCollection, EdmFilter>' must be imported from module 'CMS_CommonToolsCandAlgos.CandDecaySelector.h' before it is required
+#         typename StoreManager = typename ::helper::StoreManagerTrait<OutputCollection, edm::EDFilter>::type,
+#                                                    ^
+#/home/teemperor/cms/cmssw/CommonTools/CandAlgos/interface/ObjectShallowCloneSelector.h:15:43: note: in instantiation of default argument for 'ObjectSelector<type-#parameter-0-0,
+#      edm::OwnVector<reco::Candidate, edm::ClonePolicy<reco::Candidate> >, type-parameter-0-1, helper::NullPostProcessor<edm::OwnVector<reco::Candidate, #edm::ClonePolicy<reco::Candidate> >,
+#      edm::EDFilter> >' required here
+#class ObjectShallowCloneSelector : public ObjectSelector<Selector, reco::CandidateCollection, SizeSelector> {
+#                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#/home/teemperor/cms/cmssw/CommonTools/CandAlgos/interface/CandDecaySelector.h:47:10: note: previous definition is here
+#  struct StoreManagerTrait<reco::CandidateCollection, EdmFilter> {
+#         ^
+
+
+  "RecoLocalCalo/EcalRecAlgos/interface/EcalSeverityLevelService.h", # References EcalSeverityLevel which doesn't seem to exist
+
+  "DataFormats/GeometrySurface/interface/SimpleConeBounds.h", #Calls tmp.inside(p) but that usually takes also a LocalError parameter
+  "RecoVertex/KinematicFitPrimitives/interface/KinematicVertexDistance.h", #Includes nonexistent file
+  "PhysicsTools/UtilAlgos/interface/StoreManagerTrait.h", #Redefines ObjectSelectorBase, CommonTools/UtilAlgos/interface/StoreManagerTrait.h
+  "PhysicsTools/UtilAlgos/interface/BasicFilter.h", #Uses the "vitrual" keyword, that has yet 'to be understood'..., DONE
+  "PhysicsTools/UtilAlgos/interface/AdHocNTupler.h", #Includes nonexistent file
+  "PhysicsTools/HepMCCandAlgos/interface/MCTruthCompositeMatcher.h", # Includes nonexistend file
+  "L1Trigger/CSCTrackFinder/interface/CSCTFSPCoreLogic.h", #Includes missing generated code
+  "L1Trigger/CSCTrackFinder/interface/CSCTFSectorProcessor.h", #Includes header above
+  "RecoVertex/MultiVertexFit/interface/LinPtFinderFromAdaptiveFitter.h", #Includes nonexistent file
+  "CommonTools/RecoAlgos/interface/PixelMatchGsfElectronSelector.h", # Obsolete file
+  "CommonTools/UtilAlgos/interface/ObjectCounter.h", #Includes nonexistent file
+  "PhysicsTools/CandUtils/interface/CandMatcher.h", #Not even valid core anymore, has std;:vector instead of::... DONE
+  "CommonTools/RecoAlgos/interface/PixelMatchGsfElectronSelector.h", #Includes nonexistent file
+  "TrackingTools/GsfTools/interface/RCMultiGaussianState.h", #Obsolete code
+  "CommonTools/RecoAlgos/interface/PhotonSelector.h", #Does funny things with unique_ptr copying around..
+  "PhysicsTools/IsolationUtils/interface/TauConeIsolationAlgo.h", #Includes nonexistent header
+  "CommonTools/CandAlgos/interface/NamedCandCombiner.h", #Includes nonexistent header
+  "CommonTools/CandUtils/interface/NamedCandCombiner.h", # Constructor doesn't work
+  "TrackingTools/GsfTools/interface/KeepingNonZeroWeightsMerger.h", #Includes nonexistent file
+  "Mixing/Base/interface/PoissonPUGenerator.h", # calls non-static member function  without object CLHEP::RandPoissonQ
+  "RecoVertex/KinematicFitPrimitives/interface/KinematicVertexAssociator.h", #includes nonexistent header
+
+  "CommonTools/Utils/src/CutBinaryOperatorSetter.h", #includes below header
+  "CommonTools/Utils/src/CutBinaryOperator.h", #includes nonexistend CutBase.h
+
+  "TrackingTools/TrackFitters/interface/DebugHelpers.h", # textual header
+
+  "MagneticField/VolumeGeometry/interface/PlanarVolumeBoundary.h", # Includes nonexisent file: MagneticField/MagVolumeGeometry/interface/BoundaryPlane.h
+
+  "DataFormats/SiPixelDigi/interface/PixelDigifwd.h", # Forward delcares a nested class?
+
+  "DataFormats/FEDRawData/interface/DaqData.h", # Completely broken
+
+  "CaloOnlineTools/HcalOnlineDb/interface/LMap.h", #Includes boost/boost::shared_ptr ...
+
+  "RecoEcal/EgammaClusterProducers/interface/PiZeroDiscriminatorProducer.h", # Redefines a symbol
+  "DQM/SiStripCommissioningDbClients/interface/SamplingHistosUsingDb.h", #Does inheritance wrong
+
+  "SimTracker/TrackHistory/interface/TrackClassifierByProxy.h", #Uses nonexistent TrackClassifier constructor
+
+  "TrackingTools/GsfTracking/src/DebugHelpers.h", #Broken code?
+
+  "DataFormats/GeometryCommonDetAlgo/interface/DeepCopyPointer.h", # Cycle DataFormats/GeometryCommonDetAlgo - DataFormats/GeometrySurface
+  "DataFormats/GeometryCommonDetAlgo/interface/ErrorMatrixTag.h", # Cycle DataFormats/GeometryCommonDetAlgo - DataFormats/GeometrySurface
+
+  "CommonTools/CandAlgos/interface/CloneProducer.h", #Invalid code, funny unique_ptr copying going on...
+  "RecoEcal/EgammaClusterAlgos/interface/LogPositionCalc.h", #Uses EcalRecHitData which does no longer exist
+  "TrackingTools/GsfTools/src/GaussianStateLessWeight.h", # Redefines class
+  "CommonReco/GSFTools/interface/KeepingNonZeroWeightsMerger.h", #Uses template class without template args
+  "TrackingTools/GsfTools/interface/LargestWeightsStateMerger.h", #Same as above
+  "TrackingTools/GsfTools/interface/MahalanobisDistance.h", #Same as above
+  "TrackingTools/GsfTools/interface/MultiTrajectoryStateCombiner.h", #Invalid and obsolete header... DONE
+
+  "PhysicsTools/IsolationUtils/interface/CalIsolationAlgoNoExp.h", # Includes nonexistent stuff
+  "PhysicsTools/IsolationAlgos/interface/CalIsolationNoExtrapol.h", #includes above header
+
+  "ElectroWeakAnalysis/ZMuMu/interface/SmoothStepFunction.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuMuBack.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuMuBackNorm.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuMuFunction.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuMuNormalBack.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuMuScaledFunction.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuStandaloneFunction.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuStandaloneScaledFunction.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuTrackFunction.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuTrackScaledFunction.h", # Ingoring ZMuMu, totally broken
+  "ElectroWeakAnalysis/ZMuMu/interface/ZMuTrackScaledNormalBack.h", # Ingoring ZMuMu, totally broken
+
+  "DetectorDescription/Core/interface/graph_path.h", # Broken code?
+  "RecoTracker/Record/interface/Records.h", # Seems to be broken...
+  "CommonTools/UtilAlgos/interface/ChargeSelector.h", # I don't even know. Seems really broken...
+  "MagneticField/VolumeGeometry/interface/PlanarVolumeBoundary.h", #REferences unknown classes...
+  "PhysicsTools/SelectorUtils/interface/Expressions.h", # Really broken meta-programming going on here...
+  "RecoVertex/LinearizationPointFinders/interface/GenericLinearizationPointFinder.h", # Uses template class as a non-template class...
+  "CondCore/PopCon/interface/VerifyState.h", # Includes nonexistent TagInfo.h
+  "TrackPropagation/RungeKutta/src/RK4PreciseSolver.h", # Includes nonexistent things
+  "Alignment/LaserAlignment/interface/LaserHitPairGenerator.h", # Copy constructor doesn't work here
+  "Alignment/LaserAlignment/interface/SeedGeneratorForLaserBeams.h", #Uses the header above and isn't used anywhere...
+  "MagneticField/VolumeGeometry/interface/MagneticFieldVolume.h", #Also doesn't compile. PositionType isn't define...
+  "CondFormats/Calibration/interface/bitObj.h", # Broken. I don't even know... DONE
+]
+textual_headers = [
+  "FWCore/Utilities/src/Guid.h",
+  "FWCore/Utilities/interface/Signal.h",
+  "FWCore/Framework/src/ProductResolvers.h",
+  "FWCore/Framework/src/UnscheduledAuxiliary.h",
+  "DataFormats/GeometryVector/interface/Basic3DVectorLD.h", # Different Basic3DVector templates that it depends on here...
+  "CondFormats/Serialization/src/SerializationManual.h", #Repeatedly included
+  "CondFormats/ESObjects/src/SerializationManual.h", #Repeatedly included
+  "CondFormats/PhysicsToolsObjects/src/SerializationManual.h", #Repeatedly included
+  "CondFormats/SiPixelObjects/interface/SerializationManual.h", #Repeatedly included
+  "CondFormats/SiPixelObjects/src/SerializationManual.h", #Repeatedly included
+  "CondFormats/Calibration/src/SerializationManual.h", #Repeatedly included
+  "CondFormats/EcalObjects/src/SerializationManual.h", #Repeatedly included
+]
 
 # Handle command line arguments
 for arg in sys.argv[1:]:
@@ -31,6 +193,10 @@ for arg in sys.argv[1:]:
         cxxmodules = True
     elif arg == "--modules":
         cxxmodules = True
+    elif arg == "-H":
+        printTextualHeaders = True
+    elif arg == "--nolink":
+        noLink = True
     else:
         print("Unknown arg: " + arg)
         exit(1)
@@ -58,7 +224,7 @@ def get_files(node, base_dir):
     for file in files:
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
-        result += glob.glob(file)
+        result += glob.glob(file, recursive=True)
         os.chdir(cwd_bak)
 
     for child_node in node:
@@ -69,6 +235,34 @@ def get_files(node, base_dir):
                     result.remove(to_remove)
     return result
 
+# WIP code....
+class RootDict:
+    def __init__(self, classes_h, classes_xml):
+        r = re.compile('[^a-zA-Z0-9_]')
+        self.unique_name = r.sub('', remove_prefix(classes_h))
+        self.cpp_file = self.unique_name + "_rflx.cpp"
+        self.classes_h = classes_h
+        self.classes_xml = classes_xml
+        
+    def cmake_target(self):
+        return self.unique_name
+    
+    def cmake_command(self):
+        classes_arg = ""
+        classes_dep = ""
+        if self.classes_xml != None:
+            classes_arg = " -s " + self.classes_xml
+            classes_dep = " " + self.classes_xml
+        
+        command = ("add_custom_command(\n"
+           "  OUTPUT ${CMAKE_BINARY_DIR}/" + self.cpp_file + "\n" +
+           "  COMMAND genreflex " + self.classes_h + " -I${CMAKE_SOURCE_DIR} " +
+              " -o ${CMAKE_BINARY_DIR}/" + self.cpp_file + classes_arg + "\n" +
+           "  DEPENDS " + self.classes_h + classes_dep + "\n" +
+           "  COMMENT \"Generating ROOT dict " + self.unique_name + "\")\n"
+              ) 
+        return command
+
 # Abstract base class for anything that can be built by SCRAM.
 class ScramTargetBase(object):
     def __init__(self):
@@ -77,7 +271,6 @@ class ScramTargetBase(object):
         # Paths to the source files that should be compiled
         # to generate this target.
         self.source_files = []
-        self.classes_h = []
         # Unique name of this target.
         self.name = None
         # CMake-friendly name that is alphanumeric with '_'
@@ -110,7 +303,9 @@ class ScramTargetBase(object):
         self.dir = ""
         self.module = None
         self.forwards = set()
-
+        self.was_linked = False
+        self.root_dict = None
+        
     def link_dependencies(self):
         for forward in self.forwards:
             self.libs |= self.project.get_target(forward).libs
@@ -123,21 +318,29 @@ class ScramTargetBase(object):
                 target = self.project.get_target(dependency)
                 self.dependencies.add(target)
             except IOError as e:
-                print('Warning: Dependency "' + dependency + '" not found!')
-
+                print("Warning: Dependency " + dependency + " not found!")
+                
+    def link(self):
+        if self.was_linked:
+            return
+        self.was_linked = True
         for dependency in self.dependencies:
+            dependency.link()
             self.include_dirs |= dependency.include_dirs
             self.needed_libs |= dependency.libs
             self.finds |= dependency.finds
+            if self.is_virtual():
+                self.libs |= dependency.libs
 
-    def has_source(self):
-        return not len(self.source_files) == 0
-
-    def built_by_cmake(self):
-        return self.has_source() and self.has_dictionary() and not self.external
+    def is_virtual(self):
+        return len(self.source_files) == 0
 
     def has_dictionary(self):
         return not len(self.classes_h) == 0
+
+    def built_by_cmake(self):
+        return not self.is_virtual() and not self.external
+
 
 def get_lib_or_name_attr(node):
     if "name" in node.attrib:
@@ -195,25 +398,32 @@ class ScramModuleLibrary(ScramTargetBase):
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
         base_glob = "src/*"
-        self.source_files = glob.glob(base_glob+".cc")
-        self.source_files += glob.glob(base_glob+".cpp")
-        self.source_files += glob.glob(base_glob+".cxx")
-        self.source_files += glob.glob(base_glob+".c")
-        self.source_files += glob.glob(base_glob+".C")
         if self.add_subdir:
             base_glob = "src/**/*"
-            self.source_files += glob.glob(base_glob+".cc")
-            self.source_files += glob.glob(base_glob+".cpp")
-            self.source_files += glob.glob(base_glob+".cxx")
-            self.source_files += glob.glob(base_glob+".c")
-            self.source_files += glob.glob(base_glob+".C")
-        self.classes_h = glob.glob("src/classes*.h")
+        
+        self.source_files = glob.glob(base_glob+".cc", recursive=self.add_subdir)
+        self.source_files += glob.glob(base_glob+".cpp", recursive=self.add_subdir)
+        self.source_files += glob.glob(base_glob+".cxx", recursive=self.add_subdir)
+        self.source_files += glob.glob(base_glob+".c", recursive=self.add_subdir)
+        self.source_files += glob.glob(base_glob+".C", recursive=self.add_subdir)
+
+        for s in self.source_files:
+            if s.endswith("src/ReferenceTrajectory.cc"):
+                self.source_files.remove(s)
+                break
+
+        if os.path.isfile("src/classes.h") and not noLink:
+            classes_xml = None
+            classes_h = os.path.realpath("src/classes.h")
+            if os.path.isfile("src/classes_def.xml"):
+                classes_xml = os.path.realpath("src/classes_def.xml")
+            self.root_dict = RootDict(classes_h, classes_xml)
+            self.source_files.append("${CMAKE_BINARY_DIR}/" + self.root_dict.cpp_file)
+        
+
         os.chdir(cwd_bak)
 
-        if self.has_source():
-            self.libs.add(self.symbol)
-         
-        if self.has_dictionary():
+        if not self.is_virtual():
             self.libs.add(self.symbol)
 
 
@@ -313,7 +523,12 @@ class ScramProject:
                 m.forwards |= set(value["depends"])
 
             if "links" in value:
-                m.libs |= set(value["links"])
+                for l in value["links"]:
+                    if l.startswith("r:"):
+                        found_libs = glob.glob(l[2:])
+                        m.libs |= set(found_libs)
+                    else:
+                        m.libs.add(l)
 
             if "find" in value:
                 m.finds |= set(value["find"])
@@ -366,6 +581,8 @@ class ScramProject:
     def resolve_dependencies(self):
         for target in self.targets.values():
             target.link_dependencies()
+        for target in self.targets.values():
+            target.link()
 
 # Takes a path to a BuildFile.xml and transforms it into an XML node.
 # Also does some preprocessing like handling global <use> tags...
@@ -412,6 +629,7 @@ class CMakeGenerator:
     # Writes the necessary CMake commands to generate the given target
     # to the given out stream (which needs to support a 'write' call).
     def generate_target(self, target, out):
+
         if target.has_dictionary():
            for clh in target.classes_h :
                cl = clh.replace('.h','')
@@ -478,7 +696,6 @@ class CMakeGenerator:
                name=target.symbol+part
                out.write('add_dependencies('+target.symbol+' '+name+'Gen)\n')
                out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)\n')
-
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
     # `handle_target` call to the same CMakeLists.txt.
@@ -515,6 +732,9 @@ class CMakeGenerator:
     def handle_subsystem(self, subsystem, subsystem_modules):
         subsystem_cmake = open(subsystem + os.sep + "CMakeLists.txt", "w")
         for module in subsystem_modules:
+            # FIXME: Another StaticAnalyzer check that is just an ugly hack...
+            if module.package == "StaticAnalyzers":
+                continue
             subsystem_cmake.write("add_subdirectory(" + module.package + ")\n")
 
         subsystem_cmake.write("\n\n")
@@ -614,6 +834,45 @@ class CMakeGenerator:
         if cxxmodules:
           self.gen_module_map()
 
+    def get_headers(self, path):
+        result = set()
+        result |= set(glob.glob(path + "**/*.h", recursive=True))
+        result |= set(glob.glob(path + "**/*.hh", recursive=True))
+        result |= set(glob.glob(path + "**/*.hpp", recursive=True))
+        result |= set(glob.glob(path + "**/*.icc", recursive=True))
+        result |= set(glob.glob(path + "**/*.inc", recursive=True))
+
+        for s in list(result):
+            if s.endswith("/classes.h"):
+                result.remove(s)
+                continue
+            if s.endswith("/headers.h"):
+                result.remove(s)
+                continue
+
+            for ignored in ignored_headers:
+                if s.endswith(ignored):
+                    result.remove(s)
+                    break
+
+        result = list(result)
+        result.sort()
+        
+        return result
+
+    def is_obsolete(self, path):
+        try:
+            content = open(path).read()
+            if '#error' in content and not "#if" in content:
+                print("Obsolete header ignored: " + path)
+                return True
+        except UnicodeDecodeError:
+            print("Failed to read header: " + path)
+            return False
+        return False
+
+    
+
     def gen_module_map(self):
         m = open("module.modulemap", "w")
         for module in self.project.modules:
@@ -622,18 +881,49 @@ class CMakeGenerator:
             dir_path = target.dir + "/interface/";
             if os.path.isdir(dir_path):
                 if not perHeaderModules:
-                    m.write("module \"" + target.symbol + "\" {\n")
-                    for file in os.listdir(dir_path):
+                    m.write("module CMS_" + target.symbol + " {\n")
+                    
+                    for file in self.get_headers(dir_path):
+                        if file in ignored_headers:
+                            continue
+                        if file.endswith("headers.h"):
+                            continue
+                        if self.is_obsolete(file):
+                            continue
                         if (file.endswith(".h") or
                             file.endswith(".hh") or
+                            file.endswith(".hpp") or
                             file.endswith(".icc") or
                             file.endswith(".inc")):
 
-                            full_path = dir_path + file;
-                            m.write("  ")
-                            if not (file.endswith(".h") or file.endswith(".hh")):
+                            full_path = file;
+                            module_name = full_path[len(dir_path):]
+                            
+                            m.write("  module \"" + module_name + "\" { ");
+                            if full_path in textual_headers or not (file.endswith(".h") or file.endswith(".hh") or file.endswith(".hpp")):
                                 m.write("textual ")
-                            m.write("header \"" + full_path + "\"\n")
+                            m.write("header \"" + full_path + "\" export * }\n")
+                    dir_path = target.dir + "/src/"
+                    internal_headers = self.get_headers(dir_path)
+                    if len(internal_headers) != 0 and False:
+                        m.write ("  // internal headers\n")
+                        for file in internal_headers:
+                            if file in ignored_headers:
+                                continue
+                            if self.is_obsolete(file):
+                                continue
+                            if (file.endswith(".h") or
+                                file.endswith(".hh") or
+                                file.endswith(".hpp") or
+                                file.endswith(".icc") or
+                                file.endswith(".inc")):
+
+                                full_path = file;
+                                # We could make them private in theory... m.write("  private ")
+                                m.write("  module \"" + full_path + "\" { ")
+                                if full_path in textual_headers or not (file.endswith(".h") or file.endswith(".hh") or file.endswith(".hpp")):
+                                    m.write("textual ")
+                                m.write("header \"" + full_path + "\" export * } \n")
                     m.write("  export *\n}\n\n")
                 else: # if per header modules
                     for file in os.listdir(target.dir + "/interface/"):
@@ -644,8 +934,8 @@ class CMakeGenerator:
                             "    header \"" + full_path + "\"\n" +
                             "    export *\n" +
                             "}\n\n"
-                            )
 
+                            )
 
         m.close()
         # Copy/create cxxmodule specific files in folder
@@ -660,11 +950,11 @@ class CMakeGenerator:
   { 'name': '/usr/include/', 'type': 'directory',
     'contents': [
       { 'name' : 'module.modulemap', 'type': 'file',
-        'external-contents': '""" + prefix + """boost.modulemap'
+        'external-contents': '""" + prefix + """system.modulemap'
       }
     ]
   },
-  { 'name': '/usr/include/c++/6.3.1/', 'type': 'directory',
+  { 'name': '/usr/include/c++/7.2.0/', 'type': 'directory',
     'contents': [
       { 'name' : 'module.modulemap', 'type': 'file',
         'external-contents': '""" + prefix + """stl.modulemap'
@@ -677,18 +967,29 @@ class CMakeGenerator:
                )
             m.close()
             shutil.copyfile(os.path.join(script_dir, "stl.modulemap"), "stl.modulemap")
-            shutil.copyfile(os.path.join(script_dir, "boost.modulemap"), "boost.modulemap")
+            shutil.copyfile(os.path.join(script_dir, "system.modulemap"), "system.modulemap")
 
     def gen(self):
-        self.gen_top_level()
         for module in self.project.modules:
             if self.handle_module(module):
                 for target in module.targets:
                     self.handle_target(target)
+        self.gen_top_level()
 
-
+# Dummy code in test normal dict generation doesn't work for some reason...
+def make_dicts():
+    for root, dirs, files in os.walk("."):
+        if root.endswith("/src") and  "classes.h" in files:
+            has_xml = ("classes_def.xml" in files)
+            command = "genreflex classes.h -I" + os.getcwd()
+            if has_xml:
+                command += " -s classes_def.xml"
+            print("Generating dict for " + root)
+            subprocess.call(command, shell=True, cwd=root)
 
 def main():
+    #make_dicts()
+
     # Create an empty ScramProject
     project = ScramProject()
 
