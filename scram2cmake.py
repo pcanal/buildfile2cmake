@@ -659,8 +659,7 @@ class CMakeGenerator:
                                 " PUBLIC " + dir + ")\n")
             
             if target.cxx_flags:
-                out.write("target_compile_options(" + target.symbol +
-                           " PUBLIC " + " ".join(sorted(target.cxx_flags)) + ")\n")
+                out.write('add_compile_options('+'"'+' '.join(sorted(target.cxx_flags))+'"' + ')\n')
 
             if len(target.ld_flags.strip()) != 0:
                 out.write("# Manually defined LD_FLAGS\n")
