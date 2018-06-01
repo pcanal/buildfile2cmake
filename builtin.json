@@ -15,19 +15,19 @@
     "CoralBase": {
         "depends": ["coral"],
         "links": [
-            "CoralBase"
+            "lcg_CoralBase"
         ]
     },
     "CoralCommon": {
         "depends": ["coral"],
         "links": [
-            "CoralCommon"
+            "lcg_CoralCommon"
         ]
     },
     "CoralKernel": {
         "depends": ["coral"],
         "links": [
-            "CoralKernel"
+            "lcg_CoralKernel"
         ]
     },
     "Core": {
@@ -193,7 +193,7 @@
     "RelationalAccess": {
         "depends": ["coral"],
         "links": [
-            "RelationalAccess"
+            "lcg_RelationalAccess"
         ]
     },
     "TkOnlineSwDB": {
