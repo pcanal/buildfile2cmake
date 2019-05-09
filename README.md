@@ -1,9 +1,13 @@
-# scram2cmake
+# buildfile2cmake
 
-Creates CMake project files for SCRAM projects.
+Creates CMake project files from SCRAM BuildFile.xml files.
 
 ## Usage
 
-`cd` into a directory containing a SCRAM project (like `cd ~/CERN/cmssw/`). Then run `PATH/TO/REPO/scram2cmake.py`. Done!
+`cd` into a directory containing a SCRAM BuildFile.xml files.
+Then run `PATH/TO/REPO/buildfile2cmake.py`. Done!
 
-The included builtin.json uses cmake variables defined by these cmake macros https://github.com/gartung/cmaketools
+The included builtin.json uses cmake variables defined by the cmake modlues in https://github.com/hsf/cmaketools as well as standard CMake modules.
+
+Original script scram2cmake.py originated here
+https://github.com/Teemperor/scram2cmake
