@@ -630,15 +630,6 @@ class CMakeGenerator:
     # to the given out stream (which needs to support a 'write' call).
     def generate_target(self, target, out):
 
-        if target.has_dictionary():
-           for clh in target.classes_h :
-               cl = clh.replace('.h','')
-               part = cl.replace('src/classes','')
-               cldef = 'src/classes_def'+part+'.xml'
-               name=target.symbol+part
-               target.source_files.append(name+'Dict.cpp')
-               out.write('reflex_generate_dictionary('+name+' '+clh+' '+cldef+' ROOTMAPLIB '+target.symbol+')\n')
-
         if target.has_source():
             if target.is_executable:
                 out.write("add_executable(")
@@ -652,57 +643,64 @@ class CMakeGenerator:
                     out.write("\n  " + source)
             out.write("\n)\n\n")
 
-            for dir in sorted(target.include_dirs):
-                out.write("target_include_directories(" + target.symbol +
-                                " PUBLIC " + dir + ")\n")
-                out.write("include_directories(" + target.symbol +
-                                " PUBLIC " + dir + ")\n")
+            out.write('target_include_directories('+target.symbol+' PRIVATE ${CMAKE_SOURCE_DIR})\n\n')
+            if len(target.include_dirs) > 0:
+                out.write("target_include_directories(" + target.symbol + " PUBLIC\n")
+                out.write("\n".join(sorted(target.include_dirs)))
+                out.write("\n)\n\n")
             
             if target.cxx_flags:
-                out.write('add_compile_options('+'"'+' '.join(sorted(target.cxx_flags))+'"' + ')\n')
+                out.write('add_compile_options('+'"'+' '.join(sorted(target.cxx_flags))+'"' + ')\n\n')
 
             if len(target.ld_flags.strip()) != 0:
                 out.write("# Manually defined LD_FLAGS\n")
                 out.write("# target_xcompile_options(" + target.symbol + 
-                          " " + target.ld_flags + ")\n")
+                          " " + target.ld_flags + ")\n\n")
 
             if len(target.needed_libs) != 0:
                 out.write("target_link_libraries(" + target.symbol + " PUBLIC\n")
-                for lib in sorted(target.needed_libs):
-                    out.write("  " + lib + "\n")
-                out.write(")\n")
+                out.write("\n".join(sorted(target.needed_libs)))
+                out.write("\n)\n\n")
             out.write("\n")
             if re.search("test", target.dir) :
                 if target.is_executable:
-                    out.write("add_test(NAME "+target.symbol+" COMMAND "+target.symbol+")\n")
+                    out.write("add_test(NAME "+target.symbol+" COMMAND "+target.symbol+")\n\n")
             else:
                 out.write("install( TARGETS ") 
                 out.write(target.symbol)
                 out.write(" DESTINATION ")
                 if target.is_executable:
-                    out.write(" bin ")
+                    out.write("${CMAKE_BIN_INSTALLDIR} ")
                 else:
                     out.write(" lib ")
-                out.write(" EXPORT cmssw:")
+                out.write(" EXPORT fwcore::")
                 out.write(target.symbol)
                 out.write(")\n\n")
 
+        else:
+           out.write('add_library('+target.symbol+' INTERFACE)\n\n')
+
         if target.has_dictionary():
-            for clh in target.classes_h :
+           out.write("include_directories(\n")
+           out.write('\n'.join(sorted(target.include_dirs)))
+           out.write("\n)\n\n")
+           out.write("include_directories(${CMAKE_SOURCE_DIR})\n\n")
+           out.write("include_directories(/usr/include/)\n\n")
+           for clh in target.classes_h :
                cl = clh.replace('.h','')
                part = cl.replace('src/classes','')
                cldef = 'src/classes_def'+part+'.xml'
                name=target.symbol+part
-               out.write('add_dependencies('+target.symbol+' '+name+'Gen)\n')
-               out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)\n')
+               target.source_files.append(name+'Dict.cpp')
+               out.write('reflex_build_dictionary('+name+' '+clh+' '+cldef+')\n\n')
+               out.write('add_dependencies('+target.symbol+' '+name+'-dictgen)\n\n')
+               out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)\n\n')
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
     # `handle_target` call to the same CMakeLists.txt.
     def handle_target(self, target):
         output_path = target.dir + os.sep + "CMakeLists.txt"
         output_file = open(output_path, "a")
-        output_file.write("include_directories(${CMAKE_SOURCE_DIR})\n")
-        output_file.write("include_directories(/usr/include/)\n")
         self.generate_target(target, output_file)
         output_file.close()
 
@@ -719,7 +717,7 @@ class CMakeGenerator:
         if len(module.binaries) != 0:
             output_file.write("add_subdirectory(bin)\n")
         if len(module.tests) != 0:
-            output_file.write("if(BUILDTEST)\n")
+            output_file.write("if(${BUILDTEST})\n")
             output_file.write("add_subdirectory(test)\n")
             output_file.write("endif()\n")
         if len(module.plugins) != 0:
@@ -764,19 +762,20 @@ class CMakeGenerator:
         output_path = "CMakeLists.txt"
         output_file = open(output_path, "w")
 
-        output_file.write("cmake_minimum_required(VERSION 3.0)\n")
-        output_file.write("project(CMSSW C CXX Fortran)\n\n")
-        output_file.write("include_directories(${CMAKE_SOURCE_DIR})\n")
-        output_file.write("include_directories(/usr/include/)\n")
-        output_file.write("find_package(CMakeTools)\n")
-        output_file.write("UseCMakeTools()\n")
-        output_file.write("find_package(ROOT 6.0.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA RooFitCore RooFit )\n")
+        output_file.write("cmake_minimum_required(VERSION 3.12)\n")
+        output_file.write("project(Framework VERSION 0.0.0 LANGUAGES C CXX)\n\n")
+        output_file.write("find_package(ROOT 6.12.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA)\n")
+        output_file.write('include(GNUInstallDirs)\n')
+        output_file.write('include(${ROOT_USE_FILE})\n')
         output_file.write("set(Boost_NO_BOOST_CMAKE ON)\n")
         output_file.write("set(Boost_NO_SYSTEM_PATHS ON)\n")
-        output_file.write("find_package(Boost 1.57.0 COMPONENTS filesystem thread iostreams python regex serialization system program_options )\n")
-        output_file.write("find_package(PythonInterp)\n")
-        output_file.write("find_package(PythonLibs)\n")
+        output_file.write("find_package(Boost 1.67.0 COMPONENTS filesystem thread iostreams python27 regex serialization system program_options )\n")
+        output_file.write("find_package(Python2 COMPONENTS Interpreter Development)\n")
         output_file.write("find_package(Threads)\n")
+        output_file.write("find_package(CMakeTools)\n")
+        output_file.write("UseCMakeTools()\n")
+        output_file.write("include(GoogleTest)\n")
+        output_file.write('find_package(Xrootd)\n')
 
         include_paths = set()
         finds = set()
@@ -786,10 +785,10 @@ class CMakeGenerator:
                 include_paths |= target.include_dirs
                 finds |= target.finds
 
-        for f in finds:
+        for f in sorted(finds):
             output_file.write("find_package("+f+")\n")
-        for d in include_paths:
-            output_file.write("include_directories(" + d + ")\n")
+#        for d in sorted(include_paths):
+#           output_file.write("include_directories(" + d + ")\n")
 
         if cxxmodules:
             output_file.write("set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} "
@@ -808,8 +807,8 @@ class CMakeGenerator:
 
 
         output_file.write("install(FILES CMakeLists.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
-        output_file.write('install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
-        output_file.write('install(DIRECTORY scram2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
+#        output_file.write('install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
+#        output_file.write('install(DIRECTORY scram2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
 
         module_groups = {}
 
