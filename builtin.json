@@ -787,7 +787,7 @@
             "${JEMALLOC_INCLUDE_DIR}"
         ],
         "links": [
-            "jemalloc"
+            "${jemalloc}"
         ]
     },
     "jimmy": {
@@ -1608,7 +1608,7 @@
             "${TCMALLOC_INCLUDE_DIR}"
         ],
         "links": [
-            "tcmalloc_minimal"
+            "${tcmalloc_minimal}"
         ]
     },
     "tensorflow-cc": {
