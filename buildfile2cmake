@@ -508,15 +508,15 @@ class CMakeGenerator:
             out.write("\n")
             if re.search("test", target.dir) :
                 if target.is_executable:
-                    out.write("add_test(NAME "+target.symbol+" COMMAND "+target.symbol+")\n\n")
+                    out.write("add_test("+target.symbol+" "+target.symbol+")\n\n")
             else:
                 out.write("install( TARGETS ") 
                 out.write(target.symbol)
                 out.write(" DESTINATION ")
                 if target.is_executable:
-                    out.write("${CMAKE_BIN_INSTALLDIR} ")
+                    out.write("${CMAKE_INSTALL_BINDIR} ")
                 else:
-                    out.write(" lib ")
+                    out.write("${CMAKE_INSTALL_LIBDIR}")
                 out.write(" EXPORT fwcore::")
                 out.write(target.symbol)
                 out.write(")\n\n")
@@ -535,10 +535,9 @@ class CMakeGenerator:
                part = cl.replace('src/classes','')
                cldef = 'src/classes_def'+part+'.xml'
                name=target.symbol+part
-               target.source_files.append(name+'Dict.cpp')
                out.write('reflex_build_dictionary('+name+' '+clh+' '+cldef+')\n\n')
-               out.write('add_dependencies('+target.symbol+' '+name+'-dictgen)\n\n')
-               out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.rootmap DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)\n\n')
+               out.write('target_link_libraries('+target.symbol+' MODULE ' + name +'Dict)\n')
+               out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap DESTINATION ${CMAKE_INSTALL_LIBDIR})\n\n')
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
     # `handle_target` call to the same CMakeLists.txt.
@@ -617,6 +616,7 @@ class CMakeGenerator:
         output_file.write("find_package(Python2 COMPONENTS Interpreter Development)\n")
         output_file.write("find_package(Threads)\n")
         output_file.write("find_package(CMakeTools)\n")
+        output_file.write("find_package(benchmark)\n")
         output_file.write("UseCMakeTools()\n")
         output_file.write("include(GoogleTest)\n")
         output_file.write('find_package(Xrootd)\n')
@@ -851,7 +851,7 @@ def main():
 
     for root, dirs, files in os.walk('.'):
         r = remove_str_refix(root, './')
-        if len(r.split("/")) == 2 and not r.startswith('.git') :
+        if len(r.split("/")) == 2 and not r.startswith('.git') and not r.startswith('cmaketools'):
             if not 'BuildFile.xml' in os.listdir(r):
                 data = '<scram><export><lib name="1"/></export></scram>'
                 et=ET.fromstring(data)

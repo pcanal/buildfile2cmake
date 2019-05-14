@@ -353,9 +353,6 @@
         ]
     },
     "catch2": {
-        "find": [
-            "Catch2"
-         ],
          "includes": [
              "${CATCH2_INCLUDE_DIRS}"
          ]
@@ -709,25 +706,19 @@
         ]
     },
     "google-benchmark-main":{
-        "includes": [
-            "${GoogleBenchmark_INCLUDE_DIR}"
-        ],
         "links": [
-            "benchmark_main"
+            "benchmark::benchmark_main"
         ],
         "finds": [
-            "GoogleBenchmark"
+            "benchmark"
         ]
     },
     "google-benchmark":{
-        "includes": [
-            "${GoogleBenchmark_INCLUDE_DIR}"
-        ],
         "links": [
-            "benchmark"
+            "benchmark::benchmark"
         ],
         "finds": [
-            "GoogleBenchmark"
+            "benchmark"
         ]
     },
     "hector": {
