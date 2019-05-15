@@ -474,6 +474,7 @@ class CMakeGenerator:
     # to the given out stream (which needs to support a 'write' call).
     def generate_target(self, target, out):
 
+ 
         if target.has_source():
             if target.is_executable:
                 out.write("add_executable(")
@@ -520,24 +521,40 @@ class CMakeGenerator:
                 out.write(" EXPORT fwcore::")
                 out.write(target.symbol)
                 out.write(")\n\n")
-
+            if target.has_dictionary():
+                for clh in target.classes_h :
+                    cl = clh.replace('.h','')
+                    part = cl.replace('src/classes','')
+                    cldef = 'src/classes_def'+part+'.xml'
+                    name=target.symbol+part
+                    out.write("include_directories(${CMAKE_SOURCE_DIR}\n")
+                    out.write('\n'.join(sorted(target.include_dirs)))
+                    out.write("\n)\n\n")
+                    out.write('reflex_build_dictionary('+name+' '+clh+' '+cldef+')\n\n')
+                    out.write('add_library('+name+'DictObj OBJECT ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.cxx)\n\n')
+                    out.write('set_property(TARGET '+name+'DictObj PROPERTY POSITION_INDEPENDENT_CODE ON)\n\n')
+                    out.write('add_dependencies('+name+'DictObj '+name+'-dictgen)\n\n')
+                    out.write('add_dependencies('+target.symbol+' '+name+'DictObj)\n\n')
+                    out.write('target_link_libraries('+target.symbol+' PUBLIC $<TARGET_OBJECTS:'+name+'DictObj>)\n\n')
+                    out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap DESTINATION ${CMAKE_INSTALL_LIBDIR})\n\n')
         else:
-           out.write('add_library('+target.symbol+' INTERFACE)\n\n')
-
-        if target.has_dictionary():
-           out.write("include_directories(\n")
-           out.write('\n'.join(sorted(target.include_dirs)))
-           out.write("\n)\n\n")
-           out.write("include_directories(${CMAKE_SOURCE_DIR})\n\n")
-           out.write("include_directories(/usr/include/)\n\n")
-           for clh in target.classes_h :
-               cl = clh.replace('.h','')
-               part = cl.replace('src/classes','')
-               cldef = 'src/classes_def'+part+'.xml'
-               name=target.symbol+part
-               out.write('reflex_build_dictionary('+name+' '+clh+' '+cldef+')\n\n')
-               out.write('target_link_libraries('+target.symbol+' MODULE ' + name +'Dict)\n')
-               out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap DESTINATION ${CMAKE_INSTALL_LIBDIR})\n\n')
+            if target.has_dictionary():
+                out.write('add_library('+target.symbol+' INTERFACE)\n\n')
+                for clh in target.classes_h :
+                    cl = clh.replace('.h','')
+                    part = cl.replace('src/classes','')
+                    cldef = 'src/classes_def'+part+'.xml'
+                    name=target.symbol+part
+                    out.write("include_directories(${CMAKE_SOURCE_DIR}\n")
+                    out.write('\n'.join(sorted(target.include_dirs)))
+                    out.write("\n)\n\n")
+                    out.write('reflex_build_dictionary('+name+' '+clh+' '+cldef+')\n\n')
+                    out.write('add_library('+name+'DictObj OBJECT ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.cxx)\n\n')
+                    out.write('set_property(TARGET '+name+'DictObj PROPERTY POSITION_INDEPENDENT_CODE ON)\n\n')
+                    out.write('add_dependencies('+name+'DictObj '+name+'-dictgen)\n\n')
+                    out.write('add_dependencies('+target.symbol+' '+name+'DictObj)\n\n')
+                    out.write('target_link_libraries('+target.symbol+' INTERFACE $<TARGET_OBJECTS:'+name+'DictObj>)\n\n')
+                    out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap DESTINATION ${CMAKE_INSTALL_LIBDIR})\n\n')
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
     # `handle_target` call to the same CMakeLists.txt.
@@ -644,15 +661,15 @@ class CMakeGenerator:
         subsystem_list.sort()
 
         for subsystem in subsystem_list:
-            output_file.write("add_subdirectory(" + subsystem + ")\n")
             output_file.write("install(DIRECTORY "+subsystem+" DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
+            output_file.write("add_subdirectory(" + subsystem + ")\n")
             subsystem_modules = self.project.subsystems[subsystem]
             self.handle_subsystem(subsystem, subsystem_modules)
 
 
         output_file.write("install(FILES CMakeLists.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
-#        output_file.write('install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
-#        output_file.write('install(DIRECTORY scram2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
+        output_file.write('#install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
+        output_file.write('#install(DIRECTORY buildfile2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
 
         module_groups = {}
 
