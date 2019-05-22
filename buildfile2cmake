@@ -71,33 +71,7 @@ def get_files(node, base_dir):
                     result.remove(to_remove)
     return result
 
-# WIP code....
-class RootDict:
-    def __init__(self, classes_h, classes_xml):
-        r = re.compile('[^a-zA-Z0-9_]')
-        self.unique_name = r.sub('', remove_prefix(classes_h))
-        self.cpp_file = self.unique_name + "_rflx.cpp"
-        self.classes_h = classes_h
-        self.classes_xml = classes_xml
-        
-    def cmake_target(self):
-        return self.unique_name
-    
-    def cmake_command(self):
-        classes_arg = ""
-        classes_dep = ""
-        if self.classes_xml != None:
-            classes_arg = " -s " + self.classes_xml
-            classes_dep = " " + self.classes_xml
-        
-        command = ("add_custom_command(\n"
-           "  OUTPUT ${CMAKE_BINARY_DIR}/" + self.cpp_file + "\n" +
-           "  COMMAND genreflex " + self.classes_h + " -I${CMAKE_SOURCE_DIR} " +
-              " -o ${CMAKE_BINARY_DIR}/" + self.cpp_file + classes_arg + "\n" +
-           "  DEPENDS " + self.classes_h + classes_dep + "\n" +
-           "  COMMENT \"Generating ROOT dict " + self.unique_name + "\")\n"
-              ) 
-        return command
+
 
 # Abstract base class for anything that can be built by SCRAM.
 class ScramTargetBase(object):
@@ -130,6 +104,8 @@ class ScramTargetBase(object):
         self.is_test = False
         self.libs = set()
         self.cxx_flags = set()
+        self.test_runner_args = []
+        self.pretest = ""
         self.defines = ""
         self.ld_flags = ""
         self.edm_plugin = False
@@ -181,7 +157,7 @@ class ScramTargetBase(object):
 
     def has_source(self):
         return len(self.source_files) !=0
-
+    
     def is_virtual(self):
         return len(self.source_files) == 0
 
@@ -259,7 +235,6 @@ class ScramModuleLibrary(ScramTargetBase):
             self.source_files += glob.glob(base_glob+".c")
             self.source_files += glob.glob(base_glob+".C")
         self.classes_h = glob.glob("src/classes*.h")
-        
 
         os.chdir(cwd_bak)
 
@@ -291,6 +266,14 @@ class ScramTarget(ScramTargetBase):
         for child in node:
             if child.tag == "use" or child.tag == "lib":
                 self.dependencies_by_name.add(get_lib_or_name_attr(child))
+            if child.tag == "flags":
+                for key, value in child.attrib.items():
+                    if "TEST_RUNNER_ARGS" == key:
+                        self.test_runner_args = value.split()
+                    if "PRE_TEST" == key:
+                        self.pretest = value
+                    if "EDM_PLUGIN" == key:
+                        self.edm_plugin=True
 
 
 
@@ -302,7 +285,6 @@ class ScramModule():
             if child.tag == "bin" or child.tag == "library":
                 bin = ScramTarget(child, base_dir)
                 result.append(bin)
-            # We no longer handle the deprecated environment XML tag
             if child.tag == "environment":
                 result += self.get_targets_from(base_dir, child)
         return result
@@ -440,7 +422,6 @@ def parse_BuildFileXml(path):
                         element.append(topElement)
         # Deal with the case where <use> is wrapped in <environment> at the top level
             if topElement.tag == 'environment':
-                print path
                 used=topElement.find('use')
                 if used is not None:
                     for element in root:
@@ -473,20 +454,74 @@ class CMakeGenerator:
     # Writes the necessary CMake commands to generate the given target
     # to the given out stream (which needs to support a 'write' call).
     def generate_target(self, target, out):
-
- 
         if target.has_source():
+            if target.has_dictionary():
+                for clh in target.classes_h :
+                    cl = clh.replace('.h','')
+                    part = cl.replace('src/classes','')
+                    cldef = 'src/classes_def'+part+'.xml'
+                    name=target.symbol+part
+                    out.write("include_directories(${CMAKE_SOURCE_DIR}\n")
+                    out.write('\n'.join(sorted(target.include_dirs)))
+                    out.write("\n)\n\n")
+                    out.write('cms_rootdict('+target.symbol+' '+clh+' '+cldef+')\n\n')
             if target.is_executable:
                 out.write("add_executable(")
                 out.write(target.symbol)
             else:
                 out.write("add_library(")
                 out.write(target.symbol)
-                out.write(" SHARED ")
+                out.write(' SHARED ${'+target.symbol+'_EXTRA_SOURCES}')
 
             for source in sorted(target.source_files):
-                    out.write("\n  " + source)
+                out.write("\n  " + source)
             out.write("\n)\n\n")
+            
+            if target.has_dictionary():
+                out.write('add_rootdict_rules('+target.symbol+')\n\n')
+
+            if re.search("test", target.dir):
+                if target.is_executable:
+                    if len(target.test_runner_args) == 3:
+                        out.write("add_test(NAME %s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, target.test_runner_args[2] ))
+                        out.write("set_tests_properties(%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol))
+                        out.write('set_tests_properties(%s_CTest PROPERTIES ENVIRONMENT "CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n'%(target.symbol))
+
+                        if not target.pretest == '':
+                            out.write("#add_dependencies("+target.symbol+" "+target.pretest+")\n")
+
+                    if len(target.test_runner_args) > 3:
+                        for i in range(2,len(target.test_runner_args)):
+                            out.write("add_test(NAME %s_%s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, i, target.test_runner_args[i] ))
+                            out.write("set_tests_properties(%s_%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol,i))
+                            out.write('set_tests_properties(%s_%s_CTest PROPERTIES ENVIRONMENT "CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n'%(target.symbol, i))
+
+                    if len(target.test_runner_args) == 0:
+                        out.write("add_test(NAME "+target.symbol+"_CTest COMMAND "+target.symbol+")\n\n")
+                        out.write("set_tests_properties("+target.symbol+"_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test )\n")
+                        out.write('set_tests_properties('+target.symbol+'_CTest PROPERTIES ENVIRONMENT "CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                        out.write("set_target_properties(")
+                        out.write(target.symbol)
+                        out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
+                else:
+                    out.write("set_target_properties(")
+                    out.write(target.symbol)
+                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
+            else:
+                if target.is_executable:
+                    out.write("set_target_properties(")
+                    out.write(target.symbol)
+                    out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)\n")
+                else:
+                    out.write("set_target_properties(")
+                    out.write(target.symbol)
+                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
+            if re.search('plugin', target.dir) or target.edm_plugin:
+                if not target.is_executable:
+                    out.write('set_target_properties(')
+                    out.write(target.symbol)
+                    out.write(' PROPERTIES PREFIX "plugin")\n')
+               
 
             out.write('target_include_directories('+target.symbol+' PRIVATE ${CMAKE_SOURCE_DIR})\n\n')
             if len(target.include_dirs) > 0:
@@ -507,10 +542,8 @@ class CMakeGenerator:
                 out.write("\n".join(sorted(target.needed_libs)))
                 out.write("\n)\n\n")
             out.write("\n")
-            if re.search("test", target.dir) :
-                if target.is_executable:
-                    out.write("add_test("+target.symbol+" "+target.symbol+")\n\n")
-            else:
+            if not re.search("test", target.dir) :
+                out.write("add_python_rules("+target.dir+")\n")
                 out.write("install( TARGETS ") 
                 out.write(target.symbol)
                 out.write(" DESTINATION ")
@@ -519,27 +552,9 @@ class CMakeGenerator:
                 else:
                     out.write("${CMAKE_INSTALL_LIBDIR}")
                 out.write(" EXPORT fwcore::")
-                out.write(target.symbol)
                 out.write(")\n\n")
-            if target.has_dictionary():
-                for clh in target.classes_h :
-                    cl = clh.replace('.h','')
-                    part = cl.replace('src/classes','')
-                    cldef = 'src/classes_def'+part+'.xml'
-                    name=target.symbol+part
-                    out.write("include_directories(${CMAKE_SOURCE_DIR}\n")
-                    out.write('\n'.join(sorted(target.include_dirs)))
-                    out.write("\n)\n\n")
-                    out.write('reflex_build_dictionary('+name+' '+clh+' '+cldef+')\n\n')
-                    out.write('add_library('+name+'DictObj OBJECT ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.cxx)\n\n')
-                    out.write('set_property(TARGET '+name+'DictObj PROPERTY POSITION_INDEPENDENT_CODE ON)\n\n')
-                    out.write('add_dependencies('+name+'DictObj '+name+'-dictgen)\n\n')
-                    out.write('add_dependencies('+target.symbol+' '+name+'DictObj)\n\n')
-                    out.write('target_link_libraries('+target.symbol+' PUBLIC $<TARGET_OBJECTS:'+name+'DictObj>)\n\n')
-                    out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap DESTINATION ${CMAKE_INSTALL_LIBDIR})\n\n')
         else:
             if target.has_dictionary():
-                out.write('add_library('+target.symbol+' INTERFACE)\n\n')
                 for clh in target.classes_h :
                     cl = clh.replace('.h','')
                     part = cl.replace('src/classes','')
@@ -548,13 +563,10 @@ class CMakeGenerator:
                     out.write("include_directories(${CMAKE_SOURCE_DIR}\n")
                     out.write('\n'.join(sorted(target.include_dirs)))
                     out.write("\n)\n\n")
-                    out.write('reflex_build_dictionary('+name+' '+clh+' '+cldef+')\n\n')
-                    out.write('add_library('+name+'DictObj OBJECT ${CMAKE_CURRENT_BINARY_DIR}/'+name+'.cxx)\n\n')
-                    out.write('set_property(TARGET '+name+'DictObj PROPERTY POSITION_INDEPENDENT_CODE ON)\n\n')
-                    out.write('add_dependencies('+name+'DictObj '+name+'-dictgen)\n\n')
-                    out.write('add_dependencies('+target.symbol+' '+name+'DictObj)\n\n')
-                    out.write('target_link_libraries('+target.symbol+' INTERFACE $<TARGET_OBJECTS:'+name+'DictObj>)\n\n')
-                    out.write('install(FILES ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm  ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap DESTINATION ${CMAKE_INSTALL_LIBDIR})\n\n')
+                    out.write('cms_rootdict('+target.symbol+' '+clh+' '+cldef+')\n\n')
+                out.write('add_rootdict_rules('+target.symbol+')\n\n')
+                out.write('add_library('+target.symbol+' SHARED ${'+target.symbol+'_EXTRA_SOURCES})\n\n')
+
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
     # `handle_target` call to the same CMakeLists.txt.
@@ -577,9 +589,7 @@ class CMakeGenerator:
         if len(module.binaries) != 0:
             output_file.write("add_subdirectory(bin)\n")
         if len(module.tests) != 0:
-            output_file.write("if(${BUILDTEST})\n")
             output_file.write("add_subdirectory(test)\n")
-            output_file.write("endif()\n")
         if len(module.plugins) != 0:
             output_file.write("add_subdirectory(plugins)\n")
 
@@ -595,7 +605,12 @@ class CMakeGenerator:
             subsystem_cmake.write("add_subdirectory(" + module.package + ")\n")
 
         subsystem_cmake.write("\n\n")
-
+        subsystem_cmake.write('set(pythondir ${CMAKE_BINARY_DIR}/python/%s)\n' % subsystem)
+        subsystem_cmake.write('message(STATUS "subsystem %s")\n' % subsystem)
+        subsystem_cmake.write('file(MAKE_DIRECTORY ${pythondir})\n')
+        #subsystem_cmake.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated\n__path__.append(\'${pythondir}\')\n")\n')
+        subsystem_cmake.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated\nimport os\n__path__.append(os.path.dirname(os.path.abspath(__file__)))")\n')
+ 
         has_buildable_targets = False
         for module in subsystem_modules:
             for target in module.targets:
@@ -619,25 +634,31 @@ class CMakeGenerator:
 
     # Generates the top-level CMakeLists.txt
     def gen_top_level(self):
+
         output_path = "CMakeLists.txt"
         output_file = open(output_path, "w")
-
-        output_file.write("cmake_minimum_required(VERSION 3.12)\n")
-        output_file.write("project(Framework VERSION 0.0.0 LANGUAGES C CXX)\n\n")
-        output_file.write("find_package(ROOT 6.12.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA)\n")
-        output_file.write('include(GNUInstallDirs)\n')
-        output_file.write('include(${ROOT_USE_FILE})\n')
-        output_file.write("set(Boost_NO_BOOST_CMAKE ON)\n")
-        output_file.write("set(Boost_NO_SYSTEM_PATHS ON)\n")
-        output_file.write("find_package(Boost 1.67.0 COMPONENTS filesystem thread iostreams python27 regex serialization system program_options )\n")
-        output_file.write("find_package(Python2 COMPONENTS Interpreter Development)\n")
-        output_file.write("find_package(Threads)\n")
-        output_file.write("find_package(CMakeTools)\n")
-        output_file.write("find_package(benchmark)\n")
-        output_file.write("UseCMakeTools()\n")
-        output_file.write("include(GoogleTest)\n")
-        output_file.write('find_package(Xrootd)\n')
-
+        preamble="""
+cmake_minimum_required(VERSION 3.12)
+project(Framework VERSION 0.0.0 LANGUAGES C CXX)
+set(BUILDTEST True)
+include(CTest)
+enable_testing()
+cmake_policy( SET CMP0082 NEW)
+find_package(ROOT 6.12.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA)
+include(GNUInstallDirs)
+include(${ROOT_USE_FILE})
+set(Boost_NO_BOOST_CMAKE ON)
+set(Boost_NO_SYSTEM_PATHS ON)
+find_package(Boost 1.67.0 COMPONENTS filesystem thread iostreams python27 regex serialization system program_options )
+find_package(Python2 COMPONENTS Interpreter Development)
+find_package(Threads)
+find_package(CMakeTools)
+find_package(benchmark)
+UseCMakeTools()
+include(GoogleTest)
+find_package(Xrootd)
+"""
+        output_file.write(preamble)
         include_paths = set()
         finds = set()
 
@@ -648,12 +669,129 @@ class CMakeGenerator:
 
         for f in sorted(finds):
             output_file.write("find_package("+f+")\n")
-#        for d in sorted(include_paths):
-#           output_file.write("include_directories(" + d + ")\n")
+        output_file.write('set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")\n')
+        output_file.write('set(pythondir ${CMAKE_BINARY_DIR}/python)\n')
+        output_file.write('file(MAKE_DIRECTORY ${pythondir})\n')
+        output_file.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated" )\n')
+ 
 
-        if cxxmodules:
-            output_file.write("set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} "
-                              "-fmodules -Rmodule-build -ivfsoverlay " + prefix + "libs.overlay.yaml -fmodules-cache-path=${CMAKE_BINARY_DIR}/pcms/  -Xclang -fmodules-local-submodule-visibility\")\n")
+        epr="""
+
+macro(edmpluginrefresh name)
+      message("edmpluginrefresh ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh ${CMAKE_BINARY_DIR}/lib/plugin*.so")
+      set(ENV{LD_LIBRARY_PATH} "${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH}")
+      add_custom_command(TARGET ${name} PRE_BUILD
+      COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "${CMAKE_BINARY_DIR}/lib/plugin*.so"
+      )
+endmacro()
+
+macro(edmplugingen name)
+      add_custom_command(TARGET ${name} POST_BUILD
+      COMMAND echo "module plugin${name}" >${CMAKE_BINARY_DIR}/lib/plugin${name}.edmplugin
+      )
+endmacro()
+
+
+macro(cms_rootdict name)
+  if("${ARGN}" STREQUAL "")
+    set(classes_h classes.h)
+    set(classes_xml classes_def.xml)
+    set(${name}_ROOTDICT ${name}_x)
+  else()
+    set(classes_h ${ARGV1})
+    set(classes_xml ${ARGV2})
+    if(${name}_ROOTDICT)
+      MATH(EXPR ${name}_DICT_COUNT "${${name}_DICT_COUNT}+1")
+      set(${name}_ROOTDICT ${name}_x${${name}_DICT_COUNT})
+    else()
+      set(${name}_DICT_COUNT 0)
+      set(${name}_ROOTDICT ${name}_x)
+    endif()
+  endif()
+  set(${name}_EXTRA_SOURCES ${${name}_EXTRA_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/${${name}_ROOTDICT}.cc)
+  set(${name}_ROOTDICTS ${${name}_ROOTDICTS} ${${name}_ROOTDICT})
+  set(ROOTDICT_${${name}_ROOTDICT} ${classes_h} ${classes_xml} ${CMAKE_CURRENT_BINARY_DIR}/${${name}_ROOTDICT}.cc)
+  unset(clases_h)
+  unset(classes_xml)
+endmacro()
+
+macro(add_rootdict_rules name)
+  set(flags "")
+  get_directory_property(defs COMPILE_DEFINITIONS)
+  if(defs)
+    foreach(d ${defs})
+      set(flags ${flags} -D${d})
+    endforeach()
+  endif()
+  get_directory_property(dirs INCLUDE_DIRECTORIES)
+  if(dirs)
+    foreach(inc ${dirs})
+      set(flags ${flags} -I${inc})
+    endforeach()
+  endif()
+  foreach(dict ${${name}_ROOTDICTS})
+    list(GET ROOTDICT_${dict} 0 classes_h)
+    list(GET ROOTDICT_${dict} 1 classes_xml)
+    list(GET ROOTDICT_${dict} 2 classes_cc)
+    get_filename_component(classname ${classes_h} NAME_WE)
+    set_source_files_properties(${classes_cc} PROPERTIES COMPILE_FLAGS "-Os -Wno-unused-variable")
+    add_custom_command(OUTPUT ${classes_cc}
+                    COMMAND ${ROOT_genreflex_CMD} ${CMAKE_CURRENT_SOURCE_DIR}/${classes_h}
+                    -s ${CMAKE_CURRENT_SOURCE_DIR}/${classes_xml}
+                    -o ${classes_cc}
+                    --deep
+                    --rootmap=${CMAKE_BINARY_DIR}/lib/${dict}.rootmap
+                    --rootmap-lib=${CMAKE_BINARY_DIR}/lib/lib${name}.so
+                    --library ${CMAKE_BINARY_DIR}/lib/lib${name}.so --multiDict
+                    -DCMS_DICT_IMPL -D_REENTRANT -DGNUSOURCE -D__STRICT_ANSI__ ${FLAGS} -DCMSSW_REFLEX_DICT -I${CMAKE_CURRENT_SOURCE_DIR} 
+                    -I${CMAKE_SOURCE_DIR} ${flags}
+                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${classes_h} ${CMAKE_CURRENT_SOURCE_DIR}/${classes_xml}
+                    )
+  endforeach()
+  unset(clases_h)
+  unset(classes_xml)
+  unset(classname)
+  unset(FLAGS)
+endmacro()
+
+macro(add_python_rules target)
+  file(GLOB pyfiles ${CMAKE_CURRENT_SOURCE_DIR}/python/*.py)
+  message(STATUS ${target} pyfiles ${pyfiles})
+  file(GLOB tpyfiles ${CMAKE_CURRENT_SOURCE_DIR}/python/test/*.py)
+  message(STATUS ${target} tpyfiles ${tpyfiles})
+  file(GLOB cfifiles ${CMAKE_CURRENT_SOURCE_DIR}/python/*_cfi.py)
+  message(STATUS ${target} cfifiles ${cfifiles})
+  set(pythondir ${CMAKE_BINARY_DIR}/python/${target})
+  get_filename_component(pdir ${pythondir} DIRECTORY)
+  if(pyfiles OR tpyfiles)
+      file(MAKE_DIRECTORY ${pdir})
+      file(CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/python ${pythondir} SYMBOLIC)
+      if(cfifiles)
+          set(cfidir ${CMAKE_BINARY_DIR}/cfipython/${target})
+          file(MAKE_DIRECTORY ${cfidir})
+          file(COPY ${cfifiles} DESTINATION ${cfidir})
+      endif()
+      set(dnames "")
+      foreach(file ${tpyfiles})
+          get_filename_component(dname ${file} DIRECTORY)
+          list(APPEND dnames ${dname})
+      endforeach()
+      if(dnames)
+          list(REMOVE_DUPLICATES dnames)
+          foreach(dir ${dnames})
+              file(WRITE "${dir}/__init__.py" "#autogenerated by add_python_rules")
+          endforeach()
+      endif()
+      file(WRITE "${pythondir}/__init__.py" "#autogenerated by add_python_rules\nimport os\n__path__.append(os.path.dirname(os.path.abspath(__file__).rsplit(\'/python/${target}\',1)[0])+\'/cfipython/${target}\')\n")
+  endif()
+  unset(pyfiles)
+  unset(tpyfiles)
+  unset(cfifiles)
+  unset(pythondir)
+endmacro()
+
+"""
+        output_file.write(epr)
 
         subsystem_list = []
         for subsystem in self.project.subsystems:
@@ -661,15 +799,11 @@ class CMakeGenerator:
         subsystem_list.sort()
 
         for subsystem in subsystem_list:
-            output_file.write("install(DIRECTORY "+subsystem+" DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
             output_file.write("add_subdirectory(" + subsystem + ")\n")
+            output_file.write("install(DIRECTORY "+subsystem+" DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
             subsystem_modules = self.project.subsystems[subsystem]
             self.handle_subsystem(subsystem, subsystem_modules)
 
-
-        output_file.write("install(FILES CMakeLists.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
-        output_file.write('#install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
-        output_file.write('#install(DIRECTORY buildfile2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)\n')
 
         module_groups = {}
 
@@ -683,15 +817,16 @@ class CMakeGenerator:
                 module_groups[group_name].append(module)
             else:
                 module_groups[group_name] = [module]
-        output_file.write("set(BUILDTEST True)\n")
-        output_file.write("include(CTest)\n")
-        output_file.write("enable_testing()\n")
-        output_file.write("\n")
+
+        postamble="""
+install(FILES CMakeLists.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/src)
+#install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)
+#install(DIRECTORY buildfile2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)
+"""
+        output_file.write(postamble)
 
         output_file.close()
 
-        if cxxmodules:
-          self.gen_module_map()
 
     def get_headers(self, path):
         result = set()
@@ -730,103 +865,6 @@ class CMakeGenerator:
             return False
         return False
 
-    
-
-    def gen_module_map(self):
-        m = open("module.modulemap", "w")
-        for module in self.project.modules:
-            target = module.main_lib
-
-            dir_path = target.dir + "/interface/";
-            if os.path.isdir(dir_path):
-                if not perHeaderModules:
-                    m.write("module CMS_" + target.symbol + " {\n")
-                    
-                    for file in self.get_headers(dir_path):
-                        if file in ignored_headers:
-                            continue
-                        if file.endswith("headers.h"):
-                            continue
-                        if self.is_obsolete(file):
-                            continue
-                        if (file.endswith(".h") or
-                            file.endswith(".hh") or
-                            file.endswith(".hpp") or
-                            file.endswith(".icc") or
-                            file.endswith(".inc")):
-
-                            full_path = file;
-                            module_name = full_path[len(dir_path):]
-                            
-                            m.write("  module \"" + module_name + "\" { ");
-                            if full_path in textual_headers or not (file.endswith(".h") or file.endswith(".hh") or file.endswith(".hpp")):
-                                m.write("textual ")
-                            m.write("header \"" + full_path + "\" export * }\n")
-                    dir_path = target.dir + "/src/"
-                    internal_headers = self.get_headers(dir_path)
-                    if len(internal_headers) != 0 and False:
-                        m.write ("  // internal headers\n")
-                        for file in internal_headers:
-                            if file in ignored_headers:
-                                continue
-                            if self.is_obsolete(file):
-                                continue
-                            if (file.endswith(".h") or
-                                file.endswith(".hh") or
-                                file.endswith(".hpp") or
-                                file.endswith(".icc") or
-                                file.endswith(".inc")):
-
-                                full_path = file;
-                                # We could make them private in theory... m.write("  private ")
-                                m.write("  module \"" + full_path + "\" { ")
-                                if full_path in textual_headers or not (file.endswith(".h") or file.endswith(".hh") or file.endswith(".hpp")):
-                                    m.write("textual ")
-                                m.write("header \"" + full_path + "\" export * } \n")
-                    m.write("  export *\n}\n\n")
-                else: # if per header modules
-                    for file in os.listdir(target.dir + "/interface/"):
-                        if (file.endswith(".h") or file.endswith(".hh")):
-                            full_path = target.dir + "/interface/" + file;
-                            m.write(
-                            "module \"" + full_path + "\" {\n" +
-                            "    header \"" + full_path + "\"\n" +
-                            "    export *\n" +
-                            "}\n\n"
-
-                            )
-
-        m.close()
-        # Copy/create cxxmodule specific files in folder
-        if cxxmodules:
-            m = open("libs.overlay.yaml", "w")
-            m.write(
-"""
-{
-  'version': 0,
-  'ignore-non-existent-contents': false,
-  'roots': [
-  { 'name': '/usr/include/', 'type': 'directory',
-    'contents': [
-      { 'name' : 'module.modulemap', 'type': 'file',
-        'external-contents': '""" + prefix + """system.modulemap'
-      }
-    ]
-  },
-  { 'name': '/usr/include/c++/7.2.0/', 'type': 'directory',
-    'contents': [
-      { 'name' : 'module.modulemap', 'type': 'file',
-        'external-contents': '""" + prefix + """stl.modulemap'
-      }
-    ]
-  }
-  ]
-}
-"""
-               )
-            m.close()
-            shutil.copyfile(os.path.join(script_dir, "stl.modulemap"), "stl.modulemap")
-            shutil.copyfile(os.path.join(script_dir, "system.modulemap"), "system.modulemap")
 
     def gen(self):
         for module in self.project.modules:
@@ -835,16 +873,6 @@ class CMakeGenerator:
                     self.handle_target(target)
         self.gen_top_level()
 
-# Dummy code in test normal dict generation doesn't work for some reason...
-def make_dicts():
-    for root, dirs, files in os.walk("."):
-        if root.endswith("/src") and  "classes.h" in files:
-            has_xml = ("classes_def.xml" in files)
-            command = "genreflex classes.h -I" + os.getcwd()
-            if has_xml:
-                command += " -s classes_def.xml"
-            print("Generating dict for " + root)
-            subprocess.call(command, shell=True, cwd=root)
 
 def main():
     #make_dicts()
@@ -876,6 +904,7 @@ def main():
                 project.add_module(m)
 
     project.resolve_dependencies()
+    
 
     generator = CMakeGenerator(project)
     generator.gen()
