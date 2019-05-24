@@ -903,6 +903,14 @@ def main():
 </library>
 """
                 f.write(data)
+        if r == "Utilities/General/test":
+            data=""
+            with open('%s/BuildFile.xml' % r , 'r') as g:
+                data=g.read()
+            with open('%s/BuildFile.xml' % r , 'w') as f:
+                data = re.sub('\&\&','&amp;&amp;', data)
+                f.write(data)
+
 
     # traverse root directory, and list directories as dirs and files as files
     for root, dirs, files in os.walk('.'):
