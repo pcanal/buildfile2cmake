@@ -486,44 +486,50 @@ class CMakeGenerator:
                         out.write("add_test(NAME %s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, target.test_runner_args[2] ))
                         out.write("set_tests_properties(%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol))
                         out.write('set_tests_properties(%s_CTest \n'%(target.symbol))
-                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH}:CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
 
                         if not target.pretest == '':
-                            out.write("#add_dependencies("+target.symbol+" "+target.pretest+")\n")
+                            out.write("add_dependencies("+target.symbol+" "+target.pretest+")\n")
 
                     if len(target.test_runner_args) > 3:
                         for i in range(2,len(target.test_runner_args)):
                             out.write("add_test(NAME %s_%s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, i, target.test_runner_args[i] ))
                             out.write("set_tests_properties(%s_%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol,i))
                             out.write('set_tests_properties(%s_%s_CTest\n'%(target.symbol, i))
-                            out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH}:CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                            out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
 
                     if len(target.test_runner_args) == 0:
                         out.write("add_test(NAME "+target.symbol+"_CTest COMMAND "+target.symbol+")\n\n")
                         out.write("set_tests_properties("+target.symbol+"_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test )\n")
                         out.write('set_tests_properties('+target.symbol+'_CTest \n')
-                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH}:CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
                         out.write("set_target_properties(")
                         out.write(target.symbol)
                         out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
+                    out.write("add_dependencies( ALL_TESTBINS "+target.symbol+")\n")
+                    out.write("add_dependencies("+target.symbol+" EDMPLUGINREFRESH EDMPLUGINREFRESHTEST)\n")
                 else:
                     out.write("set_target_properties(")
                     out.write(target.symbol)
                     out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
+                    out.write("add_dependencies( ALL_TESTLIBS "+target.symbol+")\n")
             else:
                 if target.is_executable:
                     out.write("set_target_properties(")
                     out.write(target.symbol)
                     out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)\n")
+                    out.write(" add_dependencies( ALL_BINS "+target.symbol+")\n")
                 else:
                     out.write("set_target_properties(")
                     out.write(target.symbol)
                     out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
+                    out.write(" add_dependencies( ALL_LIBS "+target.symbol+")\n")
             if re.search('plugin', target.dir) or target.edm_plugin:
                 if not target.is_executable:
                     out.write('set_target_properties(')
                     out.write(target.symbol)
                     out.write(' PROPERTIES PREFIX "plugin")\n')
+                    out.write('add_dependencies( ALL_PLUGINS '+target.symbol+')\n')
                
 
             out.write('target_include_directories('+target.symbol+' PRIVATE ${CMAKE_SOURCE_DIR})\n\n')
@@ -549,7 +555,7 @@ class CMakeGenerator:
                 out.write("add_python_rules("+target.dir+")\n")
                 out.write("install( TARGETS ") 
                 out.write(target.symbol)
-                out.write(" DESTINATION ")
+                out.write(" DESTINATION ${CMAKE_INSTALL_PREFIX}/")
                 if target.is_executable:
                     out.write("${CMAKE_INSTALL_BINDIR} ")
                 else:
@@ -592,7 +598,7 @@ class CMakeGenerator:
         if len(module.binaries) != 0:
             output_file.write("add_subdirectory(bin)\n")
         if len(module.tests) != 0:
-            output_file.write("add_subdirectory(test)\n")
+            output_file.write("if(BUILDTEST)\n  add_subdirectory(test)\nendif()\n")
         if len(module.plugins) != 0:
             output_file.write("add_subdirectory(plugins)\n")
 
@@ -642,9 +648,14 @@ class CMakeGenerator:
         preamble="""
 cmake_minimum_required(VERSION 3.12)
 project(Framework VERSION 0.0.0 LANGUAGES C CXX)
+
 set(BUILDTEST True)
-include(CTest)
-enable_testing()
+
+if(BUILDTEST)
+  include(CTest)
+  enable_testing()
+endif()
+
 cmake_policy( SET CMP0082 NEW)
 find_package(ROOT 6.12.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA)
 include(GNUInstallDirs)
@@ -659,6 +670,13 @@ find_package(benchmark)
 UseCMakeTools()
 include(GoogleTest)
 find_package(Xrootd)
+add_custom_target(ALL_LIBS)
+add_custom_target(ALL_BINS)
+add_custom_target(ALL_PLUGINS)
+add_custom_target(ALL_TESTLIBS)
+add_custom_target(ALL_TESTBINS)
+add_custom_target(ALL_TARGETS)
+add_dependencies(ALL_TARGETS ALL_LIBS ALL_BINS ALL_PLUGINS ALL_TESTLIBS ALL_TESTBINS)
 """
         output_file.write(preamble)
         include_paths = set()
@@ -677,22 +695,21 @@ find_package(Xrootd)
         output_file.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated" )\n')
  
 
-        epr="""
+        macros="""
 
-macro(edmpluginrefresh name)
-      message("edmpluginrefresh ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh ${CMAKE_BINARY_DIR}/lib/plugin*.so")
-      set(ENV{LD_LIBRARY_PATH} "${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH}")
-      add_custom_command(TARGET ${name} PRE_BUILD
-      COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "${CMAKE_BINARY_DIR}/lib/plugin*.so"
+add_custom_target(EDMPLUGINREFRESH 
+  COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "plugin*.so" WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+  DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh ALL_PLUGINS ALL_LIBS 
+  COMMENT "Running edmPluginRefesh in lib dir"
+  )
+if(BUILDTEST)
+    add_custom_target(EDMPLUGINREFRESHTEST 
+      COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "plugin*.so" WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
+      DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh ALL_TESTLIBS
+      COMMENT "Running edmPluginRefesh in lib dir"
+      BYPRODUCTS ${CMAKE_BINARY_DIR}/lib/.edmplugincache
       )
-endmacro()
-
-macro(edmplugingen name)
-      add_custom_command(TARGET ${name} POST_BUILD
-      COMMAND echo "module plugin${name}" >${CMAKE_BINARY_DIR}/lib/plugin${name}.edmplugin
-      )
-endmacro()
-
+endif()
 
 macro(cms_rootdict name)
   if("${ARGN}" STREQUAL "")
@@ -795,7 +812,7 @@ macro(add_python_rules target)
 endmacro()
 
 """
-        output_file.write(epr)
+        output_file.write(macros)
 
         subsystem_list = []
         for subsystem in self.project.subsystems:
@@ -804,7 +821,6 @@ endmacro()
 
         for subsystem in subsystem_list:
             output_file.write("add_subdirectory(" + subsystem + ")\n")
-            output_file.write("install(DIRECTORY "+subsystem+" DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
             subsystem_modules = self.project.subsystems[subsystem]
             self.handle_subsystem(subsystem, subsystem_modules)
 
@@ -821,14 +837,18 @@ endmacro()
                 module_groups[group_name].append(module)
             else:
                 module_groups[group_name] = [module]
+ 
 
+        for subsystem in subsystem_list:
+            output_file.write("install(DIRECTORY "+subsystem+" DESTINATION ${CMAKE_INSTALL_PREFIX}/src)\n")
+        
         postamble="""
 install(FILES CMakeLists.txt DESTINATION ${CMAKE_INSTALL_PREFIX}/src)
-#install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)
-#install(DIRECTORY buildfile2cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)
+install(DIRECTORY cmaketools DESTINATION ${CMAKE_INSTALL_PREFIX}/src PATTERN ".git" EXCLUDE)
 """
         output_file.write(postamble)
 
+        output_file.write("#install(FILES ${CMAKE_BINARY_DIR}/lib/.edmplugincache DESINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})\n")
         output_file.close()
 
 
