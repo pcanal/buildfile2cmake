@@ -485,7 +485,8 @@ class CMakeGenerator:
                     if len(target.test_runner_args) == 3:
                         out.write("add_test(NAME %s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, target.test_runner_args[2] ))
                         out.write("set_tests_properties(%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol))
-                        out.write('set_tests_properties(%s_CTest PROPERTIES ENVIRONMENT "CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n'%(target.symbol))
+                        out.write('set_tests_properties(%s_CTest \n'%(target.symbol))
+                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH}:CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
 
                         if not target.pretest == '':
                             out.write("#add_dependencies("+target.symbol+" "+target.pretest+")\n")
@@ -494,12 +495,14 @@ class CMakeGenerator:
                         for i in range(2,len(target.test_runner_args)):
                             out.write("add_test(NAME %s_%s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, i, target.test_runner_args[i] ))
                             out.write("set_tests_properties(%s_%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol,i))
-                            out.write('set_tests_properties(%s_%s_CTest PROPERTIES ENVIRONMENT "CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n'%(target.symbol, i))
+                            out.write('set_tests_properties(%s_%s_CTest\n'%(target.symbol, i))
+                            out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH}:CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
 
                     if len(target.test_runner_args) == 0:
                         out.write("add_test(NAME "+target.symbol+"_CTest COMMAND "+target.symbol+")\n\n")
                         out.write("set_tests_properties("+target.symbol+"_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test )\n")
-                        out.write('set_tests_properties('+target.symbol+'_CTest PROPERTIES ENVIRONMENT "CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                        out.write('set_tests_properties('+target.symbol+'_CTest \n')
+                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH}:CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python;PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
                         out.write("set_target_properties(")
                         out.write(target.symbol)
                         out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
@@ -606,7 +609,6 @@ class CMakeGenerator:
 
         subsystem_cmake.write("\n\n")
         subsystem_cmake.write('set(pythondir ${CMAKE_BINARY_DIR}/python/%s)\n' % subsystem)
-        subsystem_cmake.write('message(STATUS "subsystem %s")\n' % subsystem)
         subsystem_cmake.write('file(MAKE_DIRECTORY ${pythondir})\n')
         #subsystem_cmake.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated\n__path__.append(\'${pythondir}\')\n")\n')
         subsystem_cmake.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated\nimport os\n__path__.append(os.path.dirname(os.path.abspath(__file__)))")\n')
@@ -756,11 +758,8 @@ endmacro()
 
 macro(add_python_rules target)
   file(GLOB pyfiles ${CMAKE_CURRENT_SOURCE_DIR}/python/*.py)
-  message(STATUS ${target} pyfiles ${pyfiles})
   file(GLOB tpyfiles ${CMAKE_CURRENT_SOURCE_DIR}/python/test/*.py)
-  message(STATUS ${target} tpyfiles ${tpyfiles})
   file(GLOB cfifiles ${CMAKE_CURRENT_SOURCE_DIR}/python/*_cfi.py)
-  message(STATUS ${target} cfifiles ${cfifiles})
   set(pythondir ${CMAKE_BINARY_DIR}/python/${target})
   get_filename_component(pdir ${pythondir} DIRECTORY)
   if(pyfiles OR tpyfiles)
@@ -782,7 +781,12 @@ macro(add_python_rules target)
               file(WRITE "${dir}/__init__.py" "#autogenerated by add_python_rules")
           endforeach()
       endif()
-      file(WRITE "${pythondir}/__init__.py" "#autogenerated by add_python_rules\nimport os\n__path__.append(os.path.dirname(os.path.abspath(__file__).rsplit(\'/python/${target}\',1)[0])+\'/cfipython/${target}\')\n")
+      list(FIND pyfiles "__init__.py" initpy)
+      if(initpy)
+          file(TOUCH "${pythondir}/__init__.py")
+      else()
+          file(WRITE "${pythondir}/__init__.py" "#autogenerated by add_python_rules\nimport os\n__path__.append(os.path.dirname(os.path.abspath(__file__).rsplit(\'/python/${target}\',1)[0])+\'/cfipython/${target}\')\n")
+      endif()
   endif()
   unset(pyfiles)
   unset(tpyfiles)
@@ -880,6 +884,26 @@ def main():
     # Create an empty ScramProject
     project = ScramProject()
 
+    for root, dirs, files in os.walk('.'):
+        r = remove_str_refix(root, './')
+        if len(r.split("/")) == 2 and not r.startswith('.git') and not r.startswith('cmaketools'):
+            if not 'BuildFile.xml' in os.listdir(r):
+                with open('%s/BuildFile.xml'%r, 'w') as f:
+                    data = '<export><lib name="1"/></export>\n'
+
+                    f.write(data)
+        if r == 'IOPool/TFileAdaptor/plugins':
+            data=""
+            with open('%s/BuildFile.xml' % root , 'r') as g:
+                data=g.read()
+            with open('%s/BuildFile.xml' % root , 'w') as f:
+                data += """
+<library   file="module.cc" name="IOPoolTFileAdaptorAuto">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+"""
+                f.write(data)
+
     # traverse root directory, and list directories as dirs and files as files
     for root, dirs, files in os.walk('.'):
         for file in files:
@@ -894,14 +918,6 @@ def main():
                 if m:
                     project.add_module(m)
 
-    for root, dirs, files in os.walk('.'):
-        r = remove_str_refix(root, './')
-        if len(r.split("/")) == 2 and not r.startswith('.git') and not r.startswith('cmaketools'):
-            if not 'BuildFile.xml' in os.listdir(r):
-                data = '<scram><export><lib name="1"/></export></scram>'
-                et=ET.fromstring(data)
-                m = ScramModule('.', r, et)
-                project.add_module(m)
 
     project.resolve_dependencies()
     

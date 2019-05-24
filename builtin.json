@@ -209,7 +209,7 @@
             "${XROOTD_INCLUDE_DIR}"
         ],
         "links": [
-            "XrdClient"
+            "XrdCl"
         ]
     },
     "XrdPosixPreload": {
