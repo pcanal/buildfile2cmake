@@ -454,6 +454,8 @@ class CMakeGenerator:
     # Writes the necessary CMake commands to generate the given target
     # to the given out stream (which needs to support a 'write' call).
     def generate_target(self, target, out):
+        if re.search('buildfile2cmake',target.dir):
+            return
         if target.has_source():
             if target.has_dictionary():
                 for clh in target.classes_h :
@@ -553,6 +555,7 @@ class CMakeGenerator:
             out.write("\n")
             if not re.search("test", target.dir) :
                 out.write("add_python_rules("+target.dir+")\n")
+                out.write("add_script_rules("+target.dir+")\n")
                 out.write("install( TARGETS ") 
                 out.write(target.symbol)
                 out.write(" DESTINATION ${CMAKE_INSTALL_PREFIX}/")
@@ -664,6 +667,7 @@ set(Boost_NO_BOOST_CMAKE ON)
 set(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost 1.67.0 COMPONENTS filesystem thread iostreams python27 regex serialization system program_options )
 find_package(Python2 COMPONENTS Interpreter Development)
+find_package(Python3 COMPONENTS Interpreter Development)
 find_package(Threads)
 find_package(CMakeTools)
 find_package(benchmark)
@@ -772,6 +776,16 @@ macro(add_rootdict_rules name)
   unset(classname)
   unset(FLAGS)
 endmacro()
+
+macro(add_script_rules target)
+  file(GLOB scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*)
+  if(scripts)
+      foreach(script ${scripts})
+          file(COPY ${script} DESTINATION ${CMAKE_BINARY_DIR/bin})
+      endforeach()
+  endif()
+endmacro()
+
 
 macro(add_python_rules target)
   file(GLOB pyfiles ${CMAKE_CURRENT_SOURCE_DIR}/python/*.py)
@@ -906,7 +920,7 @@ def main():
 
     for root, dirs, files in os.walk('.'):
         r = remove_str_refix(root, './')
-        if len(r.split("/")) == 2 and not r.startswith('.git') and not r.startswith('cmaketools'):
+        if len(r.split("/")) == 2 and not r.startswith('.git') and not r.startswith('cmaketools') and not r.startswith('buildfile2cmake'):
             if not 'BuildFile.xml' in os.listdir(r):
                 with open('%s/BuildFile.xml'%r, 'w') as f:
                     data = '<export><lib name="1"/></export>\n'
@@ -939,6 +953,8 @@ def main():
             if len(root.split("/")) != 2:
               continue
             if root == "Utilities/StaticAnalyzers":
+              continue
+            if root == 'buildfile2cmake/.git':
               continue
             if file == "BuildFile.xml":
                 path = os.path.join(root, file)

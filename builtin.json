@@ -995,6 +995,11 @@
             "${Python2_INCLUDE_DIRS}"
          ]
     },
+    "python3": {
+        "includes": [
+            "${Python3_INCLUDE_DIRS}"
+         ]
+    },
     "rivet": {
         "includes": [
             "${RIVET_INCLUDE_DIR}"
