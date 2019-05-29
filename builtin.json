@@ -969,7 +969,11 @@
     "py2-pandas": {},
     "py2-pippkgs": {},
     "py2-root_numpy": {},
-    "py2-pybind11" : {},
+    "py2-pybind11" : {
+        "includes": [
+            "${Python2_INCLUDE_DIRS}/pybind11"
+        ]
+    },
     "pyclang": {},
     "pydata": {},
     "pythia6": {
@@ -997,7 +1001,10 @@
     },
     "python3": {
         "includes": [
-            "${Python3_INCLUDE_DIRS}"
+            "${Python2_INCLUDE_DIRS}"
+         ],
+        "links": [
+            "Python2::Python"
          ]
     },
     "rivet": {

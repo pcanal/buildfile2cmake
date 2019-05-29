@@ -486,9 +486,7 @@ class CMakeGenerator:
                 if target.is_executable:
                     if len(target.test_runner_args) == 3:
                         out.write("add_test(NAME %s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, target.test_runner_args[2] ))
-                        out.write("set_tests_properties(%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol))
-                        out.write('set_tests_properties(%s_CTest \n'%(target.symbol))
-                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                        out.write("add_test_env(%s_CTest)\n" % (target.symbol))
 
                         if not target.pretest == '':
                             out.write("add_dependencies("+target.symbol+" "+target.pretest+")\n")
@@ -496,15 +494,11 @@ class CMakeGenerator:
                     if len(target.test_runner_args) > 3:
                         for i in range(2,len(target.test_runner_args)):
                             out.write("add_test(NAME %s_%s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, i, target.test_runner_args[i] ))
-                            out.write("set_tests_properties(%s_%s_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test)\n" % (target.symbol,i))
-                            out.write('set_tests_properties(%s_%s_CTest\n'%(target.symbol, i))
-                            out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                            out.write("add_test_env(%s_%s_CTest)\n" % (target.symbol, i))
 
                     if len(target.test_runner_args) == 0:
                         out.write("add_test(NAME "+target.symbol+"_CTest COMMAND "+target.symbol+")\n\n")
-                        out.write("set_tests_properties("+target.symbol+"_CTest PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test )\n")
-                        out.write('set_tests_properties('+target.symbol+'_CTest \n')
-                        out.write('PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/lib:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")\n\n')
+                        out.write("add_test_env("+target.symbol+"_CTest)\n\n")
                         out.write("set_target_properties(")
                         out.write(target.symbol)
                         out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
@@ -578,6 +572,10 @@ class CMakeGenerator:
                     out.write('cms_rootdict('+target.symbol+' '+clh+' '+cldef+')\n\n')
                 out.write('add_rootdict_rules('+target.symbol+')\n\n')
                 out.write('add_library('+target.symbol+' SHARED ${'+target.symbol+'_EXTRA_SOURCES})\n\n')
+                out.write("set_target_properties(")
+                out.write(target.symbol)
+                out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
+                out.write(" add_dependencies( ALL_LIBS "+target.symbol+")\n")
 
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
@@ -658,7 +656,9 @@ if(BUILDTEST)
   include(CTest)
   enable_testing()
 endif()
-
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+SET(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test")
 cmake_policy( SET CMP0082 NEW)
 find_package(ROOT 6.12.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA)
 include(GNUInstallDirs)
@@ -667,7 +667,7 @@ set(Boost_NO_BOOST_CMAKE ON)
 set(Boost_NO_SYSTEM_PATHS ON)
 find_package(Boost 1.67.0 COMPONENTS filesystem thread iostreams python27 regex serialization system program_options )
 find_package(Python2 COMPONENTS Interpreter Development)
-find_package(Python3 COMPONENTS Interpreter Development)
+#find_package(Python3 COMPONENTS Interpreter Development)
 find_package(Threads)
 find_package(CMakeTools)
 find_package(benchmark)
@@ -823,6 +823,14 @@ macro(add_python_rules target)
   unset(tpyfiles)
   unset(cfifiles)
   unset(pythondir)
+endmacro()
+
+macro(add_test_env target)
+set_tests_properties(${target} PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test )
+set_tests_properties(${target} PROPERTIES TIMEOUT 30 )
+set_tests_properties(${target} 
+PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_RELEASE_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_SOURCE_DIR};PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHONPATH};PYTHON27PATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHON27PATH};PYTHON3PATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:$ENV{PYTHON3PATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{LD_LIBRARY_PATH};LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/")
+
 endmacro()
 
 """
