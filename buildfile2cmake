@@ -3,7 +3,6 @@
 import os, glob, shutil, sys, subprocess, re
 import xml.etree.ElementTree as ET
 import json
-
 # The directory of the current SCRAM project.
 prefix = os.getcwd() + os.sep
 
@@ -656,18 +655,15 @@ if(BUILDTEST)
   include(CTest)
   enable_testing()
 endif()
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-SET(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test")
 cmake_policy( SET CMP0082 NEW)
-find_package(ROOT 6.12.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder PyROOT TMVA)
+find_package(ROOT 6.12.0 COMPONENTS Rint Thread Cling Core MathCore MathMore Matrix Minuit Minuit2 Physics MLP Foam Hist Spectrum Tree TreePlayer RIO XMLIO Net Gpad Graf Postscript Graf3d Eve RGL Gui GuiHtml Html EG Geom GeomBuilder TMVA)
 include(GNUInstallDirs)
 include(${ROOT_USE_FILE})
 set(Boost_NO_BOOST_CMAKE ON)
 set(Boost_NO_SYSTEM_PATHS ON)
-find_package(Boost 1.67.0 COMPONENTS filesystem thread iostreams python27 regex serialization system program_options )
-find_package(Python2 COMPONENTS Interpreter Development)
-#find_package(Python3 COMPONENTS Interpreter Development)
+find_package(Boost 1.67.0 COMPONENTS filesystem thread iostreams regex serialization system program_options python%s%s)
+find_package(Python2 COMPONENTS Development)
+find_package(Python3 COMPONENTS Development)
 find_package(Threads)
 find_package(CMakeTools)
 find_package(benchmark)
@@ -681,7 +677,7 @@ add_custom_target(ALL_TESTLIBS)
 add_custom_target(ALL_TESTBINS)
 add_custom_target(ALL_TARGETS)
 add_dependencies(ALL_TARGETS ALL_LIBS ALL_BINS ALL_PLUGINS ALL_TESTLIBS ALL_TESTBINS)
-"""
+""" % (sys.version_info[0],sys.version_info[1])
         output_file.write(preamble)
         include_paths = set()
         finds = set()

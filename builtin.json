@@ -239,8 +239,6 @@
             "Boost::system",
             "Boost::iostreams",
             "Boost::program_options",
-            "Boost::python27",
-            "Python2::Python",
             "Boost::serialization",
             "Boost::system",
             "Boost::regex"
@@ -284,13 +282,10 @@
     "boost_python": {
         "includes": [
             "${Boost_INCLUDE_DIR}",
-            "${Boost_INCLUDE_DIR}/python",
-            "${Python2_INCLUDE_DIR}"
+            "${Boost_INCLUDE_DIR}/python"
         ],
         "links": [
-            "Threads::Threads",
-            "Boost::python27",
-            "Python2::Python"
+            "Threads::Threads"
         ]
     },
     "boost_regex": {
@@ -969,11 +964,7 @@
     "py2-pandas": {},
     "py2-pippkgs": {},
     "py2-root_numpy": {},
-    "py2-pybind11" : {
-        "includes": [
-            "${Python2_INCLUDE_DIRS}/pybind11"
-        ]
-    },
+    "py2-pybind11" : {},
     "pyclang": {},
     "pydata": {},
     "pythia6": {
@@ -997,14 +988,17 @@
     "python": {
         "includes": [
             "${Python2_INCLUDE_DIRS}"
+         ],
+        "links": [
+            "Python2::Python"
          ]
     },
     "python3": {
         "includes": [
-            "${Python2_INCLUDE_DIRS}"
+            "${Python3_INCLUDE_DIRS}"
          ],
         "links": [
-            "Python2::Python"
+            "Python3::Python"
          ]
     },
     "rivet": {
