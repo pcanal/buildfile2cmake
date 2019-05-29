@@ -583,7 +583,7 @@
             "Geant4::G4visXXX",
             "Geant4::G4VRML"
         ],
-        "finds": [
+        "find": [
             "Geant4"
         ]
     },
@@ -623,7 +623,7 @@
             "Geant4::G4visXXX",
             "Geant4::G4VRML"
         ],
-        "finds": [
+        "find": [
             "Geant4"
         ]
     },
@@ -663,7 +663,7 @@
             "Geant4::G4visXXX",
             "Geant4::G4VRML"
         ],
-        "finds": [
+        "find": [
             "Geant4"
         ]
     },
@@ -704,7 +704,7 @@
         "links": [
             "benchmark::benchmark_main"
         ],
-        "finds": [
+        "find": [
             "benchmark"
         ]
     },
@@ -712,7 +712,7 @@
         "links": [
             "benchmark::benchmark"
         ],
-        "finds": [
+        "find": [
             "benchmark"
         ]
     },
@@ -964,7 +964,14 @@
     "py2-pandas": {},
     "py2-pippkgs": {},
     "py2-root_numpy": {},
-    "py2-pybind11" : {},
+    "py2-pybind11" : {
+        "links": [
+            "pybind11::pybind11"
+         ],
+        "find": [
+            "pybind11"
+         ]
+    },
     "pyclang": {},
     "pydata": {},
     "pythia6": {
@@ -987,18 +994,18 @@
     },
     "python": {
         "includes": [
-            "${Python2_INCLUDE_DIRS}"
+            "${Python_INCLUDE_DIR}"
          ],
         "links": [
-            "Python2::Python"
+            "${Python_LIBRARY}"
          ]
     },
     "python3": {
         "includes": [
-            "${Python3_INCLUDE_DIRS}"
+            "${Python_INCLUDE_DIR}"
          ],
         "links": [
-            "Python3::Python"
+            "${Python_LIBRARY}"
          ]
     },
     "rivet": {
@@ -1731,6 +1738,9 @@
         ]
     },
     "xrootd": {
+        "find": [
+            "Xrootd"
+        ],
         "includes": [
             "${XROOTD_INCLUDE_DIR}"
         ],
