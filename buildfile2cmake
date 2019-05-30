@@ -506,7 +506,7 @@ class CMakeGenerator:
                 else:
                     out.write("set_target_properties(")
                     out.write(target.symbol)
-                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
+                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
                     out.write("add_dependencies( ALL_TESTLIBS "+target.symbol+")\n")
             else:
                 if target.is_executable:
@@ -546,7 +546,15 @@ class CMakeGenerator:
                 out.write("\n".join(sorted(target.needed_libs)))
                 out.write("\n)\n\n")
             out.write("\n")
-            if not re.search("test", target.dir) :
+            if re.search("test", target.dir) :
+                if not target.is_executable:
+                    out.write("install( TARGETS ") 
+                    out.write(target.symbol)
+                    out.write(" DESTINATION ${CMAKE_INSTALL_PREFIX}/")
+                    out.write("${CMAKE_INSTALL_LIBDIR}")
+                    out.write(" EXPORT fwcore::")
+                    out.write(")\n\n")
+            else:
                 out.write("add_python_rules("+target.dir+")\n")
                 out.write("add_script_rules("+target.dir+")\n")
                 out.write("install( TARGETS ") 
