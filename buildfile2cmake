@@ -507,13 +507,13 @@ class CMakeGenerator:
                         out.write("add_test_env("+target.symbol+"_CTest)\n\n")
                         out.write("set_target_properties(")
                         out.write(target.symbol)
-                        out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
+                        out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)\n")
                     out.write("add_dependencies( ALL_TESTBINS "+target.symbol+")\n")
                     out.write("add_dependencies( "+target.symbol+" ALL_PLUGINS)\n")
                 else:
                     out.write("set_target_properties(")
                     out.write(target.symbol)
-                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
+                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
                     out.write("add_dependencies( ALL_TESTLIBS "+target.symbol+")\n")
             else:
                 if target.is_executable:
