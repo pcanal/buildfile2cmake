@@ -478,14 +478,15 @@ class CMakeGenerator:
                     out.write('\n'.join(sorted(target.include_dirs)))
                     out.write("\n)\n\n")
                     out.write('reflex_build_dictionary('+target.symbol+' '+clh+' '+cldef+')\n\n')
-                    out.write('set_target_properties('+name+'Dict\n')
+                    out.write('set_target_properties('+name+'Dict ')
                     out.write('PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n')
                     out.write('add_dependencies(ALL_DICTS '+name+'Dict)\n')
-                #if 'FWCoreTFWLiteSelector' == target.symbol or 'FWCoreTFWLiteSelectorTest' == target.symbol or 'IOPoolTFileAdaptor' == target.symbol:
                     out.write('add_dependencies('+target.symbol+' '+name+')\n')
-                    out.write("target_link_libraries("+target.symbol+" INTERFACE ${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}"+target.symbol+"Dict${CMAKE_SHARED_LIBRARY_SUFFIX})\n")
-                    out.write('file(COPY ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap DESTINATION ${CMAKE_BINARY_DIR}/lib)\n')
-                    out.write('file(COPY ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm DESTINATION ${CMAKE_BINARY_DIR}/lib)\n')
+                    out.write("target_link_libraries("+target.symbol+" INTERFACE ")
+                    out.write("${CMAKE_BINARY_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}"+target.symbol+"Dict${CMAKE_SHARED_LIBRARY_SUFFIX})\n")
+                    out.write('add_custom_command(TARGET '+name+'Dict POST_BUILD\n')
+                    out.write('COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap ${CMAKE_BINARY_DIR}/lib\n')
+                    out.write('COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm   ${CMAKE_BINARY_DIR}/lib)\n')
 
             if re.search("test", target.dir):
                 if target.is_executable:
@@ -508,7 +509,7 @@ class CMakeGenerator:
                         out.write(target.symbol)
                         out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
                     out.write("add_dependencies( ALL_TESTBINS "+target.symbol+")\n")
-                    out.write("add_dependencies("+target.symbol+" ALL_DICTS EDMPLUGINREFRESH EDMPLUGINREFRESHTEST)\n")
+                    out.write("add_dependencies( "+target.symbol+" ALL_PLUGINS)\n")
                 else:
                     out.write("set_target_properties(")
                     out.write(target.symbol)
@@ -516,15 +517,15 @@ class CMakeGenerator:
                     out.write("add_dependencies( ALL_TESTLIBS "+target.symbol+")\n")
             else:
                 if target.is_executable:
-                    out.write("set_target_properties(")
+                    out.write("set_target_properties( ")
                     out.write(target.symbol)
                     out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)\n")
-                    out.write(" add_dependencies( ALL_BINS "+target.symbol+")\n")
+                    out.write("add_dependencies( ALL_BINS "+target.symbol+")\n")
                 else:
                     out.write("set_target_properties(")
                     out.write(target.symbol)
                     out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
-                    out.write(" add_dependencies( ALL_LIBS "+target.symbol+")\n")
+                    out.write("add_dependencies( ALL_LIBS "+target.symbol+")\n")
             if re.search('plugin', target.dir) or target.edm_plugin:
                 if not target.is_executable:
                     out.write('set_target_properties(')
@@ -587,6 +588,10 @@ class CMakeGenerator:
                     out.write('set_target_properties('+name+'Dict\n')
                     out.write('PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n')
                     out.write('add_dependencies(ALL_DICTS '+name+'Dict)\n')
+                    out.write('add_dependencies('+target.symbol+' '+name+'Dict)\n')
+                    out.write('add_custom_command(TARGET '+name+'Dict POST_BUILD\n')
+                    out.write('COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/'+name+'Dict.rootmap ${CMAKE_BINARY_DIR}/lib\n')
+                    out.write('COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/'+name+'_rdict.pcm   ${CMAKE_BINARY_DIR}/lib)\n')
 
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
@@ -681,15 +686,16 @@ find_package(Threads)
 find_package(CMakeTools)
 UseCMakeTools()
 include(GoogleTest)
-add_custom_target(ALL_LIBS)
-add_custom_target(ALL_BINS)
-add_custom_target(ALL_DICTS)
-add_custom_target(ALL_PLUGINS)
-add_custom_target(ALL_TESTLIBS)
-add_custom_target(ALL_TESTBINS)
-add_custom_target(ALL_TARGETS)
+add_custom_target(ALL_LIBS ALL)
+add_custom_target(ALL_BINS ALL)
+add_dependencies(ALL_BINS ALL_LIBS)
+add_custom_target(ALL_DICTS ALL)
 add_dependencies(ALL_LIBS ALL_DICTS)
-add_dependencies(ALL_TARGETS ALL_LIBS ALL_BINS ALL_PLUGINS ALL_TESTLIBS ALL_TESTBINS)
+add_custom_target(ALL_PLUGINS ALL)
+add_dependencies(ALL_LIBS ALL_PLUGINS)
+add_custom_target(ALL_TESTLIBS ALL)
+add_custom_target(ALL_TESTBINS ALL)
+add_dependencies(ALL_TESTBINS ALL_TESTLIBS ALL_LIBS)
 """ % (sys.version_info[0],sys.version_info[1],sys.version_info[0],sys.version_info[0],sys.version_info[0])
         output_file.write(preamble)
 
@@ -719,22 +725,22 @@ file(WRITE  "${pythondir}/__init__.py" "#autogenerated")
 
         macros="""
 
-add_custom_target(EDMPLUGINREFRESH 
+add_custom_command(TARGET ALL_PLUGINS POST_BUILD
   COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "plugin*.so" 
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-  DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh ALL_PLUGINS ALL_LIBS 
+  DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh
   COMMENT "Running edmPluginRefesh in lib dir"
   BYPRODUCTS ${CMAKE_BINARY_DIR}/lib/.edmplugincache
-  )
+)
 if(BUILDTEST)
-    add_custom_target(EDMPLUGINREFRESHTEST 
+  add_custom_command(TARGET ALL_PLUGINS POST_BUILD
       COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "plugin*.so"
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-      DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh ALL_PLUGINS ALL_TESTLIBS
+      DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh
       COMMENT "Running edmPluginRefesh in test dir"
       BYPRODUCTS ${CMAKE_BINARY_DIR}/test/.edmplugincache
-      )
-endif()
+  )
+endif() 
 
 macro(add_script_rules target)
   file(GLOB scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*)
@@ -786,12 +792,12 @@ endmacro()
 
 macro(add_test_env target)
 set_tests_properties(${target} PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test )
-set_tests_properties(${target} PROPERTIES TIMEOUT 20 )
+set_tests_properties(${target} PROPERTIES TIMEOUT 600 )
 get_filename_component(CXXPATH, $ENV{SPACK_CXX}, DIRECTORY)
 set(SPACK_CXX ${CXXPATH})
 set(ROOT_GCC_TOOLCHAIN "${SPACK_CXX}/..")
 set_tests_properties(${target}
-PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOTSYS}/include:$ENV{SPACK_INCLUDE_DIRS};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_RELEASE_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/src;PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{SPACK_LINK_DIRS}:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
+PROPERTIES ENVIRONMENT "ROOT_INCLUDE_PATH=${CMAKE_SOURCE_DIR}:$ENV{ROOTSYS}/include:$ENV{SPACK_INCLUDE_DIRS}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_RELEASE_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/src;PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{SPACK_LINK_DIRS}:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 
 endmacro()
 
