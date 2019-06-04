@@ -700,6 +700,8 @@ add_dependencies(ALL_TESTBINS ALL_TESTLIBS ALL_LIBS)
         output_file.write(preamble)
 
         preinstall="""
+set(testdir ${CMAKE_BINARY_DIR}/test)
+file(MAKE_DIRECTORY ${testdir} )
 set(sourcedir ${CMAKE_BINARY_DIR}/src)
 file(MAKE_DIRECTORY ${sourcedir})
 file(GLOB sources "${CMAKE_SOURCE_DIR}/*")
@@ -729,24 +731,16 @@ add_custom_command(TARGET ALL_PLUGINS POST_BUILD
   COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "plugin*.so" 
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/lib
   DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh
-  COMMENT "Running edmPluginRefesh in lib dir"
+  COMMENT "Running edmPluginRefesh in for libs"
   BYPRODUCTS ${CMAKE_BINARY_DIR}/lib/.edmplugincache
 )
-if(BUILDTEST)
-  add_custom_command(TARGET ALL_PLUGINS POST_BUILD
-      COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "plugin*.so"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/test
-      DEPENDS ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh
-      COMMENT "Running edmPluginRefesh in test dir"
-      BYPRODUCTS ${CMAKE_BINARY_DIR}/test/.edmplugincache
-  )
-endif() 
 
 macro(add_script_rules target)
   file(GLOB scripts ${CMAKE_CURRENT_SOURCE_DIR}/scripts/*)
   if(scripts)
       foreach(script ${scripts})
           file(COPY ${script} DESTINATION ${CMAKE_BINARY_DIR}/bin)
+          install(FILES ${script}  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
       endforeach()
   endif()
 endmacro()
