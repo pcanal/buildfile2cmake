@@ -481,7 +481,8 @@ class CMakeGenerator:
                     out.write('set_target_properties('+name+'Dict\n')
                     out.write('PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n')
                     out.write('add_dependencies(ALL_LIBS '+name+'Dict)\n')
-                    out.write('target_link_libraries('+target.symbol+' INTERFACE '+name+'Dict)\n')
+                if 'FWCoreTFWLiteSelector' == target.symbol or 'FWCoreTFWLiteSelectorTest' == target.symbol or 'IOPoolTFileAdaptor' == target.symbol:
+                    out.write("target_link_libraries("+target.symbol+" INTERFACE "+target.symbol+"Dict)\n")
 
             if re.search("test", target.dir):
                 if target.is_executable:
@@ -583,7 +584,6 @@ class CMakeGenerator:
                     out.write('set_target_properties('+name+'Dict\n')
                     out.write('PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n')
                     out.write('add_dependencies(ALL_LIBS '+name+'Dict)\n')
-                    out.write('target_link_libraries('+target.symbol+' INTERFACE '+name+'Dict)\n')
                 #out.write('add_rootdict_rules('+target.symbol+')\n\n')
                 #out.write('add_library('+target.symbol+' SHARED ${'+target.symbol+'_EXTRA_SOURCES})\n\n')
                 #out.write("set_target_properties(")
