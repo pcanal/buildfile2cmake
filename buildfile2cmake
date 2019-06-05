@@ -491,7 +491,7 @@ class CMakeGenerator:
             if re.search("test", target.dir):
                 if target.is_executable:
                     if len(target.test_runner_args) == 3:
-                        out.write("add_test(NAME %s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, target.test_runner_args[2] ))
+                        out.write("add_test(NAME %s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, target.test_runner_args[0], target.test_runner_args[2] ))
                         out.write("add_test_env(%s_CTest)\n" % (target.symbol))
 
                         if not target.pretest == '':
@@ -499,7 +499,7 @@ class CMakeGenerator:
 
                     if len(target.test_runner_args) > 3:
                         for i in range(2,len(target.test_runner_args)):
-                            out.write("add_test(NAME %s_%s_CTest COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, i, target.test_runner_args[i] ))
+                            out.write("add_test(NAME %s_%s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, i, target.test_runner_args[0], target.test_runner_args[i] ))
                             out.write("add_test_env(%s_%s_CTest)\n" % (target.symbol, i))
 
                     if len(target.test_runner_args) == 0:
@@ -756,7 +756,8 @@ macro(add_python_rules target)
   get_filename_component(pdir ${pythondir} DIRECTORY)
   if(pyfiles OR tpyfiles)
       file(MAKE_DIRECTORY ${pdir})
-      file(CREATE_LINK ${pythonsrcdir} ${pythondir} SYMBOLIC)
+      file(RELATIVE_PATH reldir ${pdir} ${pythonsrcdir} )
+      file(CREATE_LINK ${reldir}  ${pythondir} SYMBOLIC)
       if(cfifiles)
           set(cfidir ${CMAKE_BINARY_DIR}/cfipython/${target})
           file(MAKE_DIRECTORY ${cfidir})
