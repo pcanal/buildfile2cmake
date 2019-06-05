@@ -786,7 +786,6 @@ macro(add_python_rules target)
 endmacro()
 
 macro(add_test_env target)
-set_tests_properties(${target} PROPERTIES WORKING_DIR ${CMAKE_BINARY_DIR}/test )
 set_tests_properties(${target} PROPERTIES TIMEOUT 600 )
 get_filename_component(CXXPATH, $ENV{SPACK_CXX}, DIRECTORY)
 set(SPACK_CXX ${CXXPATH})
