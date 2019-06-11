@@ -458,24 +458,24 @@ class CMakeGenerator:
             out.write("\n)\n\n")
 
             if re.search("test", target.dir):
+                out.write('set(ENV{CTEST_PARALLEL_LEVEL} 1)\n')
                 if target.is_executable:
-                    if not socket.getfqdn().endswith('cern.ch') and (target.symbol == 'test_StorageFactory_Rfio2' or target.symbol == 'test_StorageFactory_Rfio3' ): 
+                    if not socket.getfqdn().endswith('cern.ch') and (target.symbol == 'edmCatalogFileLocator_t' or target.symbol == 'test_StorageFactory_Rfio2' or target.symbol == 'test_StorageFactory_Rfio3' ): 
                             out.write('message("Skipping test %s that can only run in cern.ch domain")\n'%target.symbol)
                     else:
                         out.write("set_target_properties(")
                         out.write(target.symbol)
                         out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
                         if len(target.test_runner_args) == 3:
-                            out.write("add_test(NAME %s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, target.test_runner_args[0], target.test_runner_args[2] ))
-                            out.write("add_test_env(%s_CTest)\n" % (target.symbol))
-
+                            out.write('add_test(NAME %s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n' % (target.symbol, target.test_runner_args[0], target.test_runner_args[2] ) )
+                            out.write("add_test_env(%s_CTest)\n" % target.symbol)
                             if not target.pretest == '':
                                 out.write("add_dependencies("+target.symbol+" "+target.pretest+")\n")
-
                         if len(target.test_runner_args) > 3:
                             for i in range(2,len(target.test_runner_args)):
-                                out.write("add_test(NAME %s_%s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n" % (target.symbol, i, target.test_runner_args[0], target.test_runner_args[i] ))
+                                out.write('add_test(NAME %s_%s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n' % (target.symbol, i, target.test_runner_args[0], target.test_runner_args[i] ) )
                                 out.write("add_test_env(%s_%s_CTest)\n" % (target.symbol, i))
+
 
                         if len(target.test_runner_args) == 0 and target.run_test:
                             out.write("add_test(NAME "+target.symbol+"_CTest COMMAND "+target.symbol+")\n\n")
