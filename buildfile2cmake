@@ -458,7 +458,6 @@ class CMakeGenerator:
             out.write("\n)\n\n")
 
             if re.search("test", target.dir):
-                out.write('set(ENV{CTEST_PARALLEL_LEVEL} 1)\n')
                 if target.is_executable:
                     if not socket.getfqdn().endswith('cern.ch') and (target.symbol == 'edmCatalogFileLocator_t' or target.symbol == 'test_StorageFactory_Rfio2' or target.symbol == 'test_StorageFactory_Rfio3' ): 
                             out.write('message("Skipping test %s that can only run in cern.ch domain")\n'%target.symbol)
@@ -473,8 +472,8 @@ class CMakeGenerator:
                                 out.write("add_dependencies("+target.symbol+" "+target.pretest+")\n")
                         if len(target.test_runner_args) > 3:
                             for i in range(2,len(target.test_runner_args)):
-                                out.write('add_test(NAME %s_%s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n' % (target.symbol, i, target.test_runner_args[0], target.test_runner_args[i] ) )
-                                out.write("add_test_env(%s_%s_CTest)\n" % (target.symbol, i))
+                                out.write('add_test(NAME %s_%s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n'%(target.symbol,i,target.test_runner_args[0], target.test_runner_args[i] ))
+                                out.write("add_test_env(%s_%s_CTest)\n" % (target.symbol,i))
 
 
                         if len(target.test_runner_args) == 0 and target.run_test:
@@ -833,12 +832,10 @@ endmacro()
 
 macro(add_test_env target)
 set_tests_properties(${target} PROPERTIES TIMEOUT 600 )
-get_filename_component(CXXPATH, $ENV{SPACK_CXX}, DIRECTORY)
-set(SPACK_CXX ${CXXPATH})
-set(ROOT_GCC_TOOLCHAIN "${SPACK_CXX}/..")
+set_tests_properties(${target} PROPERTIES WORKING_DICRECTORY ${CMAKE_BINARY_DIR}/test/${target})
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test/${target})
 set_tests_properties(${target}
-PROPERTIES ENVIRONMENT "CMAKE_PARALLEL_LEVEL=1;LOCALRT=${CMAKE_BINARY_DIR};ROOT_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR}:${CMAKE_SOURCE_DIR}:$ENV{ROOTSYS}/include:$ENV{SPACK_INCLUDE_DIRS}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_RELEASE_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/src;PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{SPACK_LINK_DIRS}:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test;LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
-
+PROPERTIES ENVIRONMENT "LOCALRT=${CMAKE_BINARY_DIR};ROOT_INCLUDE_PATH=${CMAKE_CURRENT_SOURCE_DIR}:${CMAKE_SOURCE_DIR}:$ENV{ROOTSYS}/include:$ENV{SPACK_INCLUDE_DIRS}:$ENV{ROOT_INCLUDE_PATH};CMSSW_BASE=${CMAKE_BINARY_DIR};CMSSW_RELEASE_BASE=${CMAKE_BINARY_DIR};CMSSW_SEARCH_PATH=${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/src;PYTHONPATH=${CMAKE_BINARY_DIR}/python:${CMAKE_BINARY_DIR}/cfipython:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{PYTHONPATH};PATH=${CMAKE_BINARY_DIR}/test:${CMAKE_BINARY_DIR}/bin:$ENV{PATH};LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_BINARY_DIR}/lib:${CMAKE_BINARY_DIR}/test:$ENV{SPACK_LINK_DIRS}:$ENV{LD_LIBRARY_PATH};LOCAL_TMP_DIR=${CMAKE_BINARY_DIR}/test/${target};LOCAL_TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}")
 endmacro()
 
 """
