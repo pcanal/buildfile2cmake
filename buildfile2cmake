@@ -766,7 +766,7 @@ macro(add_rootdict_rules name)
 endmacro()
 
 add_custom_command(TARGET ALL_LIBS POST_BUILD
-  COMMAND ${CMAKE_BINARY_DIR}/bin/edmPluginRefresh "plugin*.so" 
+  COMMAND $<TARGET_FILE:edmPluginRefresh> "plugin*.so" 
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/lib
   DEPENDS edmPluginRefresh
   BYPRODUCTS ${CMAKE_BINARY_DIR}/lib/.edmplugincache
@@ -788,7 +788,7 @@ macro(edm_write_config target dir)
   set(cfidir ${CMAKE_BINARY_DIR}/cfipython/${dir})
   file(MAKE_DIRECTORY ${cfidir})
   add_custom_command( TARGET ${target} POST_BUILD
-                    COMMAND ${CMAKE_BINARY_DIR}/bin/edmWriteConfigs -p $<TARGET_FILE:${target}>
+                    COMMAND $<TARGET_FILE:edmWriteConfigs> -p $<TARGET_FILE:${target}>
                     WORKING_DIRECTORY ${cfidir}
                     DEPENDS edmWriteConfigs ${target}
                     )
