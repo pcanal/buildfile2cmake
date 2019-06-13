@@ -19,17 +19,17 @@ def remove_prefix(path):
     path = os.path.realpath(path)
     if path.startswith(prefix):
         return path[len(prefix):]
-    print("NOT IN CMS" + path)
+    print('NOT IN CMS' + path)
     assert False
 
 # Given an XML node with a 'file' attribute and a base_directory
 # in which the BuildFile.xml containing this node,
 def get_files(node, base_dir):
     result = []
-    files = [x.strip() for x in node.attrib["file"].split(",") ]
+    files = [x.strip() for x in node.attrib['file'].split(',') ]
     # Fallback in case we use space delimiters in the file lists...
     if len(files) == 1:
-        files = files[0].split(" ")
+        files = files[0].split(' ')
 
     for file in files:
         cwd_bak = os.path.realpath(os.getcwd())
@@ -38,9 +38,9 @@ def get_files(node, base_dir):
         os.chdir(cwd_bak)
 
     for child_node in node:
-        if child_node.tag == "flags":
-            if "SKIP_FILES" in child_node.attrib:
-                to_remove = child_node.attrib["SKIP_FILES"]
+        if child_node.tag == 'flags':
+            if 'SKIP_FILES' in child_node.attrib:
+                to_remove = child_node.attrib['SKIP_FILES']
                 if to_remove in result:
                     result.remove(to_remove)
     return result
@@ -79,16 +79,16 @@ class ScramTargetBase(object):
         self.libs = set()
         self.cxx_flags = set()
         self.test_runner_args = []
-        self.pretest = ""
-        self.defines = ""
-        self.ld_flags = ""
+        self.pretest = ''
+        self.defines = ''
+        self.ld_flags = ''
         self.run_test = True
         self.edm_plugin = False
         self.needed_libs = set()
         self.include_dirs = set()
         self.finds = set()
         self.add_subdir = False
-        self.dir = ""
+        self.dir = ''
         self.module = None
         self.forwards = set()
         self.was_linked = False
@@ -141,9 +141,9 @@ class ScramTargetBase(object):
 
 
 def get_lib_or_name_attr(node):
-    if "name" in node.attrib:
-        return node.attrib["name"]
-    return node.attrib["lib"]
+    if 'name' in node.attrib:
+        return node.attrib['name']
+    return node.attrib['lib']
 
 
 class ScramModuleLibrary(ScramTargetBase):
@@ -151,65 +151,65 @@ class ScramModuleLibrary(ScramTargetBase):
         super(ScramModuleLibrary,self).__init__()
         self.dir = base_dir
         self.name = remove_prefix(base_dir)
-        self.symbol = self.name.replace("/", "").replace("-", "")
+        self.symbol = self.name.replace('/', '').replace('-', '')
 
         for child in node:
-            if child.tag == "use" or child.tag == "lib":
+            if child.tag == 'use' or child.tag == 'lib':
                 self.dependencies_by_name.add(get_lib_or_name_attr(child))
-            if child.tag == "flags":
+            if child.tag == 'flags':
                 for key, value in child.attrib.items():
-                    if "CXXFLAGS" == key or "cppflags" == key or "CPPFLAGS" == key:
+                    if 'CXXFLAGS' == key or 'cppflags' == key or 'CPPFLAGS' == key:
                         self.cxx_flags |= set(value.split())
-                    elif "CPPDEFINES" == key:
-                        self.defines += " -D" + value
+                    elif 'CPPDEFINES' == key:
+                        self.defines += ' -D' + value
                         self.defines = self.defines.strip()
-                    elif "LDFLAGS" == key:
-                        self.ld_flags += " " + value
+                    elif 'LDFLAGS' == key:
+                        self.ld_flags += ' ' + value
                         self.ld_flags = self.ld_flags.strip()
-                    elif "EDM_PLUGIN" == key:
-                        if child.attrib["EDM_PLUGIN"] == "1":
+                    elif 'EDM_PLUGIN' == key:
+                        if child.attrib['EDM_PLUGIN'] == '1':
                             self.edm_plugin = True
-                    elif "BIGOBJ_CXXFLAGS" == key:
+                    elif 'BIGOBJ_CXXFLAGS' == key:
                         pass
-                    elif "DROP_DEP" == key:
+                    elif 'DROP_DEP' == key:
                         pass
-                    elif "RIVET_PLUGIN" == key:
+                    elif 'RIVET_PLUGIN' == key:
                         pass
-                    elif "GENREFLEX_ARGS" == key:
+                    elif 'GENREFLEX_ARGS' == key:
                         pass
-                    elif "NO_LIB_CHECKING" == key:
+                    elif 'NO_LIB_CHECKING' == key:
                         pass
-                    elif "LCG_DICT_XML" == key:
+                    elif 'LCG_DICT_XML' == key:
                         pass
-                    elif "LCG_DICT_HEADER" == key:
+                    elif 'LCG_DICT_HEADER' == key:
                         pass
-                    elif key.startswith("REM_"):
+                    elif key.startswith('REM_'):
                       pass
-                    elif "ADD_SUBDIR" == key:
-                        if value == "1":
+                    elif 'ADD_SUBDIR' == key:
+                        if value == '1':
                             self.add_subdir = True
                     else:
-                        print("Unknown flag type: " + str(child.attrib))
+                        print('Unknown flag type: ' + str(child.attrib))
                     
         
         cwd_bak = os.path.realpath(os.getcwd())
         os.chdir(base_dir)
-        base_glob = "src/*"
+        base_glob = 'src/*'
         
-        self.source_files = glob.glob(base_glob+".cc")
-        self.source_files += glob.glob(base_glob+".cpp")
-        self.source_files += glob.glob(base_glob+".cxx")
-        self.source_files += glob.glob(base_glob+".c")
-        self.source_files += glob.glob(base_glob+".C")
+        self.source_files = glob.glob(base_glob+'.cc')
+        self.source_files += glob.glob(base_glob+'.cpp')
+        self.source_files += glob.glob(base_glob+'.cxx')
+        self.source_files += glob.glob(base_glob+'.c')
+        self.source_files += glob.glob(base_glob+'.C')
 
         if self.add_subdir:
-            base_glob = "src/**/*"
-            self.source_files += glob.glob(base_glob+".cc")
-            self.source_files += glob.glob(base_glob+".cpp")
-            self.source_files += glob.glob(base_glob+".cxx")
-            self.source_files += glob.glob(base_glob+".c")
-            self.source_files += glob.glob(base_glob+".C")
-        self.classes_h = glob.glob("src/classes*.h")
+            base_glob = 'src/**/*'
+            self.source_files += glob.glob(base_glob+'.cc')
+            self.source_files += glob.glob(base_glob+'.cpp')
+            self.source_files += glob.glob(base_glob+'.cxx')
+            self.source_files += glob.glob(base_glob+'.c')
+            self.source_files += glob.glob(base_glob+'.C')
+        self.classes_h = glob.glob('src/classes*.h')
 
         os.chdir(cwd_bak)
 
@@ -226,30 +226,30 @@ class ScramTarget(ScramTargetBase):
         self.source_files = get_files(node, base_dir)
 
         try:
-            self.name = node.attrib["name"]
+            self.name = node.attrib['name']
         except KeyError as e:
             assert len(self.source_files) == 1
-            self.name = self.source_files[0].split(".")[0]
+            self.name = self.source_files[0].split('.')[0]
 
-        self.symbol = self.name.replace("/", "").replace("-", "")
+        self.symbol = self.name.replace('/', '').replace('-', '')
 
-        if node.tag == "bin":
+        if node.tag == 'bin':
             self.is_executable = True
         else:
             self.libs.add(self.symbol)
 
         for child in node:
-            if child.tag == "use" or child.tag == "lib":
+            if child.tag == 'use' or child.tag == 'lib':
                 self.dependencies_by_name.add(get_lib_or_name_attr(child))
-            if child.tag == "flags":
+            if child.tag == 'flags':
                 for key, value in child.attrib.items():
-                    if "TEST_RUNNER_ARGS" == key:
+                    if 'TEST_RUNNER_ARGS' == key:
                         self.test_runner_args = value.split()
-                    if "PRE_TEST" == key:
+                    if 'PRE_TEST' == key:
                         self.pretest = value
-                    if "EDM_PLUGIN" == key:
+                    if 'EDM_PLUGIN' == key:
                         self.edm_plugin=True
-                    if "NO_TESTRUN" == key:
+                    if 'NO_TESTRUN' == key:
                         self.run_test=False
 
 
@@ -259,16 +259,16 @@ class ScramModule():
     def get_targets_from(self, base_dir, node):
         result = []
         for child in node:
-            if child.tag == "bin" or child.tag == "library":
+            if child.tag == 'bin' or child.tag == 'library':
                 bin = ScramTarget(child, base_dir)
                 result.append(bin)
-            if child.tag == "environment":
+            if child.tag == 'environment':
                 result += self.get_targets_from(base_dir, child)
         return result
 
     def parse_directory(self, base_dir):
         result = []
-        file_path = base_dir + "BuildFile.xml"
+        file_path = base_dir + 'BuildFile.xml'
         if os.path.isfile(file_path):
             xml = parse_BuildFileXml(file_path)
             result += self.get_targets_from(base_dir, xml)
@@ -276,18 +276,18 @@ class ScramModule():
 
     def __init__(self, name, base_dir, node):
         self.base_dir = base_dir
-        assert(len(base_dir.split("/")) == 2)
-        self.subsystem = base_dir.split("/")[0]
-        self.package = base_dir.split("/")[1]
-        self.name = self.base_dir.replace("/", "_")
+        assert(len(base_dir.split('/')) == 2)
+        self.subsystem = base_dir.split('/')[0]
+        self.package = base_dir.split('/')[1]
+        self.name = self.base_dir.replace('/', '_')
         self.targets = []
 
         self.main_lib = ScramModuleLibrary(node, base_dir)
         self.targets = [self.main_lib]
 
-        self.binaries = self.parse_directory(base_dir + os.sep + "bin" + os.sep)
-        self.tests = self.parse_directory(base_dir + os.sep + "test" + os.sep)
-        self.plugins = self.parse_directory(base_dir + os.sep + "plugins" + os.sep)
+        self.binaries = self.parse_directory(base_dir + os.sep + 'bin' + os.sep)
+        self.tests = self.parse_directory(base_dir + os.sep + 'test' + os.sep)
+        self.plugins = self.parse_directory(base_dir + os.sep + 'plugins' + os.sep)
 
         self.targets += self.binaries
         self.targets += self.tests
@@ -309,7 +309,7 @@ class ScramProject:
     # Creates all external targets that SCRAM can depend on (e.g. root, geant4...)
     # They only serve the purpose that we can resolve dependencies...
     def init_builtin(self):
-        builtin_json = open(os.path.dirname(os.path.realpath(__file__)) + os.sep + "builtin.json")
+        builtin_json = open(os.path.dirname(os.path.realpath(__file__)) + os.sep + 'builtin.json')
         builtins = json.load(builtin_json)
 
         for key, value in builtins.items():
@@ -317,20 +317,20 @@ class ScramProject:
             m.name = key
             m.target = key
             m.external = True
-            if "includes" in value:
-                m.include_dirs |= set(value["includes"])
+            if 'includes' in value:
+                m.include_dirs |= set(value['includes'])
 
-            if "depends" in value:
-                m.forwards |= set(value["depends"])
+            if 'depends' in value:
+                m.forwards |= set(value['depends'])
 
-            if "links" in value:
-                m.libs |= set(value["links"])
+            if 'links' in value:
+                m.libs |= set(value['links'])
 
-            if "find" in value:
-                m.finds |= set(value["find"])
+            if 'find' in value:
+                m.finds |= set(value['find'])
 
-            if "cxx_flags" in value:
-                m.cxx_flags |= set(value["cxx_flags"])
+            if 'cxx_flags' in value:
+                m.cxx_flags |= set(value['cxx_flags'])
 
             self.add_target(m)
 
@@ -384,32 +384,32 @@ class ScramProject:
 def parse_BuildFileXml(path):
     f = open(path)
     try:
-        data = ""
+        data = ''
         for line in f:
             if not re.match('^#',line):
                 data += line
-        data = "<scram>" + data.strip() + "</scram>"
+        data = '<scram>' + data.strip() + '</scram>'
         root = ET.fromstring(data)
         # Manually copy all global <use> not inside a <bin>/<library> tag
         # to each of those tags in the current BuildFile.xml
         for topElement in root:
-            if topElement.tag == "use" or topElement.tag == "flags" :
+            if topElement.tag == 'use' or topElement.tag == 'flags' :
                 for element in root:
-                    if element.tag == "library" or element.tag == "bin":
+                    if element.tag == 'library' or element.tag == 'bin':
                         element.append(topElement)
         # Deal with the case where <use> is wrapped in <environment> at the top level
             if topElement.tag == 'environment':
                 used=topElement.find('use')
                 if used is not None:
                     for element in root:
-                        if element.tag == "library" or element.tag == "bin":
+                        if element.tag == 'library' or element.tag == 'bin':
                             element.append(used)
         f.close()
         return root
         
 
     except Exception as e:
-        print("error in  " + path + ": " + str(e))
+        print('error in  ' + path + ': ' + str(e))
         f.close()
         return None
 
@@ -435,9 +435,9 @@ class CMakeGenerator:
             return
         if target.has_source():
             if target.has_dictionary():
-                out.write("include_directories(${CMAKE_SOURCE_DIR}\n")
+                out.write('include_directories(${CMAKE_SOURCE_DIR}\n')
                 out.write('\n'.join(sorted(target.include_dirs)))
-                out.write("\n)\n\n")
+                out.write('\n)\n\n')
                 for clh in target.classes_h :
                     cl = clh.replace('.h','')
                     part = cl.replace('src/classes','')
@@ -446,110 +446,112 @@ class CMakeGenerator:
                     out.write('cms_rootdict('+target.symbol+' '+clh+' '+cldef+')\n\n')
                 out.write('add_rootdict_rules('+target.symbol+')\n\n')
             if target.is_executable:
-                out.write("add_executable(")
-                out.write(target.symbol)
+                if len(target.test_runner_args) >= 0:
+                    out.write('add_executable(')
+                    out.write(target.symbol)
+                    for source in sorted(target.source_files):
+                        out.write('\n  ' + source)
+                    out.write('\n)\n\n')
             else:
-                out.write("add_library(")
+                out.write('add_library(')
                 out.write(target.symbol)
                 out.write(' SHARED ${'+target.symbol+'_EXTRA_SOURCES}')
+                for source in sorted(target.source_files):
+                    out.write('\n  ' + source)
+                out.write('\n)\n\n')
 
-            for source in sorted(target.source_files):
-                out.write("\n  " + source)
-            out.write("\n)\n\n")
-
-            if re.search("test", target.dir):
+            if re.search('test', target.dir):
                 if target.is_executable:
                     if not socket.getfqdn().endswith('cern.ch') and (target.symbol == 'edmCatalogFileLocator_t' or target.symbol == 'test_StorageFactory_Rfio2' or target.symbol == 'test_StorageFactory_Rfio3' ): 
-                            out.write('message("Skipping test %s that can only run in cern.ch domain")\n'%target.symbol)
+                            out.write('message("Skipping test %s that can only run in cern.ch domain")\n\n'%target.symbol)
                     else:
-                        out.write("set_target_properties(")
-                        out.write(target.symbol)
-                        out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n")
                         if len(target.test_runner_args) == 3:
-                            out.write('add_test(NAME %s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n' % (target.symbol, target.test_runner_args[0], target.test_runner_args[2] ) )
-                            out.write("add_test_env(%s_CTest)\n" % target.symbol)
+                            out.write('add_test(NAME %s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n\n' % (target.symbol, target.test_runner_args[0], target.test_runner_args[2] ) )
+                            out.write('add_test_properties(%s_CTest)\n\n' % target.symbol)
                             if not target.pretest == '':
-                                out.write("add_dependencies("+target.symbol+" "+target.pretest+")\n")
+                                out.write('set_tests_properties(%s_CTest %s_CTest  PROPERTIES RUN_SERIAL TRUE)\n\n' % (target.pretest, target.symbol))
                         if len(target.test_runner_args) > 3:
                             for i in range(2,len(target.test_runner_args)):
-                                out.write('add_test(NAME %s_%s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n'%(target.symbol,i,target.test_runner_args[0], target.test_runner_args[i] ))
-                                out.write("add_test_env(%s_%s_CTest)\n" % (target.symbol,i))
+                                out.write('add_test(NAME %s_%s_CTest COMMAND %s -x ${CMAKE_CURRENT_SOURCE_DIR}/%s)\n\n'%(target.symbol,i,target.test_runner_args[0], target.test_runner_args[i] ))
+                                out.write('add_test_properties(%s_%s_CTest)\n\n' % (target.symbol,i))
 
 
                         if len(target.test_runner_args) == 0 and target.run_test:
-                            out.write("add_test(NAME "+target.symbol+"_CTest COMMAND "+target.symbol+")\n\n")
-                            out.write("add_test_env("+target.symbol+"_CTest)\n\n")
-                        out.write("add_dependencies( ALL_TESTBINS "+target.symbol+")\n")
-                        out.write("add_dependencies( "+target.symbol+" ALL_PLUGINS)\n")
+                            out.write('set_target_properties(%s PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n\n'%target.symbol)                      
+                            out.write('add_test(NAME '+target.symbol+'_CTest COMMAND '+target.symbol+')\n\n')
+                            out.write('add_test_properties('+target.symbol+'_CTest)\n\n')
+                        out.write('add_dependencies( ALL_TESTBINS '+target.symbol+')\n\n')
+                        out.write('add_dependencies( '+target.symbol+' ALL_PLUGINS)\n\n')
                 else:
-                    out.write("set_target_properties(")
+                    out.write('set_target_properties(')
                     out.write(target.symbol)
-                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
-                    out.write("add_dependencies( ALL_TESTLIBS "+target.symbol+")\n")
+                    out.write(' PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n\n')
+                    out.write('add_dependencies( ALL_TESTLIBS '+target.symbol+')\n\n')
             else:
                 if target.is_executable:
-                    out.write("set_target_properties( ")
+                    out.write('set_target_properties( ')
                     out.write(target.symbol)
-                    out.write(" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)\n")
-                    out.write("add_dependencies( ALL_BINS "+target.symbol+")\n")
+                    out.write(' PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)\n\n')
+                    out.write('add_dependencies( ALL_BINS '+target.symbol+')\n\n')
                 else:
-                    out.write("set_target_properties(")
+                    out.write('set_target_properties(')
                     out.write(target.symbol)
-                    out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
-                    out.write("add_dependencies( ALL_LIBS "+target.symbol+")\n")
+                    out.write(' PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n\n')
+                    out.write('add_dependencies( ALL_LIBS '+target.symbol+')\n\n')
             if re.search('plugin', target.dir) or target.edm_plugin:
                 if not target.is_executable:
                     out.write('set_target_properties(')
                     out.write(target.symbol)
-                    out.write(' PROPERTIES PREFIX "plugin")\n')
-                    out.write('add_dependencies( ALL_PLUGINS '+target.symbol+')\n')
-                    tdir=str.join('/', target.dir.split("/")[:2])
-                    out.write('edm_write_config( '+target.symbol+' '+tdir+')\n')
+                    out.write(' PROPERTIES PREFIX "plugin")\n\n')
+                    out.write('add_dependencies( ALL_PLUGINS '+target.symbol+')\n\n')
+                    tdir=str.join('/', target.dir.split('/')[:2])
+                    out.write('edm_write_config( '+target.symbol+' '+tdir+')\n\n')
+            if len(target.test_runner_args) >= 0:
+                out.write('target_include_directories('+target.symbol+' PRIVATE ${CMAKE_SOURCE_DIR})\n\n')
+                if len(target.include_dirs) > 0:
+                    out.write('target_include_directories(' + target.symbol + ' PUBLIC\n')
+                    out.write('\n'.join(sorted(target.include_dirs)))
+                    out.write('\n)\n\n')
+                
+                if target.cxx_flags:
+                    out.write('add_compile_options('+'"'+' '.join(sorted(target.cxx_flags))+'"' + ')\n\n')
 
-            out.write('target_include_directories('+target.symbol+' PRIVATE ${CMAKE_SOURCE_DIR})\n\n')
-            if len(target.include_dirs) > 0:
-                out.write("target_include_directories(" + target.symbol + " PUBLIC\n")
-                out.write("\n".join(sorted(target.include_dirs)))
-                out.write("\n)\n\n")
-            
-            if target.cxx_flags:
-                out.write('add_compile_options('+'"'+' '.join(sorted(target.cxx_flags))+'"' + ')\n\n')
+                if len(target.ld_flags.strip()) != 0:
+                    out.write('# Manually defined LD_FLAGS\n')
+                    out.write('# target_xcompile_options(' + target.symbol + 
+                              ' ' + target.ld_flags + ')\n\n')
 
-            if len(target.ld_flags.strip()) != 0:
-                out.write("# Manually defined LD_FLAGS\n")
-                out.write("# target_xcompile_options(" + target.symbol + 
-                          " " + target.ld_flags + ")\n\n")
+                if len(target.needed_libs) != 0:
+                    out.write('target_link_libraries(' + target.symbol + ' PUBLIC\n')
+                    out.write('\n'.join(sorted(target.needed_libs)))
+                    out.write('\n)\n\n')
+                out.write('\n')
 
-            if len(target.needed_libs) != 0:
-                out.write("target_link_libraries(" + target.symbol + " PUBLIC\n")
-                out.write("\n".join(sorted(target.needed_libs)))
-                out.write("\n)\n\n")
-            out.write("\n")
-            if re.search("test", target.dir) :
-                if not target.is_executable:
-                    out.write("install( TARGETS ") 
-                    out.write(target.symbol)
-                    out.write(" DESTINATION ${CMAKE_INSTALL_PREFIX}/")
-                    out.write("${CMAKE_INSTALL_LIBDIR}")
-                    out.write(" EXPORT fwcore::")
-                    out.write(")\n\n")
-            else:
-                out.write("add_python_rules("+target.dir+")\n")
-                out.write("add_script_rules("+target.dir+")\n")
-                out.write("install( TARGETS ") 
-                out.write(target.symbol)
-                out.write(" DESTINATION ${CMAKE_INSTALL_PREFIX}/")
-                if target.is_executable:
-                    out.write("${CMAKE_INSTALL_BINDIR} ")
+                if re.search('test', target.dir) :
+                    if not target.is_executable:
+                        out.write('install( TARGETS ') 
+                        out.write(target.symbol)
+                        out.write(' DESTINATION ${CMAKE_INSTALL_PREFIX}/')
+                        out.write('${CMAKE_INSTALL_LIBDIR}')
+                        out.write(' EXPORT fwcore::')
+                        out.write(')\n\n')
                 else:
-                    out.write("${CMAKE_INSTALL_LIBDIR}")
-                out.write(" EXPORT fwcore::")
-                out.write(")\n\n")
+                    out.write('add_python_rules('+target.dir+')\n\n')
+                    out.write('add_script_rules('+target.dir+')\n\n')
+                    out.write('install( TARGETS ') 
+                    out.write(target.symbol)
+                    out.write(' DESTINATION ${CMAKE_INSTALL_PREFIX}/')
+                    if target.is_executable:
+                        out.write('${CMAKE_INSTALL_BINDIR} ')
+                    else:
+                        out.write('${CMAKE_INSTALL_LIBDIR}')
+                    out.write(' EXPORT fwcore::')
+                    out.write(')\n\n')
         else:
             if target.has_dictionary():
-                out.write("include_directories(${CMAKE_SOURCE_DIR}\n")
+                out.write('include_directories(${CMAKE_SOURCE_DIR}\n')
                 out.write('\n'.join(sorted(target.include_dirs)))
-                out.write("\n)\n\n")
+                out.write('\n)\n\n')
                 for clh in target.classes_h :
                     cl = clh.replace('.h','')
                     part = cl.replace('src/classes','')
@@ -558,52 +560,52 @@ class CMakeGenerator:
                     out.write('cms_rootdict('+target.symbol+' '+clh+' '+cldef+')\n\n')
                 out.write('add_rootdict_rules('+target.symbol+')\n\n')
                 out.write('add_library('+target.symbol+' SHARED ${'+target.symbol+'_EXTRA_SOURCES})\n\n')
-                out.write("set_target_properties(")
+                out.write('set_target_properties(')
                 out.write(target.symbol)
-                out.write(" PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n")
-                out.write(" add_dependencies( ALL_LIBS "+target.symbol+")\n")
+                out.write(' PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)\n\n')
+                out.write(' add_dependencies( ALL_LIBS '+target.symbol+')\n\n')
 
     # Generates the CMakeLists.txt for a given target. Note: This function APPENDS to an
     # existing CMakeLists.txt, because multiple targets are each written by their own
     # `handle_target` call to the same CMakeLists.txt.
     def handle_target(self, target):
-        output_path = target.dir + os.sep + "CMakeLists.txt"
-        output_file = open(output_path, "a")
+        output_path = target.dir + os.sep + 'CMakeLists.txt'
+        output_file = open(output_path, 'a')
         self.generate_target(target, output_file)
         output_file.close()
 
 
     # Genereates the CMakeLists.txt for a given module (e.g. `FWCore/Version/CMakeLists.txt`
     def handle_module(self, module):
-        output_path = module.base_dir + os.sep + "CMakeLists.txt"
+        output_path = module.base_dir + os.sep + 'CMakeLists.txt'
 
         if os.path.isfile(output_path):
             return False
 
-        output_file = open(output_path, "w")
+        output_file = open(output_path, 'w')
 
         if len(module.binaries) != 0:
-            output_file.write("add_subdirectory(bin)\n")
+            output_file.write('add_subdirectory(bin)\n')
         if len(module.tests) != 0:
-            output_file.write("if(BUILDTEST)\n  add_subdirectory(test)\nendif()\n")
+            output_file.write('if(BUILDTEST)\n  add_subdirectory(test)\nendif()\n\n')
         if len(module.plugins) != 0:
-            output_file.write("add_subdirectory(plugins)\n")
+            output_file.write('add_subdirectory(plugins)\n\n')
 
         output_file.close()
         return True
 
     def handle_subsystem(self, subsystem, subsystem_modules):
-        subsystem_cmake = open(subsystem + os.sep + "CMakeLists.txt", "w")
+        subsystem_cmake = open(subsystem + os.sep + 'CMakeLists.txt', 'w')
         for module in subsystem_modules:
             # FIXME: Another StaticAnalyzer check that is just an ugly hack...
-            if module.package == "StaticAnalyzers":
+            if module.package == 'StaticAnalyzers':
                 continue
-            subsystem_cmake.write("add_subdirectory(" + module.package + ")\n")
+            subsystem_cmake.write('add_subdirectory(' + module.package + ')\n\n')
 
-        subsystem_cmake.write("\n\n")
-        subsystem_cmake.write('set(pythondir ${CMAKE_BINARY_DIR}/python/%s)\n' % subsystem)
-        subsystem_cmake.write('file(MAKE_DIRECTORY ${pythondir})\n')
-        #subsystem_cmake.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated\n__path__.append(\'${pythondir}\')\n")\n')
+        subsystem_cmake.write('\n\n')
+        subsystem_cmake.write('set(pythondir ${CMAKE_BINARY_DIR}/python/%s)\n\n' % subsystem)
+        subsystem_cmake.write('file(MAKE_DIRECTORY ${pythondir})\n\n')
+        #subsystem_cmake.write('file(WRITE  '${pythondir}/__init__.py' '#autogenerated\n__path__.append(\'${pythondir}\')\n')\n')
         subsystem_cmake.write('file(WRITE  "${pythondir}/__init__.py" "#autogenerated\nimport os\n__path__.append(os.path.dirname(os.path.realpath(__file__)))")\n')
  
         has_buildable_targets = False
@@ -614,24 +616,24 @@ class CMakeGenerator:
                     break
 
         if has_buildable_targets:
-            subsystem_cmake.write("# Meta-target that builds everything in this subsystem\n")
-            subsystem_cmake.write("add_custom_target(" + subsystem + "_all)\n")
-            subsystem_cmake.write("add_dependencies(" + subsystem + "_all")
+            subsystem_cmake.write('# Meta-target that builds everything in this subsystem\n')
+            subsystem_cmake.write('add_custom_target(' + subsystem + '_all)\n\n')
+            subsystem_cmake.write('add_dependencies(' + subsystem + '_all')
             for module in subsystem_modules:
                 for target in module.targets:
                     # FIXME: The StaticAnalyzer check is just an ugly hack...
-                    if target.built_by_cmake() and target.symbol != "UtilitiesStaticAnalyzers":
-                        subsystem_cmake.write("\n  " + target.symbol)
+                    if target.built_by_cmake() and target.symbol != 'UtilitiesStaticAnalyzers':
+                        subsystem_cmake.write('\n  ' + target.symbol)
 
-            subsystem_cmake.write("\n)\n")
+            subsystem_cmake.write('\n)\n')
 
         subsystem_cmake.close()
 
     # Generates the top-level CMakeLists.txt
     def gen_top_level(self):
 
-        output_path = "CMakeLists.txt"
-        output_file = open(output_path, "w")
+        output_path = 'CMakeLists.txt'
+        output_file = open(output_path, 'w')
         preamble="""
 cmake_minimum_required(VERSION 3.12)
 project(Framework VERSION 0.0.0 LANGUAGES C CXX)
@@ -696,8 +698,8 @@ set(rootmapfiles "")
                 finds |= target.finds
 
         for f in sorted(finds):
-            output_file.write("find_package("+f+")\n")
-        output_file.write('set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")\n')
+            output_file.write('find_package('+f+')\n\n')
+        output_file.write('set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")\n\n')
  
 
         macros="""
@@ -830,7 +832,7 @@ macro(add_python_rules target)
   unset(pythondir)
 endmacro()
 
-macro(add_test_env target)
+macro(add_test_properties target)
 set_tests_properties(${target} PROPERTIES TIMEOUT 600 )
 set_tests_properties(${target} PROPERTIES WORKING_DICRECTORY ${CMAKE_BINARY_DIR}/test/${target})
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/test/${target})
@@ -848,7 +850,7 @@ endmacro()
 
 
         for subsystem in subsystem_list:
-            output_file.write("add_subdirectory(" + subsystem + ")\n")
+            output_file.write('add_subdirectory(' + subsystem + ')\n')
             subsystem_modules = self.project.subsystems[subsystem]
             self.handle_subsystem(subsystem, subsystem_modules)
 
@@ -859,7 +861,7 @@ endmacro()
             if not module.has_buildable_targets():
                 continue
 
-            group_name = module.name.split("_")[0]
+            group_name = module.name.split('_')[0]
 
             if module.name in module_groups:
                 module_groups[group_name].append(module)
@@ -883,17 +885,17 @@ install(FILES ${pcmfiles} ${rootmapfiles} ${epcfiles} DESTINATION ${CMAKE_INSTAL
 
     def get_headers(self, path):
         result = set()
-        result |= set(glob.glob(path + "**/*.h"))
-        result |= set(glob.glob(path + "**/*.hh"))
-        result |= set(glob.glob(path + "**/*.hpp"))
-        result |= set(glob.glob(path + "**/*.icc"))
-        result |= set(glob.glob(path + "**/*.inc"))
+        result |= set(glob.glob(path + '**/*.h'))
+        result |= set(glob.glob(path + '**/*.hh'))
+        result |= set(glob.glob(path + '**/*.hpp'))
+        result |= set(glob.glob(path + '**/*.icc'))
+        result |= set(glob.glob(path + '**/*.inc'))
 
         for s in list(result):
-            if s.endswith("/classes.h"):
+            if s.endswith('/classes.h'):
                 result.remove(s)
                 continue
-            if s.endswith("/headers.h"):
+            if s.endswith('/headers.h'):
                 result.remove(s)
                 continue
 
@@ -910,11 +912,11 @@ install(FILES ${pcmfiles} ${rootmapfiles} ${epcfiles} DESTINATION ${CMAKE_INSTAL
     def is_obsolete(self, path):
         try:
             content = open(path).read()
-            if '#error' in content and not "#if" in content:
-                print("Obsolete header ignored: " + path)
+            if '#error' in content and not '#if' in content:
+                print('Obsolete header ignored: ' + path)
                 return True
         except UnicodeDecodeError:
-            print("Failed to read header: " + path)
+            print('Failed to read header: ' + path)
             return False
         return False
 
@@ -935,14 +937,14 @@ def main():
 
     for root, dirs, files in os.walk('.'):
         r = remove_str_refix(root, './')
-        if len(r.split("/")) == 2 and not r.startswith('.git') and not r.startswith('cmaketools') and not r.startswith('buildfile2cmake'):
+        if len(r.split('/')) == 2 and not r.startswith('.git') and not r.startswith('cmaketools') and not r.startswith('buildfile2cmake'):
             if not 'BuildFile.xml' in os.listdir(r):
                 with open('%s/BuildFile.xml'%r, 'w') as f:
                     data = '<export><lib name="1"/></export>\n'
 
                     f.write(data)
         if r == 'IOPool/TFileAdaptor/plugins':
-            data=""
+            data=''
             with open('%s/BuildFile.xml' % root , 'r') as g:
                 data=g.read()
             with open('%s/BuildFile.xml' % root , 'w') as f:
@@ -952,8 +954,8 @@ def main():
 </library>
 """
                 f.write(data)
-        if r == "Utilities/General/test":
-            data=""
+        if r == 'Utilities/General/test':
+            data=''
             with open('%s/BuildFile.xml' % r , 'r') as g:
                 data=g.read()
             with open('%s/BuildFile.xml' % r , 'w') as f:
@@ -965,13 +967,13 @@ def main():
     for root, dirs, files in os.walk('.'):
         for file in files:
             root = remove_str_refix(root, './')
-            if len(root.split("/")) != 2:
+            if len(root.split('/')) != 2:
               continue
-            if root == "Utilities/StaticAnalyzers":
+            if root == 'Utilities/StaticAnalyzers':
               continue
             if root == 'buildfile2cmake/.git':
               continue
-            if file == "BuildFile.xml":
+            if file == 'BuildFile.xml':
                 path = os.path.join(root, file)
                 m = handle_BuildFileXml(root, path)
                 if m:
@@ -984,7 +986,7 @@ def main():
     generator = CMakeGenerator(project)
     generator.gen()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
 
 
