@@ -699,7 +699,7 @@ set(rootmapfiles "")
 
         for f in sorted(finds):
             output_file.write('find_package('+f+')\n\n')
-        output_file.write('set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes -DEDM_ML_DEBUG")\n\n')
+        output_file.write('set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")\n\n')
  
 
         macros="""
