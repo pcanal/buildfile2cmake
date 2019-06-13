@@ -699,7 +699,7 @@ set(rootmapfiles "")
 
         for f in sorted(finds):
             output_file.write('find_package('+f+')\n\n')
-        output_file.write('set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")\n\n')
+        output_file.write('set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes -DEDM_ML_DEBUG")\n\n')
  
 
         macros="""
@@ -759,6 +759,8 @@ macro(add_rootdict_rules name)
                     -I${CMAKE_SOURCE_DIR} ${flags}
                     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${classes_h} ${CMAKE_CURRENT_SOURCE_DIR}/${classes_xml}
                     )
+    list(APPEND rootmapfiles ${CMAKE_BINARY_DIR}/lib/${dict}.rootmap)
+    list(APPEND pcmfiles ${CMAKE_BINARY_DIR}/lib/lib${dict}_${dict}_x_rdict.pcm)
   endforeach()
   unset(clases_h)
   unset(classes_xml)
@@ -874,9 +876,7 @@ endmacro()
 install(DIRECTORY ${CMAKE_BINARY_DIR}/src DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY ${CMAKE_BINARY_DIR}/python DESTINATION ${CMAKE_INSTALL_PREFIX})
 install(DIRECTORY ${CMAKE_BINARY_DIR}/cfipython DESTINATION ${CMAKE_INSTALL_PREFIX})
-file(GLOB rootmapfiles "${CMAKE_BINARY_DIR}/lib/*.rootmap")
-file(GLOB epcfiles "${CMAKE_BINARY_DIR}/lib/.edmplugin*")
-install(FILES ${pcmfiles} ${rootmapfiles} ${epcfiles} DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
+install(FILES ${pcmfiles} ${rootmapfiles} ${CMAKE_BINARY_DIR}/lib/.edmplugincache DESTINATION ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR})
 """
         output_file.write(postamble)
 
