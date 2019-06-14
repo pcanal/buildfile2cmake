@@ -476,10 +476,11 @@ class CMakeGenerator:
                                 out.write('add_test_properties(%s_%s_CTest)\n\n' % (target.symbol,i))
 
 
-                        if len(target.test_runner_args) == 0 and target.run_test:
-                            out.write('set_target_properties(%s PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n\n'%target.symbol)                      
-                            out.write('add_test(NAME '+target.symbol+'_CTest COMMAND '+target.symbol+')\n\n')
-                            out.write('add_test_properties('+target.symbol+'_CTest)\n\n')
+                        if len(target.test_runner_args) == 0:
+                            out.write('set_target_properties(%s PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)\n\n'%target.symbol)
+                            if target.run_test:
+                                out.write('add_test(NAME '+target.symbol+'_CTest COMMAND '+target.symbol+')\n\n')
+                                out.write('add_test_properties('+target.symbol+'_CTest)\n\n')
                         out.write('add_dependencies( ALL_TESTBINS '+target.symbol+')\n\n')
                         out.write('add_dependencies( '+target.symbol+' ALL_PLUGINS)\n\n')
                 else:
