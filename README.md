@@ -14,22 +14,22 @@ The dictionaries branch has been tailored to only build the CMSSW ROOT dictionar
 To use:
 
 - Set up a scram project area
-`
+```
 scram pro CMSSW CMSSW_11_2_0_pre6
-`
+```
 - Checkout all CMSSW packages
-`
+```
 cd CMSSW_11_2_0_pre6/src
 eval `scram runtime -sh`
 git-cms-add-pkg '*/*' 
 PATH/TO/REPO/buildfile2cmake
-`
+```
 - Clone the cmaketools repo
-`
+```
 git clone https://github.com/gartung/cmaketools.git
-`
+```
 - Make a build directory and run CMake with the defines needed to find the header files used in dictionary generation
-`
+```
 cd ..
 mkdir build
 cd build
@@ -51,8 +51,8 @@ cmake ../src  \
 -DCLASSLIB_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/classlib/3.1.3-ghbfee/include  \
 -DORACLE_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/oracle/12.1.0.2.0-bcolbf/include
 make VERBOSE=1 -j8
-`
+```
 - Assuming the configuration and build complete you can now make the dictionaries available by setting LD_LIBRARY_PATH
-`
+```
 LD_LIBRARY_PATH=$PWD/lib
-`
+```
