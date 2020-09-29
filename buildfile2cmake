@@ -406,11 +406,12 @@ def parse_BuildFileXml(path):
                             element.append(used)
         # Deal with the case where <use> is wrapped in <iftool> at the top level
             if topElement.tag == 'iftool':
-                used  = topElement.find('use')
-                if used in not None:
-                    for element in root:
-                        if element.tag == 'library' or element.tag == 'bin':
-                            element.append(used)
+                used = topElement.find('use')
+                if used is not None:
+                    for child in topElement:
+                        if (child.tag == 'use' or child.tag == 'flags'):
+                            print(child.tag, child.attrib)
+                            root.append(child)
         f.close()
         return root
         
@@ -573,6 +574,7 @@ class CMakeGenerator:
 #                    out.write(')\n\n')
         else:
             if target.has_dictionary():
+                out.write('#target.symbol %s\n' % target.symbol)
                 out.write('include_directories(${CMAKE_SOURCE_DIR}\n')
                 out.write('\n'.join(sorted(target.include_dirs)))
                 out.write('\n)\n\n')
