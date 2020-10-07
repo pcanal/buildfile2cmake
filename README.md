@@ -15,11 +15,11 @@ To use:
 
 - Set up a scram project area
 ```
-scram pro CMSSW CMSSW_11_2_0_pre6
+scram pro CMSSW CMSSW_11_2_0_pre7
 ```
 - Checkout all CMSSW packages
 ```
-cd CMSSW_11_2_0_pre6/src
+cd CMSSW_11_2_0_pre7/src
 eval `scram runtime -sh`
 git-cms-add-pkg '*/*' 
 PATH/TO/REPO/buildfile2cmake
@@ -34,22 +34,22 @@ cd ..
 mkdir build
 cd build
 cmake ../src  \
--DBoost_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/boost/1.72.0-gchjei/include \
--DROOT_DIR=/build/cmssw/cc8_amd64_gcc8/lcg/root/6.20.06-ghbfee5/cmake \
+-DBoost_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/boost/1.72.0-gchjei/include \
+-DROOT_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/lcg/root/6.20.06-ghbfee6/cmake \
 -DCMakeTools_DIR=../src/cmaketools \
--DROOT_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/lcg/root/6.20.06-ghbfee5/include \
--DMD5_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/md5/1.0.0-bcolbf/include \
--DTBB_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/tbb/2020_U2-ghbfee/include  \
--DTINYXML2_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/tinyxml2/6.2.0-ghbfee/include \
--DSIGCPP_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/sigcpp/2.6.2-bcolbf2/include/sigc++-2.0 \
--DHEPMC_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/hepmc/2.06.07-bcolbf2/include  \
--DXERCESC_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/xerces-c/3.1.3-bcolbf/include \
--DFMT_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/fmt/7.0.1/include \
--DCUDA_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/cuda/11.0.3/include \
--DEIGEN_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/eigen/d812f411c3f9-ghbfee/include \
--DFASTJET_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/fastjet/3.3.4/include \
--DCLASSLIB_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/classlib/3.1.3-ghbfee/include  \
--DORACLE_INCLUDE_DIR=/build/cmssw/cc8_amd64_gcc8/external/oracle/12.1.0.2.0-bcolbf/include
+-DROOT_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/lcg/root/6.20.06-ghbfee6/include \
+-DMD5_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/md5/1.0.0-bcolbf2/include \
+-DTBB_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/tbb/2020_U2-ghbfee/include  \
+-DTINYXML2_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/tinyxml2/6.2.0-ghbfee/include \
+-DSIGCPP_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/sigcpp/2.6.2-bcolbf2/include/sigc++-2.0 \
+-DHEPMC_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/hepmc/2.06.07-bcolbf2/include  \
+-DXERCESC_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/xerces-c/3.1.3-bcolbf2/include \
+-DFMT_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/fmt/7.0.1/include \
+-DCUDA_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/cuda/11.1.0/include \
+-DEIGEN_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/eigen/d812f411c3f9-ghbfee/include \
+-DFASTJET_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/fastjet/3.3.4/include \
+-DCLASSLIB_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/classlib/3.1.3-ghbfee/include  \
+-DORACLE_INCLUDE_DIR==/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/oracle/12.1.0.2.0-bcolbf/include
 make VERBOSE=1 -j8
 ```
 - Assuming the configuration and build complete you can now make the dictionaries available by setting LD_LIBRARY_PATH
