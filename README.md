@@ -33,6 +33,8 @@ git clone https://github.com/gartung/cmaketools.git
 cd ..
 mkdir build
 cd build
+source /cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/gcc/8.2.0-bcolbf/etc/profile.d/init.sh 
+source /cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/cmake/3.17.2-pafccj/etc/profile.d/init.sh
 cmake ../src  \
 -DBoost_INCLUDE_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/boost/1.72.0-gchjei/include \
 -DROOT_DIR=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/lcg/root/6.20.06-ghbfee6/cmake \
