@@ -136,10 +136,10 @@
             "HepPDT"
         ],
         "includes": [
-            "${HepPDT_INCLUDE_DIR}"
+            "${HEPPDT_INCLUDE_DIR}"
         ],
         "links": [
-            "${HepPDT_HepPDT_LIBRARY}"
+            "${HEPPDT_HepPDT_LIBRARY}"
         ]
     },
     "HistoData": {
